@@ -122,7 +122,7 @@ chmod 1777 var/tmp
 ln -s usr/home home
 
 # Link timezone to localtime
-ln -s usr/share/zoneinfo/$TIMEZONE etc/localtime
+(cd etc && ln -s ../usr/share/zoneinfo/$TIMEZONE localtime)
 
 # Copy zpool.cache so the boot loader is able to locate the pool.
 cp /var/tmp/zpool.cache boot/zfs/zpool.cache
