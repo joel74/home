@@ -1,0 +1,16 @@
+#!/bin/sh
+
+username=${1-jachymko}
+usergroups=wheel
+usershell=/bin/sh
+
+if [ -x /usr/local/bin/zsh ]; then
+	usershell=/usr/local/bin/zsh
+fi
+
+pw user show $username > /dev/null 2>&1 || {
+	pw user add -n $username -m || exit $?
+}
+
+pw usermod -n $username -G $usergroups -s $usershell || exit $?
+pw user show $username

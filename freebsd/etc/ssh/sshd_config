@@ -1,0 +1,7 @@
+Port 3715
+AllowUsers jachymko
+
+VersionAddendum 
+Banner none
+
+Subsystem	sftp	/usr/libexec/sftp-server

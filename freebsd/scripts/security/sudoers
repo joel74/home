@@ -1,0 +1,10 @@
+##
+## Uncomment to enable logging of a command's output, except for
+## sudoreplay and reboot.  Use sudoreplay to play back logged sessions.
+# Defaults log_output
+# Defaults!/usr/bin/sudoreplay !log_output
+# Defaults!/usr/local/bin/sudoreplay !log_output
+# Defaults!/sbin/reboot !log_output
+
+%wheel ALL=(ALL) ALL
+#includedir /usr/local/etc/sudoers.d

@@ -1,0 +1,3 @@
+hostname=daemonik
+ifconfig_re0="inet 37.157.194.41/24"
+defaultrouter="37.157.194.1"

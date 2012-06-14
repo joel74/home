@@ -1,0 +1,2 @@
+#!/bin/sh
+portsnap -I cron update

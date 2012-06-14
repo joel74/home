@@ -1,0 +1,15 @@
+#!/bin/csh
+set PORTDIR = /usr/ports
+set PORTS = ( \
+              editors/vim-lite  \
+              devel/git         \
+              shells/zsh        \
+              sysutils/tmux     \
+              security/sudo     \
+            )
+
+foreach action (config-recursive install clean)
+	foreach port ($PORTS)
+		make -C $PORTDIR/$port $action
+	end
+end

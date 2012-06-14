@@ -1,0 +1,8 @@
+#!/bin/sh
+SUDOERS=$(dirname $0)/sudoers
+if [ -z "$1" ]; then
+	echo Replace system sudoers with $SUDOERS 
+	export VISUAL=$0 && visudo
+else
+	cat $SUDOERS > $1
+fi

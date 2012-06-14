@@ -1,0 +1,12 @@
+#!/bin/sh
+
+if [ `id -u` != 0 ]; then
+	echo Must be root
+	exit 1
+else
+	DIR=$(dirname %0)/security
+
+	$DIR/ensure-user jachymko
+	$DIR/install-sudoers
+	$DIR/lock-root-password
+fi
