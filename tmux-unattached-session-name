@@ -5,7 +5,9 @@
 ##
 
 result=$(tmux ls -F '#{session_attached} #{session_name}' |
-	grep ^0 |
-	awk '{ print $2 }')
+         grep ^0 |
+         awk '{ print $2 }' |
+	 head -n 1
+)
 
 [[ -z "$result" ]] && exit 1 || echo $result
