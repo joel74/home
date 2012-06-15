@@ -1,16 +1,1 @@
-typeset -grx JACHYMKO=`echo ~/.jachymko(:A)`
-
-typeset -gx PATH=$JACHYMKO:$PATH
-typeset -gx PAGER=less
-typeset -gx VISUAL=vim
-typeset -gx EDITOR=$VISUAL
-
 alias ls='ls -aFl'
-
-if [[ -z "$TMUX" ]]; then
-	if session=`tmux-unattached-session-name`; then
-		tmux attach -t $session
-	else
-		tmux
-	fi
-fi

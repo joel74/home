@@ -1,13 +1,17 @@
 #!/usr/bin/env zsh
 
-typeset -r JACHYMKO=`echo $0/..(:A)`
-typeset -A FILES
+if [[ -z "$JACHYMKO" ]]; then
+	typeset JACHYMKO=`echo $0/..(:A)`
+fi
 
+typeset -A FILES
 set -A FILES \
-	$JACHYMKO/zsh/zshrc  ~/.zshrc     \
+	$JACHYMKO            ~/.jachymko  \
 	$JACHYMKO/gitconfig  ~/.gitcofig  \
 	$JACHYMKO/tmux.conf  ~/.tmux.conf \
-	$JACHYMKO            ~/.jachymko  \
+	$JACHYMKO/zsh/zlogin ~/.zlogin    \
+	$JACHYMKO/zsh/zshenv ~/.zshenv    \
+	$JACHYMKO/zsh/zshrc  ~/.zshrc     \
 
 for f in ${(k)FILES}; do
 	target=$FILES[$f]

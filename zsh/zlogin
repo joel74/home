@@ -1,0 +1,7 @@
+if [[ -z "$TMUX" ]]; then
+	if session=`tmux-unattached-session-name`; then
+		tmux attach -t $session
+	else
+		tmux
+	fi
+fi
