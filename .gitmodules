@@ -1,3 +1,0 @@
-[submodule "osx/homebrew"]
-	path = osx/homebrew
-	url = https://github.com/mxcl/homebrew
