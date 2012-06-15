@@ -1,0 +1,16 @@
+#!/usr/bin/env zsh
+
+typeset -r JACHYMKO=`echo $0/..(:A)`
+typeset -A FILES
+
+set -A FILES \
+	$JACHYMKO/zsh/zshrc  ~/.zshrc     \
+	$JACHYMKO/gitconfig  ~/.gitcofig  \
+	$JACHYMKO/tmux.conf  ~/.tmux.conf \
+	$JACHYMKO            ~/.jachymko  \
+
+for f in ${(k)FILES}; do
+	target=$FILES[$f]
+	[[ -e $target ]] && rm -fr $target
+	ln -sv $f $target
+done

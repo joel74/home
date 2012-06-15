@@ -1,6 +1,0 @@
-#!/bin/sh
-set -e
-
-/usr/bin/ruby -e "$(/usr/bin/curl -fsSL https://raw.github.com/mxcl/homebrew/master/Library/Contributions/install_homebrew.rb)"
-brew install git
-brew install tmux

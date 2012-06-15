@@ -1,0 +1,11 @@
+#!/bin/sh
+
+##
+## Find a tmux session without an attached client
+##
+
+result=$(tmux ls -F '#{session_attached} #{session_name}' |
+	grep ^0 |
+	awk '{ print $2 }')
+
+[[ -z "$result" ]] && exit 1 || echo $result
