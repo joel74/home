@@ -4,8 +4,11 @@ if [[ ! -x `which brew` ]]; then
 	/usr/bin/ruby -e "$(/usr/bin/curl -fsSL https://raw.github.com/mxcl/homebrew/master/Library/Contributions/install_homebrew.rb)" 
 fi
 
-for formula in $(ls "$(dirname $0)/formulae.d"); do
+for formula ($(dirname $0)/formulae.d/*); do
+	formula=$(basename $formula)
 	if ! brew list $formula > /dev/null; then
 		brew install $formula
+	else
+		echo $formula already installed
 	fi
 done
