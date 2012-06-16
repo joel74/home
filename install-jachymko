@@ -1,0 +1,16 @@
+#!/usr/bin/env zsh
+
+function install() {
+	[[ -e $2 ]] && rm -rf $2
+	[[ -e $1 ]] && ln -sv $1 $2
+}
+
+[[ -z "$JACHYMKO" ]] && JACHYMKO=`echo $0/..(:A)`
+
+install $JACHYMKO            ~/.jachymko
+install $JACHYMKO/gitconfig  ~/.gitconfig
+install $JACHYMKO/gitignore  ~/.gitignore
+install $JACHYMKO/tmux.conf  ~/.tmux.conf
+install $JACHYMKO/zsh/zlogin ~/.zlogin
+install $JACHYMKO/zsh/zshenv ~/.zshenv
+install $JACHYMKO/zsh/zshrc  ~/.zshrc

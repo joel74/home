@@ -1,3 +1,5 @@
 [user]
 	name = jachymko
 	email = jachymko@gmail.com
+[core]
+	excludesfile = ~/.gitignore
