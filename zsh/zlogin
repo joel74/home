@@ -1,7 +1,9 @@
-if [[ -z "$TMUX" ]]; then
+if [[ -z "$TMUX" && -x `which tmux` ]]; then
 	if session=`tmux-unattached-session-name`; then
-		tmux attach -t $session
+		tmux attach -t $session && exit
 	else
-		tmux
+		tmux && exit
 	fi
 fi
+
+[[ -x `which fortune` ]] && fortune -a

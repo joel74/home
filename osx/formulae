@@ -1,14 +1,10 @@
 #!/usr/bin/env zsh
-FORMULAE=(\
-	git  \
-	tmux \
-)
-	
-if ! which brew > /dev/null; then
+
+if [[ ! -x `which brew` ]]; then
 	/usr/bin/ruby -e "$(/usr/bin/curl -fsSL https://raw.github.com/mxcl/homebrew/master/Library/Contributions/install_homebrew.rb)" 
 fi
 
-for formula in $FORMULAE; do
+for formula in $(ls "$(dirname $0)/formulae.d"); do
 	if ! brew list $formula > /dev/null; then
 		brew install $formula
 	fi
