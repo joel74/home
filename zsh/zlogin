@@ -1,5 +1,9 @@
-if [[ -z "$TMUX" && -x `which tmux` ]]; then
-	tmux-attach-or-new && exit
-fi
+[[ -z "$TMUX" ]]      &&
+[[ -z "$SSH_TTY" ]]   &&
+[[ -x `which tmux` ]] &&
+tmux-attach-or-new    &&
+exit
 
-[[ -x `which fortune` ]] && fortune -a && echo
+[[ -x `which fortune` ]] &&
+fortune -a               &&
+echo
