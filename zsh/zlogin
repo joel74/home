@@ -4,6 +4,12 @@
 tmux-attach-or-new    &&
 exit
 
+uname -a
+
+[ -x `which lastlogin` ] &&
+lastlogin                &&
+echo
+
 [[ -x `which fortune` ]] &&
 fortune -a               &&
 echo
