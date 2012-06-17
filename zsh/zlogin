@@ -4,12 +4,12 @@ if [[ -x `which tmux` ]]; then
     if [[ -z "$TMUX" ]]; then
 
         # use the default config
-        tmuxconf='~/.tmux.conf'
+        tmuxconf=~/.tmux.conf
 
         if [[ -z "$SSH_CLIENT" ]]; then
             # unless we are on localhost.
             # in that case, use the master config
-            tmuxconf='~/.tmux.master'
+            tmuxconf=~/.tmux.master
         fi
 
 
@@ -28,8 +28,8 @@ fi
 uname -a
 
 # and who's been here lately
-[ -x `which lastlogin` ] &&
-lastlogin                &&
+[[ -x `which lastlogin` ]] &&
+lastlogin                  &&
 echo
 
 # say somenthing nice. or offensive.
