@@ -3,11 +3,13 @@
 
 source-file ~/.tmux.shared
 
-# change bind key to M-C-b
-set-option -g prefix M-C-b
+# change bind key to M-C-a
+set-option -g prefix M-C-a
+
+bind-key a send-prefix
 
 # prefix again goes to last window
-bind-key M-C-b last-window
+bind-key M-C-a last-window
 
 # reload
 bind r source-file ~/.tmux.master
