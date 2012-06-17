@@ -9,7 +9,7 @@
 result=$(tmux ls -F '#{session_attached} #{session_name}' 2>/dev/null |
          grep ^0 |
          awk '{ print $2 }' |
-	 head -n 1
+         head -n 1
 )
 
-[[ -z "$result" ]] && exit 1 || echo $result
+[ -z "$result" ] && exit 1 || echo $result
