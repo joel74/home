@@ -4,7 +4,7 @@ set nocompatible
 " !silent is used to suppress error messages if the config line
 " references plugins/colorschemes that might be missing
 
-silent! runtime bundle/vim-pathogen/autoload/pathogen.vim
+silent! runtime bundle/pathogen/autoload/pathogen.vim
 
 " Call pathogen plugin management
 silent! call pathogen#infect()
