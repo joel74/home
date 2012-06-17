@@ -1,6 +1,5 @@
 # if there is tmux available
 if [[ -x `which tmux` ]]; then
-
     # and we arent running inside it already
     if [[ -z "$TMUX" ]]; then
 
@@ -24,6 +23,14 @@ if [[ -x `which tmux` ]]; then
         fi
     fi
 fi
+
+# show what we are running
+uname -a
+
+# and who's been here lately
+[ -x `which lastlogin` ] &&
+lastlogin                &&
+echo
 
 # say somenthing nice. or offensive.
 [[ -x `which fortune` ]] &&
