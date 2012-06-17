@@ -1,15 +1,38 @@
-[[ -z "$TMUX" ]]      &&
-[[ -z "$SSH_TTY" ]]   &&
-[[ -x `which tmux` ]] &&
-tmux-attach-or-new    &&
-exit
+# if there is tmux available
+if [[ -x `which tmux` ]]; then
+    # and we arent running inside it already
+    if [[ -z "$TMUX" ]]; then
 
+        # use the default config
+        tmuxconf='~/.tmux.conf'
+
+        if [[ -z "$SSH_CLIENT" ]]; then
+            # unless we are on localhost.
+            # in that case, use the master config
+            tmuxconf='~/.tmux.master'
+        fi
+
+
+        # attach to the first available abandoned session
+        # or create a new one
+
+        if tmuxsession=`$JACHYMKO/tmux-unattached-session-name` then
+            tmux -f $tmuxconf attach-session -t $tmuxsession && exit
+        else
+            tmux -f $tmuxconf new-session && exit
+        fi
+    fi
+fi
+
+# show what we are running
 uname -a
 
+# and who's been here lately
 [ -x `which lastlogin` ] &&
 lastlogin                &&
 echo
 
+# say somenthing nice. or offensive.
 [[ -x `which fortune` ]] &&
 fortune -a               &&
 echo
