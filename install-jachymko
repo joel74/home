@@ -5,7 +5,7 @@ function install() {
 	[[ -e $1 ]] && ln -sv $1 $2
 }
 
-[[ -z "$JACHYMKO" ]] && JACHYMKO=`echo $0/..(:A)`
+[[ -z "$JACHYMKO" ]] && JACHYMKO=$(echo `dirname $0`(:A))
 
 install $JACHYMKO            ~/.jachymko
 install $JACHYMKO/gitconfig  ~/.gitconfig
