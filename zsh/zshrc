@@ -1,2 +1,4 @@
 alias la='ls -aFl'
 alias ll='ls -Fl'
+
+source $JACHYMKO/zsh/prompt
