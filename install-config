@@ -1,0 +1,33 @@
+#!/usr/bin/env zsh
+
+if [ `id -u` != 0 ]; then
+    echo Must be root
+    exit 1
+fi
+
+[[ -z "$JACHYMKO" ]] && JACHYMKO=$(echo `dirname $0`(:A))
+
+uname=${uname-`uname -s`}
+dotfiles=$JACHYMKO/$uname
+
+install-dir() {
+    if [[ -d $dotfiles/$1 ]]; then
+        cp -PRvp $dotfiles/$1 $prefix/
+        chown -vv -R 0:0 $prefix/$1
+    fi
+}
+
+install-link() {
+    local dest=$prefix/$2
+    if [[ -d $(dirname $dest) ]]; then
+        ln -fsv $dotfiles/$1 $dest
+    else
+        echo Directory $(dirname $dest) does not exist.
+        echo Skipped linking $dotfiles/$1
+    fi
+}
+
+install-dir etc
+install-dir root
+
+#install-link root/DAEMONIK usr/src/sys/amd64/conf/DAEMONIK
