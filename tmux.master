@@ -30,3 +30,6 @@ bind-key -n M-C-h prev
 bind-key -n M-C-l next
 bind-key -n M-C-n select-pane -t :.-
 bind-key -n M-C-p select-pane -t :.+
+
+# show date time
+set -g status-right '#[fg=white]%Y-%m-%d %H:%M#[default]'

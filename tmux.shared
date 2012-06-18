@@ -61,5 +61,5 @@ bind m setw monitor-activity off
 bind M setw monitor-activity on
 
 set -g status-left '#h:#S)'
-set -g status-right '#[fg=white]%Y-%m-%d %H:%M#[default]'
+set -g status-right ''
 
