@@ -1,10 +1,10 @@
-# master client conf
-# https://github.com/justone/dotfiles/blob/personal/.tmux.master
-
 source-file ~/.tmux.shared
 
+# show date time
+set -g status-right '%Y-%m-%d %H:%M'
+
 # change bind key to M-C-a
-set-option -g prefix M-C-a
+set -g prefix M-C-a
 
 bind-key a send-prefix
 
@@ -30,6 +30,3 @@ bind-key -n M-C-h prev
 bind-key -n M-C-l next
 bind-key -n M-C-n select-pane -t :.-
 bind-key -n M-C-p select-pane -t :.+
-
-# show date time
-set -g status-right '#[fg=white]%Y-%m-%d %H:%M#[default]'

@@ -1,12 +1,16 @@
+# set TERM when running in tmux or screen
+# [[ ${TERM} == "screen" ]] && export TERM="screen-256color"
+
 # if there is tmux available
-if [[ -x `which tmux` ]]; then
+if [[ -x `which tmux` ]] then
+
     # and we arent running inside it already
-    if [[ -z "$TMUX" ]]; then
+    if [[ -z "$TMUX" ]] then
 
         # use the default config
         tmuxconf=~/.tmux.conf
 
-        if [[ -z "$SSH_CLIENT" ]]; then
+        if [[ -z "$SSH_CLIENT" ]] then
             # unless we are on localhost.
             # in that case, use the master config
             tmuxconf=~/.tmux.master
@@ -28,11 +32,7 @@ fi
 uname -v && echo
 
 # and who's been here lately
-[[ -x `which lastlogin` ]] &&
-lastlogin                  &&
-echo
+[[ -x `which lastlogin` ]] && lastlogin && echo
 
 # say somenthing nice. or offensive.
-[[ -x `which fortune` ]] &&
-fortune -a               &&
-echo
+[[ -x `which fortune` ]] && fortune -a && echo

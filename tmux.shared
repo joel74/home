@@ -1,5 +1,9 @@
 # https://github.com/justone/dotfiles/blob/personal/.tmux.shared
 
+# enable 256 colors
+set -g terminal-overrides "*88col*:colors=88,*256col*:colors=256,xterm*:colors=256"
+set -g default-terminal "screen-256color"
+
 # vi mode
 setw -g mode-keys vi
 
@@ -48,10 +52,8 @@ setw -g pane-border-fg black
 setw -g pane-border-bg default
 
 setw -g window-status-bg black
-setw -g window-status-current-fg default
-setw -g window-status-current-attr underscore
-setw -g window-status-alert-attr default
-setw -g window-status-alert-fg yellow
+setw -g window-status-alert-attr bright
+setw -g window-status-current-attr bright,underscore
 
 # monitor activity
 setw -g monitor-activity off
@@ -62,4 +64,3 @@ bind M setw monitor-activity on
 
 set -g status-left '[#S]'
 set -g status-right ''
-
