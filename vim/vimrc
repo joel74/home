@@ -94,10 +94,6 @@ set expandtab
 set number
 " Highlight current line
 set cursorline
-" Increase default number of lines
-" set lines=40
-" Start scrolling three lines before the horizontal window border
-"set scrolloff=3
 " Don’t reset cursor to start of line when moving around.
 set nostartofline
 
@@ -107,7 +103,6 @@ set list
 set listchars=tab:▸\
 set listchars+=trail:·
 set listchars+=nbsp:_
-"set listchars+=eol:¬
 
 " Centralize backups, swapfiles and undo history
 set backupdir=~/.vim/backups
