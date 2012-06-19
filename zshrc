@@ -1,3 +1,5 @@
+#!/usr/bin/env zsh
+
 setopt autocd
 setopt completeinword
 setopt prompt_subst

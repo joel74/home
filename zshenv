@@ -1,3 +1,5 @@
+#!/usr/bin/env zsh
+
 typeset -grx JACHYMKO=`echo ~/.jachymko(:A)`
 
 typeset -gxU PATH=$JACHYMKO:$PATH
