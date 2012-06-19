@@ -1,9 +1,10 @@
 tmux config for local and remote sessions.
-https://github.com/jachymko/home/zlogin determines which config will be used.
+[https://github.com/jachymko/home/blob/master/zlogin](~/.jachymko/zlogin) determines which config will be used.
 
 ### Prerequisities
-* **zsh**
+* zsh must be installed
 * <code>~/.jachymko</code> must be linked, as the config files contain hardcoded <code>~/.jachymko/tmux</code> paths.
+* on OS X, osascript is used to query iTunes
 
 ### tmux.conf
 * symlinked to <code>~/.tmux.conf</code>
