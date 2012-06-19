@@ -1,20 +1,24 @@
 #!/usr/bin/env zsh
 
 function install() {
-    [[ -e $2 ]] && rm -rf $2
+    if [[ -e $2 || -L $2 ]] then
+        unlink $2
+    fi
+
     [[ -e $1 ]] && ln -sv $1 $2
 }
 
 [[ -z "$JACHYMKO" ]] && JACHYMKO=$(echo `dirname $0`(:A))
+[[ -z "$prefix"   ]] && prefix=~
 
-install $JACHYMKO             ~/.jachymko
-install $JACHYMKO/gitconfig   ~/.gitconfig
-install $JACHYMKO/gitignore   ~/.gitignore
-install $JACHYMKO/tmux.conf   ~/.tmux.conf
-install $JACHYMKO/tmux.master ~/.tmux.master
-install $JACHYMKO/tmux.shared ~/.tmux.shared
-install $JACHYMKO/vim         ~/.vim
-install $JACHYMKO/vim/vimrc   ~/.vimrc
-install $JACHYMKO/zsh/zlogin  ~/.zlogin
-install $JACHYMKO/zsh/zshenv  ~/.zshenv
-install $JACHYMKO/zsh/zshrc   ~/.zshrc
+install $JACHYMKO             $prefix/.jachymko
+install $JACHYMKO/gitconfig   $prefix/.gitconfig
+install $JACHYMKO/gitignore   $prefix/.gitignore
+install $JACHYMKO/tmux.conf   $prefix/.tmux.conf
+install $JACHYMKO/tmux.master $prefix/.tmux.master
+install $JACHYMKO/tmux.shared $prefix/.tmux.shared
+install $JACHYMKO/vim         $prefix/.vim
+install $JACHYMKO/vimrc       $prefix/.vimrc
+install $JACHYMKO/zlogin      $prefix/.zlogin
+install $JACHYMKO/zshenv      $prefix/.zshenv
+install $JACHYMKO/zshrc       $prefix/.zshrc
