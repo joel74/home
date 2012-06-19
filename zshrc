@@ -27,6 +27,12 @@ function zle-line-finish {
 zle -N zle-keymap-select
 zle -N zle-line-init
 
+
+# autoload all functions in .jachymko/zsh
+for fn in $JACHYMKO/zsh/*; do
+    autoload $fn:t
+done
+
 {
     # The variables are wrapped in %{%}. This should be the case for every
     # variable that does not contain space.

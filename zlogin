@@ -1,2 +1,1 @@
-$JACHYMKO/zsh/motd
-print
+motd && print
