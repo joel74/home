@@ -1,5 +1,5 @@
 tmux config for local and remote sessions.
-[https://github.com/jachymko/home/blob/master/zlogin](~/.jachymko/zlogin) determines which config will be used.
+[~/.jachymko/zlogin][https://github.com/jachymko/home/blob/master/zlogin] determines which config will be used.
 
 ### Prerequisities
 * zsh must be installed
