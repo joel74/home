@@ -11,14 +11,12 @@ function install() {
 [[ -z "$JACHYMKO" ]] && JACHYMKO=$(echo `dirname $0`(:A))
 [[ -z "$prefix"   ]] && prefix=~
 
-install $JACHYMKO             $prefix/.jachymko
-install $JACHYMKO/gitconfig   $prefix/.gitconfig
-install $JACHYMKO/gitignore   $prefix/.gitignore
-install $JACHYMKO/tmux.conf   $prefix/.tmux.conf
-install $JACHYMKO/tmux.master $prefix/.tmux.master
-install $JACHYMKO/tmux.shared $prefix/.tmux.shared
-install $JACHYMKO/vim         $prefix/.vim
-install $JACHYMKO/vimrc       $prefix/.vimrc
-install $JACHYMKO/zlogin      $prefix/.zlogin
-install $JACHYMKO/zshenv      $prefix/.zshenv
-install $JACHYMKO/zshrc       $prefix/.zshrc
+install $JACHYMKO                $prefix/.jachymko
+install $JACHYMKO/gitconfig      $prefix/.gitconfig
+install $JACHYMKO/gitignore      $prefix/.gitignore
+install $JACHYMKO/tmux/tmux.conf $prefix/.tmux.conf
+install $JACHYMKO/vim            $prefix/.vim
+install $JACHYMKO/vim/vimrc      $prefix/.vimrc
+install $JACHYMKO/zlogin         $prefix/.zlogin
+install $JACHYMKO/zshenv         $prefix/.zshenv
+install $JACHYMKO/zshrc          $prefix/.zshrc

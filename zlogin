@@ -1,1 +1,1 @@
-motd && print
+tmux-attach-or-new || motd

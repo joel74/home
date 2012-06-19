@@ -1,0 +1,33 @@
+#!/usr/bin/env zsh
+
+# if there is tmux available
+if [[ ! -x `which tmux` ]] then
+    return 1
+fi
+
+# and we arent running inside it already
+if [[ -z "$TMUX" ]] then
+
+    if [[ -z "$SSH_CLIENT" ]] then
+        # if not in a SSH session, use master config
+        tmuxconf=$JACHYMKO/tmux/tmux.master
+    fi
+
+    if [[ -z "$tmuxconf" || ! -r "$tmuxconf" ]] then
+        # use the default config
+        tmuxconf=$JACHYMKO/tmux/tmux.conf
+    fi
+
+    # attach to the first available abandoned session
+    # or create a new one
+
+    if tmuxsession=`tmux-unattached-session-name` then
+        tmux -f $tmuxconf attach-session -t $tmuxsession
+    else
+        tmux -f $tmuxconf new-session
+    fi
+
+    return $?
+fi
+
+return 0
