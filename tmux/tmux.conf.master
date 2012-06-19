@@ -1,7 +1,7 @@
-source-file ~/.jachymko/tmux/tmux.shared
+source-file ~/.jachymko/tmux/tmux.conf.shared
 
 # reload
-bind r source-file ~/.jachymko/tmux/tmux.master
+bind r source-file ~/.jachymko/tmux/tmux.conf.master
 
 # change bind key to M-C-a
 set -g prefix M-C-a
@@ -29,4 +29,4 @@ bind-key -n M-C-n select-pane -t :.-
 bind-key -n M-C-p select-pane -t :.+
 
 # show iTunes info and date time
-set -g status-right '#(~/.jachymko/tmux/tmux.master-statusright) %Y-%m-%d %H:%M'
+set -g status-right '#(~/.jachymko/tmux/master-statusright) %Y-%m-%d %H:%M'
