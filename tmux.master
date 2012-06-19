@@ -1,7 +1,9 @@
 source-file ~/.tmux.shared
 
-# show date time
-set -g status-right '%Y-%m-%d %H:%M'
+# show iTunes info and date time
+set -g status-utf8 on
+set -g status-right '#($JACHYMKO/tmux.master-statusright) %Y-%m-%d %H:%M'
+set -g status-right-length 120
 
 # change bind key to M-C-a
 set -g prefix M-C-a

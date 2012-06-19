@@ -1,0 +1,7 @@
+#!/usr/bin/env zsh
+
+info=("${(@f)$(itunes)}") || exit 1
+artist=$info[1]
+track=$info[2]
+
+print "♬ $artist - $track │"
