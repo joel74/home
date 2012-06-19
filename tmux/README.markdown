@@ -7,11 +7,11 @@ This directory contains the tmux configuration and related scripts.
 ### tmux.conf
 * symlinked to <code>~/.tmux.conf</code>
 * 'slave' config, meant to be used in SSH sessions, nested in a local tmux instance
-* uses <kbd>Ctrl-A</kbd> prefix
+* uses <kbd>Ctrl</kbd>+<kbd>A</kbd> prefix
 
 ### tmux.master
 * 'master' config, used by the locally running tmux instance.
-* uses <kbd>Ctrl-Alt-A</kbd> prefix
+* uses <kbd>Ctrl</kbd>+<kbd>Alt</kbd>+<kbd>A</kbd> prefix
 * displays current date time, and output of the <code>tmux.master-statusright</code> script
 
 ### tmux.master-statusright
