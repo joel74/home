@@ -12,4 +12,4 @@ result=$(tmux ls -F '#{session_attached} #{session_name}' 2>/dev/null |
          head -n 1
 )
 
-[ -z "$result" ] && exit 1 || echo $result
+[[ -n "$result" ]] && echo $result || return 1

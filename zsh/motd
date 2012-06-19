@@ -7,4 +7,4 @@ uname -v && echo
 [[ -x `which lastlogin` ]] && lastlogin && echo
 
 # say somenthing nice. or offensive.
-[[ -x `which fortune` ]] && fortune -a
+[[ -x `which fortune` ]] && fortune -a && echo

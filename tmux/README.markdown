@@ -1,4 +1,5 @@
 tmux config for local and remote sessions.
+https://github.com/jachymko/home/zlogin determines which config will be used.
 
 ### Prerequisities
 * **zsh**
