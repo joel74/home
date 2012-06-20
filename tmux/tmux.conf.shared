@@ -1,11 +1,86 @@
 # https://github.com/justone/dotfiles/blob/personal/.tmux.shared
 
+## SERVER OPTIONS ########################################################################
+
+# don't wait after escape
+set -s escape-time 0
+
+## SESSION OPTIONS ######################################################################
+
 # enable 256 colors
 set -g terminal-overrides "*88col*:colors=88,*256col*:colors=256,xterm*:colors=256"
 set -g default-terminal "screen-256color"
 
-# vi mode
+# number windows from 1
+set -g base-index 1
+
+set -g visual-activity on
+set -g visual-bell on
+set -g visual-content on
+set -g visual-silence on
+
+# setting up status bar
+set -g status-utf8 on
+set -g status-justify left
+set -g status-keys vi
+
+set -g status-left '[#S]'
+set -g status-left-length 20
+
+set -g status-right ''
+set -g status-right-length 120
+
+# colors
+set -g status-bg black
+set -g message-bg black
+set -g message-command-bg black
+
+set -g status-fg white
+set -g message-fg white
+set -g message-command-bg black
+
+# pane border colors
+set -g pane-active-border-fg white
+set -g pane-active-border-bg default
+set -g pane-border-fg black
+set -g pane-border-bg default
+
+## WINDOW OPTIONS ######################################################################
+
+setw -g utf8 on
+
 setw -g mode-keys vi
+setw -g mode-bg black
+setw -g mode-fg white
+
+# don't show window flags in the status bar
+setw -g window-status-attr none
+setw -g window-status-bg black
+setw -g window-status-fg white
+setw -g window-status-format ' #I:#W '
+
+# current window
+setw -g window-status-current-attr bold
+setw -g window-status-current-bg white
+setw -g window-status-current-fg black
+setw -g window-status-current-format ' #I:#W '
+
+# window with an alert
+setw -g window-status-activity-attr underscore
+setw -g window-status-activity-bg black
+setw -g window-status-activity-fg brightyellow
+
+setw -g window-status-bell-attr underscore
+setw -g window-status-bell-bg black
+setw -g window-status-bell-fg brightyellow
+
+setw -g window-status-content-attr underscore
+setw -g window-status-content-fg brightyellow
+
+# monitor activity
+setw -g monitor-activity off
+
+## KEY BINDINGS #######################################################################
 
 # vi window splitting
 bind s split-window -v
@@ -18,7 +93,7 @@ bind k select-pane -U
 bind l select-pane -R
 
 # make it easy to grab a pane and put it into the current window
-bind-key @ command-prompt -p "create pane from:"  "join-pane -s ':%%'"
+bind @ command-prompt -p "create pane from:"  "join-pane -s ':%%'"
 
 # easily toggle synchronization (mnemonic: e is for echo)
 bind e setw synchronize-panes on
@@ -26,44 +101,10 @@ bind E setw synchronize-panes off
 
 # switch " over to selecting windows
 unbind '"'
-bind-key '"' choose-window
+bind '"' choose-window
 
 # use ' to switch between sessions
-bind-key "'" choose-session
-
-# number windows from 1
-set -g base-index 1
-
-# don't wait after escape
-set -s escape-time 0
-
-## setting up status bar
-## mostly horked from http://www.linuxized.com/2010/05/switching-from-gnu-screen-to-tmux/
-
-set -g status-utf8 on
-set -g status-justify left
-
-set -g status-left '[#S]'
-set -g status-left-length 40
-
-set -g status-right ''
-set -g status-right-length 120
-
-set -g status-bg black
-set -g status-fg white
-
-setw -g pane-active-border-fg white
-setw -g pane-active-border-bg default
-setw -g pane-border-fg black
-setw -g pane-border-bg default
-
-setw -g window-status-bg black
-setw -g window-status-alert-attr bright
-setw -g window-status-current-attr bright,underscore
-
-# monitor activity
-setw -g monitor-activity off
-set -g visual-activity off
+bind "'" choose-session
 
 bind m setw monitor-activity off
 bind M setw monitor-activity on

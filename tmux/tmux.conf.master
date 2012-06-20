@@ -8,9 +8,6 @@ set -g prefix M-C-a
 
 bind-key a send-prefix
 
-# prefix again goes to last window
-bind-key M-C-a last-window
-
 # keybindings to make resizing easier
 bind -r M-C-h resize-pane -L
 bind -r M-C-j resize-pane -D
