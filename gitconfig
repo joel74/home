@@ -3,3 +3,5 @@
 	email = jachymko@gmail.com
 [core]
 	excludesfile = ~/.gitignore
+[color]
+	ui = true
