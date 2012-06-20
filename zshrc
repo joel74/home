@@ -1,7 +1,9 @@
 #!/usr/bin/env zsh
 
-setopt autocd
-setopt completeinword
+setopt auto_cd
+setopt auto_pushd
+setopt complete_in_word
+setopt extended_glob
 setopt prompt_subst
 
 alias la='ls -aFl'
@@ -42,8 +44,6 @@ zle -N zle-line-init
         eval PR_BOLD_$COLOR='%{$fg_bold[${(L)COLOR}]%}'
     done
 
-    # Finally, let's set the prompt
-    PROMPT='$PR_BOLD_WHITE
-${${${ZLE_VICMD-0}/1/⌘}/0/ }%m:%~%# %{$reset_color%}'
+    PROMPT='$PR_BOLD_WHITE${${${ZLE_VICMD-0}/1/⌘}/0/%0(?. .$PR_RED⚠$PR_BOLD_WHITE)}%~%# %{$reset_color%}'
     RPROMPT='$PR_BG_BLACK$PR_WHITE%!%{$reset_color%}'
 }
