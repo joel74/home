@@ -43,6 +43,7 @@ zle -N zle-line-init
     done
 
     # Finally, let's set the prompt
-    PROMPT='$PR_BOLD_WHITE${${${ZLE_VICMD-0}/1/⌘}/0/ }%m:%~%# %{$reset_color%}'
+    PROMPT='$PR_BOLD_WHITE
+${${${ZLE_VICMD-0}/1/⌘}/0/ }%m:%~%# %{$reset_color%}'
     RPROMPT='$PR_BG_BLACK$PR_WHITE%!%{$reset_color%}'
 }
