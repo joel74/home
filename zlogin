@@ -5,4 +5,8 @@ if [[ -z "$SSH_CLIENT" ]] then
     tmuxconf=${tmuxconf-~/.jachymko/tmux/tmux.conf.master}
 fi
 
-tmux-attach-or-new $tmuxconf || motd
+tmuxcmd='
+    renamew shell; split -h;
+    neww -d -n vim vim'
+
+tmux-attach-or-new -f $tmuxconf ${=tmuxcmd} || motd

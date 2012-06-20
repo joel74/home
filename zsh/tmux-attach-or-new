@@ -1,25 +1,54 @@
 #!/usr/bin/env zsh
 
-if [[ ! -x `which tmux` ]] then
-    return 1
-fi
+### Attaches to the first client-less tmux session found.
+### If there are no sessions, or all have at least one client attached,
+### creates a new session and attaches to it.
+###
+###     tmux-attach-or-new [-f file] [tmux command...]
+###
+### **-f** *file*
+### Specify an alternative tmux.conf file to be used when creating
+### a new session
+###
+### *tmux command*
+### Specify any number of commands to be executed by tmux in the newly
+### created session.
+###
+###
+
+typeset tmuxconf
+
+while getopts ":f:" opt; do
+    case $opt in
+        f) tmuxconf=$OPTARG
+    esac
+done
+shift $(($OPTIND - 1))
 
 if [[ -n "$TMUX" ]] then
     # already inside tmux
     return 1
 fi
 
-# use alternate tmux config, if available
-if [[ -r "$1" ]] then
-    tmuxargs="-f $1"
+if [[ ! -x `which tmux` ]] then
+    echo tmux not available >&2
+    return 1
 fi
 
 # attach to the first available abandoned session
 # or create a new one
 if tmuxsession=`tmux-unattached-session-name` then
-    tmux ${=tmuxargs} attach-session -t $tmuxsession
+    tmux attach-session -t $tmuxsession
 else
-    tmux ${=tmuxargs} new-session
+    # no session without clients available
+
+    # use alternate tmux config, if available
+    if [[ -r "$tmuxconf" ]] then
+        tmuxargs="-f $tmuxconf"
+    fi
+
+    # pass all remaining arguments to tmux
+    tmux ${=tmuxargs} new-session \; $*
 fi
 
-return 0
+return $?
