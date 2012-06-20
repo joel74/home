@@ -14,10 +14,10 @@ set -g default-terminal "screen-256color"
 # number windows from 1
 set -g base-index 1
 
-set -g visual-activity on
-set -g visual-bell on
-set -g visual-content on
-set -g visual-silence on
+set -g visual-activity off
+set -g visual-bell off
+set -g visual-content off
+set -g visual-silence off
 
 # setting up status bar
 set -g status-utf8 on
