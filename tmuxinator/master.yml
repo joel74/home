@@ -1,0 +1,14 @@
+project_name: master
+project_root: ~/
+cli_args: -f ~/.jachymko/tmux/tmux.conf.master
+#socket_name: # Not needed.  Remove to use default socket
+#rvm: 1.9.2@rails_project
+#pre: sudo /etc/rc.d/mysqld start
+tabs:
+  - shell:
+      layout: even-vertical
+      panes:
+        - # shell
+        - # shell
+  - vim: vim
+  - daemonik: ssh -p 3715 37.157.194.41

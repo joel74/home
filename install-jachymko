@@ -15,6 +15,7 @@ install $JACHYMKO                $prefix/.jachymko
 install $JACHYMKO/gitconfig      $prefix/.gitconfig
 install $JACHYMKO/gitignore      $prefix/.gitignore
 install $JACHYMKO/tmux/tmux.conf $prefix/.tmux.conf
+install $JACHYMKO/tmuxinator     $prefix/.tmuxinator
 install $JACHYMKO/vim            $prefix/.vim
 install $JACHYMKO/vim/vimrc      $prefix/.vimrc
 install $JACHYMKO/zlogin         $prefix/.zlogin
