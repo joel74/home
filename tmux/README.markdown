@@ -21,7 +21,7 @@
 ### tmux.conf.shared
 * common configuration sourced by both of the configs
 
-### master-statusright
+### statusright.master
 * output of this script is displayed on the master tmux status bar
 * shows the track currently being played in iTunes
 
