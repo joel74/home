@@ -111,3 +111,4 @@ if exists("&undodir")
     set undodir=~/.vim/undo
 endif
 
+nnoremap <F3> :NumbersToggle<CR>
