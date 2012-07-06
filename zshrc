@@ -47,3 +47,5 @@ zle -N zle-line-init
     PROMPT='$PR_BOLD_WHITE${${${ZLE_VICMD-0}/1/⌘}/0/%0(?. .$PR_RED⚠$PR_BOLD_WHITE)}%~%# %{$reset_color%}'
     RPROMPT='$PR_BG_BLACK$PR_WHITE%!%{$reset_color%}'
 }
+
+[[ -s $HOME/.rvm/scripts/rvm ]] && source $HOME/.rvm/scripts/rvm
