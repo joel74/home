@@ -20,8 +20,16 @@ endif
 if has("syntax")
     " Enable syntax highlighting
     syntax enable
+
     " Set 256 color terminal support
-    set t_Co=256
+    " set t_Co=256
+
+    " 10.7+ Terminal.app workaround
+    if $TERM_PROGRAM == 'Apple_Terminal'
+        let g:solarized_termcolors = &t_Co
+        let g:solarized_termtrans = 1
+    endif
+
     " Set dark background
     set background=dark
     " Set colorscheme
