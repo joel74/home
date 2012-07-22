@@ -30,4 +30,6 @@ install-link() {
 install-dir etc
 install-dir root
 
-#install-link root/DAEMONIK usr/src/sys/amd64/conf/DAEMONIK
+if [[ -x "$JACHYMKO/`uname`/install-machine" ]]; then
+    $JACHYMKO/`uname`/install-machine
+fi
