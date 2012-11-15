@@ -1,14 +1,16 @@
 #!/usr/bin/env zsh
 
 if [[ ! -x `which brew` ]]; then
-	/usr/bin/ruby -e "$(/usr/bin/curl -fsSL https://raw.github.com/mxcl/homebrew/master/Library/Contributions/install_homebrew.rb)" 
+    /usr/bin/ruby -e "$(/usr/bin/curl -fsSL https://raw.github.com/mxcl/homebrew/master/Library/Contributions/install_homebrew.rb)" 
 fi
 
-for formula ($(dirname $0)/formulae.d/*); do
-	formula=$(basename $formula)
-	if ! brew list $formula > /dev/null; then
-		brew install $formula
-	else
-		echo $formula already installed
-	fi
+for file ($(dirname $0)/formulae.d/*); do
+    formula=$(basename $file)
+    if ! brew list $formula > /dev/null; then
+        echo brew install $formula `cat $file`
+    else
+        echo $formula already installed
+    fi
 done
+
+brew linkapps
