@@ -17,6 +17,7 @@ fi
 
 install $JACHYMKO/gitconfig      $prefix/.gitconfig
 install $JACHYMKO/gitignore      $prefix/.gitignore
+install $JACHYMKO/ircrc          $prefix/.ircrc
 install $JACHYMKO/tmux/tmux.conf $prefix/.tmux.conf
 install $JACHYMKO/tmuxinator     $prefix/.tmuxinator
 install $JACHYMKO/vim            $prefix/.vim
