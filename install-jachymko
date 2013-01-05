@@ -1,30 +1,44 @@
 #!/usr/bin/env zsh
 
-function install() {
+function link() {
     if [[ -e $2 || -L $2 ]] then
         unlink $2
     fi
 
-    [[ -e $1 ]] && ln -sv $1 $2
+    if [[ -e $1 ]] then
+        echo link $2 -\> $1
+        ln -s $1 $2
+    fi
+}
+
+function copy() {
+    if [[ -e $2 || -L $2 ]] then
+        unlink $2
+    fi
+
+    if [[ -e $1 ]] then
+        echo copy $1 -\> $2
+        cp -f $1 $2
+    fi
 }
 
 [[ -z "$JACHYMKO" ]] && JACHYMKO=$(echo `dirname $0`(:A))
 [[ -z "$prefix"   ]] && prefix=~
 
 if [[ ! -e $prefix/.jachymko ]]; then
-    install $JACHYMKO $prefix/.jachymko
+    link $JACHYMKO $prefix/.jachymko
 fi
 
-install $JACHYMKO/gitconfig      $prefix/.gitconfig
-install $JACHYMKO/gitignore      $prefix/.gitignore
-install $JACHYMKO/ircrc          $prefix/.ircrc
-install $JACHYMKO/tmux/tmux.conf $prefix/.tmux.conf
-install $JACHYMKO/tmuxinator     $prefix/.tmuxinator
-install $JACHYMKO/vim            $prefix/.vim
-install $JACHYMKO/vim/vimrc      $prefix/.vimrc
-install $JACHYMKO/zlogin         $prefix/.zlogin
-install $JACHYMKO/zshenv         $prefix/.zshenv
-install $JACHYMKO/zshrc          $prefix/.zshrc
+# gitconfig is copied because uname/install-jachymko scripts modify it
+copy $JACHYMKO/gitconfig      $prefix/.gitconfig
+link $JACHYMKO/gitignore      $prefix/.gitignore
+link $JACHYMKO/ircrc          $prefix/.ircrc
+link $JACHYMKO/tmux/tmux.conf $prefix/.tmux.conf
+link $JACHYMKO/vim            $prefix/.vim
+link $JACHYMKO/vim/vimrc      $prefix/.vimrc
+link $JACHYMKO/zlogin         $prefix/.zlogin
+link $JACHYMKO/zshenv         $prefix/.zshenv
+link $JACHYMKO/zshrc          $prefix/.zshrc
 
 if [[ -x "$JACHYMKO/`uname`/install-jachymko" ]]; then
     "$JACHYMKO/`uname`/install-jachymko"

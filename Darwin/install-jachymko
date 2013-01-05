@@ -7,3 +7,6 @@ curl -fsSL $get_homebrew | ruby
 curl -fsSL $get_rvm | bash -s stable --ruby
 
 ~/.jachymko/Darwin/formulae
+
+hash -r # use the git from homebrew
+git config --global credential.helper osxkeychain
