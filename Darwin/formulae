@@ -7,7 +7,7 @@ fi
 for file ($(dirname $0)/formulae.d/*); do
     formula=$(basename $file)
     if ! brew list $formula > /dev/null; then
-        echo brew install $formula `cat $file`
+        brew install $formula `cat $file`
     else
         echo $formula already installed
     fi
