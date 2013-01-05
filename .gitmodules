@@ -16,3 +16,6 @@
 [submodule "vim/bundle/vim-rake"]
 	path = vim/bundle/vim-rake
 	url = https://github.com/tpope/vim-rake.git
+[submodule "vim/bundle/vim-slim"]
+	path = vim/bundle/vim-slim
+	url = https://github.com/slim-template/vim-slim
