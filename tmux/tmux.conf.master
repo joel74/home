@@ -29,13 +29,7 @@ bind-key -n M-C-p select-pane -t :.+
 set -g status-right '#(~/.jachymko/tmux/statusright.master) %Y-%m-%d %H:%M'
 set -g default-command 'reattach-to-user-namespace -l zsh'
 
-# enable mouse mode
-set -g mode-mouse on
-set -g mouse-resize-pane on
-set -g mouse-select-pane on
-set -g mouse-select-window on
-
-# Toggle mouse on with ^B m
+# Toggle mouse on with M-C-a m
 bind m \
   set -g mode-mouse on \;\
   set -g mouse-resize-pane on \;\
@@ -43,7 +37,7 @@ bind m \
   set -g mouse-select-window on \;\
   display 'Mouse: ON'
 
-# Toggle mouse off with ^B M
+# Toggle mouse off with M-C-a  M
 bind M \
   set -g mode-mouse off \;\
   set -g mouse-resize-pane off \;\
