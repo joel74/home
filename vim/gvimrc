@@ -8,7 +8,3 @@ if has("mac")
 endif
 
 set guioptions=c " c - use console dialogs for simple questions
-
-" Set colorscheme
-set background=light
-silent! colorscheme solarized

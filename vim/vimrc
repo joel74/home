@@ -20,7 +20,7 @@ set list
 set listchars=tab:▸\
 set listchars+=trail:·
 set listchars+=nbsp:_
-
+"
 " Centralize backups, swapfiles and undo history
 set backupdir=~/.vim/backups
 set directory=~/.vim/swaps
@@ -49,7 +49,12 @@ endif
 let g:solarized_menu = 0
 
 " Set colorscheme
-set background=dark
+if has('gui_running')
+    set background=light
+else
+    set background=dark
+endif
+
 silent! colorscheme solarized
 
 if has("autocmd")
@@ -74,8 +79,18 @@ if has('cmdline_info')
     set showmode
 endif
 
-if has('statusline') && has('python')
-    source ~/.jachymko/vim/powerline/powerline/ext/vim/source_plugin.vim
+if has('statusline')
+    set laststatus=2
+    set statusline=   " clear the statusline for when vimrc is reloaded
+    set statusline+=%-3.3n\                      " buffer number
+    set statusline+=%f\                          " file name
+    set statusline+=%h%m%r%w                     " flags
+    set statusline+=[%{strlen(&ft)?&ft:'none'},  " filetype
+    set statusline+=%{strlen(&fenc)?&fenc:&enc}, " encoding
+    set statusline+=%{&fileformat}]              " file format
+    set statusline+=%=                           " right align
+    set statusline+=%b,0x%-8B\                   " current char
+    set statusline+=%-14.(%l,%c%V%)\ %<%P        " offset
 endif
 
 if has('wildmenu')
@@ -102,6 +117,24 @@ if has('extra_search')
     set smartcase
 endif
 
+" disable arrow keys
+nnoremap <Left> :echoe "Use h"<CR>
+nnoremap <Right> :echoe "Use l"<CR>
+nnoremap <Up> :echoe "Use k"<CR>
+nnoremap <Down> :echoe "Use j"<CR>"
+inoremap <up> <nop>
+inoremap <down> <nop>
+inoremap <left> <nop>
+inoremap <right> <nop>
+
+" move on every wrapped line in wrap mode
+nnoremap j gj
+nnoremap k gk
+
+" center on search result
+nnoremap n nzz
+nnoremap N Nzz
+
 " C-Tab, C-S-Tab for buffer switching
 inoremap <C-Tab>   <Esc>:bnext<CR>
 inoremap <C-S-Tab> <Esc>:bprev<CR>
@@ -113,6 +146,9 @@ noremap <C-S-Tab> :bprev<CR>
 inoremap <F1> <Esc>
 noremap <F1> :call MapF1()<CR>
 
+" <Leader>, <Space> hide highlights
+noremap <Leader>, <Space> :noh<CR>
+
 function! MapF1()
   if &buftype == "help"
     exec 'quit'
@@ -120,3 +156,7 @@ function! MapF1()
     exec 'help'
   endif
 endfunction
+
+" automatically reload vimrc, gvimrc when edited
+autocmd! bufwritepost vimrc source %
+autocmd! bufwritepost gvimrc source %
