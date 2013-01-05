@@ -48,4 +48,9 @@ zle -N zle-line-init
     RPROMPT='$PR_BG_BLACK$PR_WHITE%!%{$reset_color%}'
 }
 
-[[ -s $HOME/.rvm/scripts/rvm ]] && source $HOME/.rvm/scripts/rvm
+function source-if-exists {
+    [[ -s $1 ]] && source $1
+}
+
+source-if-exists $HOME/.rvm/scripts/rvm
+source-if-exists $HOME/.jachymko/`uname`/zshrc
