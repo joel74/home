@@ -14,6 +14,11 @@ if has("gui_running")
         set guifont=Consolas:h12:cEASTEUROPE
     endif
 
+    if has("mac")
+        set fullscreen
+        set guifont=Menlo:h12
+    endif
+
     set guioptions=aAe
 endif
 
@@ -138,3 +143,15 @@ set directory=~/.vim/swaps
 if exists("&undodir")
     set undodir=~/.vim/undo
 endif
+
+" F1 and Esc get me out of insert mode, but I can still use F1 to start (and quit) help in other modes.
+inoremap <F1> <Esc>
+noremap <F1> :call MapF1()<CR>
+
+function! MapF1()
+  if &buftype == "help"
+    exec 'quit'
+  else
+    exec 'help'
+  endif
+endfunction
