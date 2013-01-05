@@ -5,3 +5,5 @@
 	excludesfile = ~/.gitignore
 [color]
 	ui = true
+[push]
+    default = simple
