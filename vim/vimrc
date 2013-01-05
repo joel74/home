@@ -27,27 +27,30 @@ endif
 if has("syntax")
     " Enable syntax highlighting
     syntax enable
-
-    " Set 256 color terminal support
-    set t_Co=256
-
-    " 10.7+ Terminal.app workaround
-    if $TERM_PROGRAM == 'Apple_Terminal'
-        let g:solarized_termcolors = &t_Co
-        let g:solarized_termtrans = 1
-    endif
-
-    if has('gui_running')
-        set background=light
-    else
-        set background=dark
-    endif
-
-    " Set colorscheme
-    silent! colorscheme solarized
 endif
 
-if has("cmdline_info")
+" Set 256 color terminal support
+set t_Co=256
+
+" 10.7+ Terminal.app workaround
+if $TERM_PROGRAM == 'Apple_Terminal' || $TERM_PROGRAM == 'iTerm.app'
+    let g:solarized_termcolors = &t_Co
+    let g:solarized_termtrans = 1
+endif
+
+if has('gui_running')
+    set background=light
+else
+    set background=dark
+endif
+
+" Disable solarized menu
+let g:solarized_menu = 0
+
+" Set colorscheme
+silent! colorscheme solarized
+
+if has('cmdline_info')
     " Show the cursor line and column number
     set ruler
     " Show partial commands in status line
@@ -70,12 +73,12 @@ if has('statusline')
     set statusline+=%=%-14.(%l,%c%V%)\ %p%%
 endif
 
-if has("wildmenu")
+if has('wildmenu')
     " Show a list of possible completions
     set wildmenu
     " Tab autocomplete longest possible part of a string, then list
     set wildmode=longest,list
-    if has ("wildignore")
+    if has ('wildignore')
         set wildignore+=*.a,*.o
         set wildignore+=*.bmp,*.gif,*.ico,*.jpg,*.png
         set wildignore+=.DS_Store,.git,.hg,.svn
@@ -83,7 +86,7 @@ if has("wildmenu")
     endif
 endif
 
-if has("extra_search")
+if has('extra_search')
     " Highlight searches [use :noh to clear]
     set hlsearch
     " Highlight dynamically as pattern is typed
@@ -93,6 +96,12 @@ if has("extra_search")
     " ...unless has mixed case
     set smartcase
 endif
+
+" Allow hidden buffers
+set hidden
+
+" No line wrapping
+set nowrap
 
 " Backspace through everything in INSERT mode
 set backspace=indent,eol,start
@@ -129,5 +138,3 @@ set directory=~/.vim/swaps
 if exists("&undodir")
     set undodir=~/.vim/undo
 endif
-
-nnoremap <F3> :NumbersToggle<CR>
