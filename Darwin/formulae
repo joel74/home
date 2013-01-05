@@ -1,15 +1,17 @@
 #!/usr/bin/env zsh
 
 if [[ ! -x `which brew` ]]; then
-    /usr/bin/ruby -e "$(/usr/bin/curl -fsSL https://raw.github.com/mxcl/homebrew/master/Library/Contributions/install_homebrew.rb)" 
+    echo homebrew not installed! >&2
+    exit 1
 fi
 
 for file ($(dirname $0)/formulae.d/*); do
     formula=$(basename $file)
+    formula_opts=$(cat $file)
     if ! brew list $formula > /dev/null; then
-        brew install $formula `cat $file`
+        brew install $formula $formula_opts
     else
-        echo $formula already installed
+        brew upgrade $formula $formula_opts
     fi
 done
 
