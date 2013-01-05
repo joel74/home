@@ -36,6 +36,7 @@ link $JACHYMKO/ircrc          $prefix/.ircrc
 link $JACHYMKO/tmux/tmux.conf $prefix/.tmux.conf
 link $JACHYMKO/vim            $prefix/.vim
 link $JACHYMKO/vim/vimrc      $prefix/.vimrc
+link $JACHYMKO/vim/gvimrc     $prefix/.gvimrc
 link $JACHYMKO/zlogin         $prefix/.zlogin
 link $JACHYMKO/zshenv         $prefix/.zshenv
 link $JACHYMKO/zshrc          $prefix/.zshrc

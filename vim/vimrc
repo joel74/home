@@ -1,26 +1,56 @@
-" disable vi compatibility
-set nocompatible
+set nocompatible  " disable vi compatibility
+set shiftwidth=4  " Use 4 spaces for indentation
+set softtabstop=4 " Use 4 spaces for soft tab
+set tabstop=4     " Use 4 spaces for tab
+set expandtab     " Expand tab to spaces
+set number        " Enable line numbers
+set cursorline    " Highlight current line
+set nostartofline " Don’t reset cursor to start of line when moving around.
+set nowrap        " No line wrapping
+set hidden        " Allow hidden buffers
+
+set backspace=indent,eol,start " Backspace through everything in INSERT mode
+set ttyfast                    " Optimize for fast terminal connections
+set encoding=utf-8 nobomb      " Use UTF-8 without BOM
+
+"
+" Show 'invisible' characters
+set list
+" Set characters used to indicate 'invisible' characters
+set listchars=tab:▸\
+set listchars+=trail:·
+set listchars+=nbsp:_
+
+" Centralize backups, swapfiles and undo history
+set backupdir=~/.vim/backups
+set directory=~/.vim/swaps
+
+if exists("&undodir")
+    set undodir=~/.vim/undo
+endif
 
 " !silent is used to suppress error messages if the config line
 " references plugins/colorschemes that might be missing
 
-silent! runtime bundle/pathogen/autoload/pathogen.vim
-
 " Call pathogen plugin management
+silent! runtime bundle/pathogen/autoload/pathogen.vim
 silent! call pathogen#infect()
 
-if has("gui_running")
-    if has("gui_win32")
-        set guifont=Consolas:h12:cEASTEUROPE
-    endif
+" Set 256 color terminal support
+set t_Co=256
 
-    if has("mac")
-        set fullscreen
-        set guifont=Menlo:h12
-    endif
-
-    set guioptions=aAe
+" 10.7+ Terminal.app workaround
+if $TERM_PROGRAM == 'Apple_Terminal' || $TERM_PROGRAM == 'iTerm.app'
+    let g:solarized_termcolors = &t_Co
+    let g:solarized_termtrans = 1
 endif
+
+" Disable solarized menu
+let g:solarized_menu = 0
+
+" Set colorscheme
+set background=dark
+silent! colorscheme solarized
 
 if has("autocmd")
     " Load files for specific filetypes
@@ -34,26 +64,6 @@ if has("syntax")
     syntax enable
 endif
 
-" Set 256 color terminal support
-set t_Co=256
-
-" 10.7+ Terminal.app workaround
-if $TERM_PROGRAM == 'Apple_Terminal' || $TERM_PROGRAM == 'iTerm.app'
-    let g:solarized_termcolors = &t_Co
-    let g:solarized_termtrans = 1
-endif
-
-if has('gui_running')
-    set background=light
-else
-    set background=dark
-endif
-
-" Disable solarized menu
-let g:solarized_menu = 0
-
-" Set colorscheme
-silent! colorscheme solarized
 
 if has('cmdline_info')
     " Show the cursor line and column number
@@ -64,18 +74,8 @@ if has('cmdline_info')
     set showmode
 endif
 
-if has('statusline')
-    " Always show status line
-    set laststatus=2
-    " Broken down into easily includeable segments
-    " Filename
-    set statusline=%<%f\
-    " Options
-    set statusline+=%w%h%m%r
-    " Current dir
-    set statusline+=\ [%{getcwd()}]
-    " Right aligned file nav info
-    set statusline+=%=%-14.(%l,%c%V%)\ %p%%
+if has('statusline') && has('python')
+    source ~/.jachymko/vim/powerline/powerline/ext/vim/source_plugin.vim
 endif
 
 if has('wildmenu')
@@ -102,47 +102,12 @@ if has('extra_search')
     set smartcase
 endif
 
-" Allow hidden buffers
-set hidden
+" C-Tab, C-S-Tab for buffer switching
+inoremap <C-Tab>   <Esc>:bnext<CR>
+inoremap <C-S-Tab> <Esc>:bprev<CR>
 
-" No line wrapping
-set nowrap
-
-" Backspace through everything in INSERT mode
-set backspace=indent,eol,start
-" Optimize for fast terminal connections
-set ttyfast
-" Use UTF-8 without BOM
-set encoding=utf-8 nobomb
-
-" Use 4 spaces for indentation
-set shiftwidth=4
-" Use 4 spaces for soft tab
-set softtabstop=4
-" Use 4 spaces for tab
-set tabstop=4
-" Expand tab to spaces
-set expandtab
-" Enable line numbers
-set number
-" Highlight current line
-set cursorline
-" Don’t reset cursor to start of line when moving around.
-set nostartofline
-
-" Show 'invisible' characters
-set list
-" Set characters used to indicate 'invisible' characters
-set listchars=tab:▸\
-set listchars+=trail:·
-set listchars+=nbsp:_
-
-" Centralize backups, swapfiles and undo history
-set backupdir=~/.vim/backups
-set directory=~/.vim/swaps
-if exists("&undodir")
-    set undodir=~/.vim/undo
-endif
+noremap <C-Tab>   :bnext<CR>
+noremap <C-S-Tab> :bprev<CR>
 
 " F1 and Esc get me out of insert mode, but I can still use F1 to start (and quit) help in other modes.
 inoremap <F1> <Esc>

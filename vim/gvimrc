@@ -1,0 +1,14 @@
+if has("gui_win32")
+    set guifont=Consolas:h12:cEASTEUROPE
+endif
+
+if has("mac")
+    set fullscreen
+    set guifont=Menlo:h12
+endif
+
+set guioptions=c " c - use console dialogs for simple questions
+
+" Set colorscheme
+set background=light
+silent! colorscheme solarized
