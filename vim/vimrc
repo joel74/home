@@ -13,7 +13,6 @@ set nostartofline  " Don’t reset cursor to start of line when moving around.
 set nowrap         " No line wrapping
 set hidden         " Allow hidden buffers
 set undofile       " Create undo files
-set visualbell     " dont fucking beep at me
 
 set backspace=indent,eol,start " Backspace through everything in INSERT mode
 set encoding=utf-8 nobomb      " Use UTF-8 without BOM
@@ -23,12 +22,18 @@ set listchars=tab:▸\
 set listchars+=trail:·
 set listchars+=nbsp:_
 
+let s:vimdir='.vim'
+
+if has('win32')
+    let s:vimdir='vimfiles'
+endif
+
 " Centralize backups, swapfiles and undo history
-set backupdir=~/.vim/backups
-set directory=~/.vim/swaps
+exec 'set backupdir=~/' . s:vimdir . '/backups'
+exec 'set directory=~/' . s:vimdir . '/swaps'
 
 if exists('&undodir')
-    set undodir=~/.vim/undo
+    exec 'set undodir=~/' . s:vimdir . '/undo'
 endif
 
 let mapleader=","
