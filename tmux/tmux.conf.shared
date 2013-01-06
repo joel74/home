@@ -105,6 +105,3 @@ bind '"' choose-window
 
 # use ' to switch between sessions
 bind "'" choose-session
-
-bind m setw monitor-activity off
-bind M setw monitor-activity on

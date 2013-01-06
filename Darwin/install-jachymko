@@ -1,9 +1,12 @@
 #!/usr/bin/env sh
 
-get_homebrew=https://raw.github.com/mxcl/homebrew/master/Library/Contributions/install_homebrew.rb
+get_homebrew=https://raw.github.com/mxcl/homebrew/go
 get_rvm=https://get.rvm.io
 
 curl -fsSL $get_homebrew | ruby
 curl -fsSL $get_rvm | bash -s stable --ruby
 
 ~/.jachymko/Darwin/formulae
+
+hash -r # use the git from homebrew
+git config --global credential.helper osxkeychain

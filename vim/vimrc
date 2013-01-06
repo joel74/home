@@ -1,53 +1,79 @@
-" disable vi compatibility
-set nocompatible
+set nocompatible  " disable vi compatibility
+set ttyfast       " Optimize for fast terminal connections
+
+set shiftwidth=4   " Use 4 spaces for indentation
+set softtabstop=4  " Use 4 spaces for soft tab
+set tabstop=4      " Use 4 spaces for tab
+set expandtab      " Expand tab to spaces
+set colorcolumn=95 " highlight column 95
+
+set relativenumber " Enable line numbers
+set cursorline     " Highlight current line
+set nostartofline  " Don’t reset cursor to start of line when moving around.
+set nowrap         " No line wrapping
+set hidden         " Allow hidden buffers
+set undofile       " Create undo files
+set visualbell     " dont fucking beep at me
+
+set backspace=indent,eol,start " Backspace through everything in INSERT mode
+set encoding=utf-8 nobomb      " Use UTF-8 without BOM
+
+set list " Show 'invisible' characters
+set listchars=tab:▸\
+set listchars+=trail:·
+set listchars+=nbsp:_
+
+" Centralize backups, swapfiles and undo history
+set backupdir=~/.vim/backups
+set directory=~/.vim/swaps
+
+if exists('&undodir')
+    set undodir=~/.vim/undo
+endif
+
+let mapleader=","
 
 " !silent is used to suppress error messages if the config line
 " references plugins/colorschemes that might be missing
 
-silent! runtime bundle/pathogen/autoload/pathogen.vim
-
 " Call pathogen plugin management
+silent! runtime bundle/pathogen/autoload/pathogen.vim
 silent! call pathogen#infect()
 
-if has("gui_running")
-    if has("gui_win32")
-        set guifont=Consolas:h12:cEASTEUROPE
-    endif
+" Set 256 color terminal support
+set t_Co=256
 
-    set guioptions=aAe
+" 10.7+ Terminal.app workaround
+if $TERM_PROGRAM == 'Apple_Terminal' || $TERM_PROGRAM == 'iTerm.app'
+    let g:solarized_termcolors = &t_Co
+    let g:solarized_termtrans = 1
 endif
 
-if has("autocmd")
-    " Load files for specific filetypes
+" Disable solarized menu
+let g:solarized_menu = 0
+
+" Set colorscheme
+if has('gui_running')
+    set background=light
+else
+    set background=dark
+endif
+
+silent! colorscheme solarized
+
+" Load files for specific filetypes
+if has('autocmd')
     filetype on
     filetype indent on
     filetype plugin on
 endif
 
-if has("syntax")
-    " Enable syntax highlighting
+" Enable syntax highlighting
+if has('syntax')
     syntax enable
-
-    " Set 256 color terminal support
-    set t_Co=256
-
-    " 10.7+ Terminal.app workaround
-    if $TERM_PROGRAM == 'Apple_Terminal'
-        let g:solarized_termcolors = &t_Co
-        let g:solarized_termtrans = 1
-    endif
-
-    if has('gui_running')
-        set background=light
-    else
-        set background=dark
-    endif
-
-    " Set colorscheme
-    silent! colorscheme solarized
 endif
 
-if has("cmdline_info")
+if has('cmdline_info')
     " Show the cursor line and column number
     set ruler
     " Show partial commands in status line
@@ -57,25 +83,25 @@ if has("cmdline_info")
 endif
 
 if has('statusline')
-    " Always show status line
     set laststatus=2
-    " Broken down into easily includeable segments
-    " Filename
-    set statusline=%<%f\
-    " Options
-    set statusline+=%w%h%m%r
-    " Current dir
-    set statusline+=\ [%{getcwd()}]
-    " Right aligned file nav info
-    set statusline+=%=%-14.(%l,%c%V%)\ %p%%
+    set statusline=   " clear the statusline for when vimrc is reloaded
+    set statusline+=%-3.3n\                      " buffer number
+    set statusline+=%f\                          " file name
+    set statusline+=%h%m%r%w                     " flags
+    set statusline+=[%{strlen(&ft)?&ft:'none'},  " filetype
+    set statusline+=%{strlen(&fenc)?&fenc:&enc}, " encoding
+    set statusline+=%{&fileformat}]              " file format
+    set statusline+=%=                           " right align
+    set statusline+=%b,0x%-8B\                   " current char
+    set statusline+=%-14.(%l,%c%V%)\ %<%P        " offset
 endif
 
-if has("wildmenu")
+if has('wildmenu')
     " Show a list of possible completions
     set wildmenu
     " Tab autocomplete longest possible part of a string, then list
     set wildmode=longest,list
-    if has ("wildignore")
+    if has ('wildignore')
         set wildignore+=*.a,*.o
         set wildignore+=*.bmp,*.gif,*.ico,*.jpg,*.png
         set wildignore+=.DS_Store,.git,.hg,.svn
@@ -83,51 +109,78 @@ if has("wildmenu")
     endif
 endif
 
-if has("extra_search")
-    " Highlight searches [use :noh to clear]
-    set hlsearch
-    " Highlight dynamically as pattern is typed
-    set incsearch
-    " Ignore case of searches...
-    set ignorecase
-    " ...unless has mixed case
-    set smartcase
+if has('extra_search')
+    set hlsearch   " Highlight searches [use :noh to clear]
+    set incsearch  " Highlight dynamically as pattern is typed
+    set ignorecase " Ignore case of searches...
+    set smartcase  " ...unless has mixed case
+    set gdefault   " replace all instances by default
+
+    " <Leader>, <Space> hide highlights
+    nnoremap <Leader><Space> :noh<CR>
 endif
 
-" Backspace through everything in INSERT mode
-set backspace=indent,eol,start
-" Optimize for fast terminal connections
-set ttyfast
-" Use UTF-8 without BOM
-set encoding=utf-8 nobomb
+" disable crazy vim regex
+nnoremap / /\v
+vnoremap / /\v
 
-" Use 4 spaces for indentation
-set shiftwidth=4
-" Use 4 spaces for soft tab
-set softtabstop=4
-" Use 4 spaces for tab
-set tabstop=4
-" Expand tab to spaces
-set expandtab
-" Enable line numbers
-set number
-" Highlight current line
-set cursorline
-" Don’t reset cursor to start of line when moving around.
-set nostartofline
+" tab to matching brackets
+nnoremap <tab> %
+vnoremap <tab> %
 
-" Show 'invisible' characters
-set list
-" Set characters used to indicate 'invisible' characters
-set listchars=tab:▸\
-set listchars+=trail:·
-set listchars+=nbsp:_
+" disable arrow keys
+nnoremap <Left> :echoe "Use h"<CR>
+nnoremap <Right> :echoe "Use l"<CR>
+nnoremap <Up> :echoe "Use k"<CR>
+nnoremap <Down> :echoe "Use j"<CR>"
+inoremap <up> <nop>
+inoremap <down> <nop>
+inoremap <left> <nop>
+inoremap <right> <nop>
 
-" Centralize backups, swapfiles and undo history
-set backupdir=~/.vim/backups
-set directory=~/.vim/swaps
-if exists("&undodir")
-    set undodir=~/.vim/undo
-endif
+" move on every wrapped line in wrap mode
+nnoremap j gj
+nnoremap k gk
 
-nnoremap <F3> :NumbersToggle<CR>
+" center on search result
+nnoremap n nzz
+nnoremap N Nzz
+
+" C-Tab, C-S-Tab for buffer switching
+inoremap <C-Tab>   <Esc>:bnext<CR>
+inoremap <C-S-Tab> <Esc>:bprev<CR>
+
+noremap <C-Tab>   :bnext<CR>
+noremap <C-S-Tab> :bprev<CR>
+
+" JJ exit out of insert mode
+inoremap jj <Esc>
+
+" F1 and Esc get me out of insert mode
+inoremap <F1> <Esc>
+nnoremap <F1> :call MapF1()<CR>
+vnoremap <F1> :call MapF1()<CR>
+
+function! MapF1()
+  if &buftype == "help"
+    exec 'quit'
+  else
+    exec 'vert help'
+  endif
+endfunction
+
+" map ; to :
+nnoremap ; :
+
+" <Leader>, W remove trailing whitespace
+nnoremap <Leader>W :s/\v\s+$<CR>
+
+" remove all auto commands
+autocmd!
+
+" automatically reload vimrc, gvimrc when edited
+autocmd! bufwritepost vimrc source %
+autocmd! bufwritepost gvimrc source %
+
+" save everything when focus lost
+autocmd! FocusLost * :wa
