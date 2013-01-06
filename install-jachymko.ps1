@@ -9,10 +9,20 @@ function Install-Link($src, $dest) {
     }
 
     if (Test-Path -PathType Container $src) {
-        cmd /c mklink /j "$dest" "$src"
+        if ($nolink) {
+            copy-item $src $dest -verbose -recurse
+        }
+        else {
+            cmd /c mklink /j "$dest" "$src"
+        }
     }
     elseif (Test-Path -PathType Leaf $src) {
-        cmd /c mklink "$dest" "$src"
+        if ($nolink) {
+            copy-item $src $dest -verbose
+        }
+        else {
+            cmd /c mklink "$dest" "$src"
+        }
     }
 }
 
