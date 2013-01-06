@@ -1,26 +1,27 @@
 set nocompatible  " disable vi compatibility
+set ttyfast       " Optimize for fast terminal connections
+
 set shiftwidth=4  " Use 4 spaces for indentation
 set softtabstop=4 " Use 4 spaces for soft tab
 set tabstop=4     " Use 4 spaces for tab
 set expandtab     " Expand tab to spaces
-set number        " Enable line numbers
-set cursorline    " Highlight current line
-set nostartofline " Don’t reset cursor to start of line when moving around.
-set nowrap        " No line wrapping
-set hidden        " Allow hidden buffers
+
+set relativenumber " Enable line numbers
+set cursorline     " Highlight current line
+set nostartofline  " Don’t reset cursor to start of line when moving around.
+set nowrap         " No line wrapping
+set hidden         " Allow hidden buffers
+set undofile       " Create undo files
+set visualbell     " dont fucking beep at me
 
 set backspace=indent,eol,start " Backspace through everything in INSERT mode
-set ttyfast                    " Optimize for fast terminal connections
 set encoding=utf-8 nobomb      " Use UTF-8 without BOM
 
-"
-" Show 'invisible' characters
-set list
-" Set characters used to indicate 'invisible' characters
+set list " Show 'invisible' characters
 set listchars=tab:▸\
 set listchars+=trail:·
 set listchars+=nbsp:_
-"
+
 " Centralize backups, swapfiles and undo history
 set backupdir=~/.vim/backups
 set directory=~/.vim/swaps
@@ -28,6 +29,8 @@ set directory=~/.vim/swaps
 if exists("&undodir")
     set undodir=~/.vim/undo
 endif
+
+let mapleader=","
 
 " !silent is used to suppress error messages if the config line
 " references plugins/colorschemes that might be missing
@@ -57,18 +60,17 @@ endif
 
 silent! colorscheme solarized
 
+" Load files for specific filetypes
 if has("autocmd")
-    " Load files for specific filetypes
     filetype on
     filetype indent on
     filetype plugin on
 endif
 
+" Enable syntax highlighting
 if has("syntax")
-    " Enable syntax highlighting
     syntax enable
 endif
-
 
 if has('cmdline_info')
     " Show the cursor line and column number
@@ -107,15 +109,23 @@ if has('wildmenu')
 endif
 
 if has('extra_search')
-    " Highlight searches [use :noh to clear]
-    set hlsearch
-    " Highlight dynamically as pattern is typed
-    set incsearch
-    " Ignore case of searches...
-    set ignorecase
-    " ...unless has mixed case
-    set smartcase
+    set hlsearch   " Highlight searches [use :noh to clear]
+    set incsearch  " Highlight dynamically as pattern is typed
+    set ignorecase " Ignore case of searches...
+    set smartcase  " ...unless has mixed case
+    set gdefault   " replace all instances by default
+
+    " <Leader>, <Space> hide highlights
+    nnoremap <Leader><Space> :noh<CR>
 endif
+
+" disable crazy vim regex
+nnoremap / /\v
+vnoremap / /\v
+
+" tab to matching brackets
+nnoremap <tab> %
+vnoremap <tab> %
 
 " disable arrow keys
 nnoremap <Left> :echoe "Use h"<CR>
@@ -142,21 +152,26 @@ inoremap <C-S-Tab> <Esc>:bprev<CR>
 noremap <C-Tab>   :bnext<CR>
 noremap <C-S-Tab> :bprev<CR>
 
-" F1 and Esc get me out of insert mode, but I can still use F1 to start (and quit) help in other modes.
+" JJ exit out of insert mode
+inoremap jj <Esc>
+
+" F1 and Esc get me out of insert mode
 inoremap <F1> <Esc>
-noremap <F1> :call MapF1()<CR>
+nnoremap <F1> <Esc>
+vnoremap <F1> <Esc>
 
-" <Leader>, <Space> hide highlights
-noremap <Leader>, <Space> :noh<CR>
+" map ; to :
+nnoremap ; :
 
-function! MapF1()
-  if &buftype == "help"
-    exec 'quit'
-  else
-    exec 'help'
-  endif
-endfunction
+" <Leader>, W remove trailing whitespace
+nnoremap <Leader>W :s/\v\s+$<CR>
+
+" remove all auto commands
+autocmd!
 
 " automatically reload vimrc, gvimrc when edited
 autocmd! bufwritepost vimrc source %
 autocmd! bufwritepost gvimrc source %
+
+" save everything when focus lost
+autocmd! FocusLost * :wa
