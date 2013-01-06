@@ -13,7 +13,6 @@ set nostartofline  " Don’t reset cursor to start of line when moving around.
 set nowrap         " No line wrapping
 set hidden         " Allow hidden buffers
 set undofile       " Create undo files
-set visualbell     " dont fucking beep at me
 
 set backspace=indent,eol,start " Backspace through everything in INSERT mode
 set encoding=utf-8 nobomb      " Use UTF-8 without BOM

@@ -1,9 +1,7 @@
-﻿param($jachymko)
-
-if (-not $jachymko) {
-    throw "path to jachymko dotfiles not specified"
-}
-
+﻿$jachymko = (Split-Path -Parent (
+             Split-Path -Parent $MyInvocation.MyCommand.Definition)
+            )
+            
 $extensions = '001 7z arj bz2 bzip2 cab cpio deb dmg fat gz gzip hfs ' +
               'iso lha lzh lzma ntfs rar rpm squashfs swm tar taz tbz ' +
               'tbz2 tgz tpz txz vhd wim xar xz z zip' -split ' '
