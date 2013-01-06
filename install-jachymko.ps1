@@ -1,33 +1,42 @@
 param ([switch]$nolink)
 
 function Install-Link($src, $dest) {
-    if (Test-Path -PathType Container $dest) {
-        cmd /c rmdir "$dest"
+    $item = Get-Item $src -ea stop
+    $isdir = $item.PSIsContainer
+
+    if ($isdir) {
+        # delete destination using rmdir
+        # removes junctions but doesn't delete the linked content
+        cmd /c rmdir $dest /s /q
     }
-    elseif (Test-Path -PathType Leaf $dest) {
-        cmd /c del "$dest"
+    else {
+        cmd /c del $dest /f
     }
 
-    if (Test-Path -PathType Container $src) {
-        if ($nolink) {
-            copy-item $src $dest -verbose -recurse
-        }
-        else {
-            cmd /c mklink /j "$dest" "$src"
-        }
+    if ($nolink) {
+        Install-Copy $src $dest
     }
-    elseif (Test-Path -PathType Leaf $src) {
-        if ($nolink) {
-            copy-item $src $dest -verbose
+    else {
+        if ($isdir) {
+            cmd /c mklink /j $dest $src
         }
         else {
-            cmd /c mklink "$dest" "$src"
+            cmd /c mklink $dest $src
         }
     }
 }
 
 function Install-Copy($src, $dest) {
-    Copy-Item $src $dest -Force -Verbose
+    $item = Get-Item $src -ea stop
+    $isdir = $item.PSIsContainer
+
+    if ($isdir) {
+        cmd /c mkdir $dest
+        cmd /c xcopy $src $dest /e /f
+    }
+    else {
+        cmd /c copy $src $dest
+    }
 }
 
 function Install-EnvVar($name, $value) {

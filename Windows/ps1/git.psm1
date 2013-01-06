@@ -1,8 +1,9 @@
 $gitshell = '~\AppData\Local\GitHub\shell.ps1'
 
 if (-not (Test-Path $gitshell)) {
-    write-warning 'GitHub not installed!'
-    Export-ModuleMember -Functions @()
+    write-warning 'GitHub not installed! Get it at http://windows.github.com/'
+    Export-ModuleMember -Function @()
+    exit
 }
 
 . $gitshell -SkipSSHSetup
