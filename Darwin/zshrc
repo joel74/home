@@ -1,1 +1,1 @@
-alias vim='mvim --remote-silent'
+alias gvim='mvim --remote-silent'
