@@ -32,3 +32,6 @@ function guid($f)
 {
     [Guid]::NewGuid().ToString($f)
 }
+
+set-alias la Get-ChildItem
+export-modulemember -alias * -function *
