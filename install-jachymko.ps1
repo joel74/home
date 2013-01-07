@@ -79,7 +79,7 @@ $Env:PSModulePath = "$jachymkoPS1;$Env:PSModulePath"
 
 Install-EnvVar Path   $UserPath
 Install-EnvVar Editor $Env:Editor
-Install-EnvVar SModulePath $jachymkoPS1
+Install-EnvVar PSModulePath $jachymkoPS1
 
 Get-ChildItem $jachymko\Windows\install-* |% {
     switch -Regex($_.FullName) {
@@ -87,3 +87,5 @@ Get-ChildItem $jachymko\Windows\install-* |% {
         '\.reg$'       { reg import $_ 2>$null; break }
     }
 }
+
+powershell -command "cd '$jachymko'; git submodule update --init"
