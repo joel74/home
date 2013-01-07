@@ -8,6 +8,14 @@ if (-not (Test-Path $gitshell)) {
 
 . $gitshell -SkipSSHSetup
 
+function Get-GitLinkItem
+{
+    git ls-files -s |? {
+        $_ -match '^120000 (?<sha>.{40}) (.)\s+(?<path>.*)$' } |% {
+        (Get-Item $matches['path'])
+    }
+}
+
 function Get-GitBranch
 {
     switch -regex (git branch --verbose)
@@ -59,7 +67,7 @@ function Get-GitCachedChanges
     }
 }
 
-function Get-GitRepositoryName
+function Get-GitRepositoryRoot
 {
     $path = $pwd.path
 
@@ -67,12 +75,17 @@ function Get-GitRepositoryName
     {
         if (test-path $(join-path $path '.git') -type container)
         {
-            return split-path $path -leaf
+            return $path
         }
 
         $path = split-path $path -parent
     }
     while ($path)
+}
+
+function Get-GitRepositoryName
+{
+    return split-path (Get-GitRepositoryRoot) -leaf
 }
 
 function PromptExtension
@@ -85,4 +98,3 @@ function PromptExtension
     }
 }
 
-Export-ModuleMember PromptExtension

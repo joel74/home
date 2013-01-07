@@ -1,10 +1,17 @@
 param ([switch]$nolink)
 
-function Install-Link($src, $dest) {
-    $item = Get-Item $src -ea stop
-    $isdir = $item.PSIsContainer
+$jachymko = (Split-Path -Parent $MyInvocation.MyCommand.Definition)
+$jachymkoPS1 = "$jachymko\Windows\ps1"
+$prefix = $Env:UserProfile
 
-    if ($isdir) {
+ls $jachymkoPS1\*.psm1 | import-module -force
+
+function IsDir($p) {
+    (Get-Item $p -ea stop).PSIsContainer
+}
+
+function Install-Link($src, $dest) {
+    if (IsDir $dest) {
         # delete destination using rmdir
         # removes junctions but doesn't delete the linked content
         cmd /c rmdir $dest /s /q
@@ -17,7 +24,7 @@ function Install-Link($src, $dest) {
         Install-Copy $src $dest
     }
     else {
-        if ($isdir) {
+        if (IsDir $src) {
             cmd /c mklink /j $dest $src
         }
         else {
@@ -27,10 +34,7 @@ function Install-Link($src, $dest) {
 }
 
 function Install-Copy($src, $dest) {
-    $item = Get-Item $src -ea stop
-    $isdir = $item.PSIsContainer
-
-    if ($isdir) {
+    if (IsDir $src) {
         cmd /c mkdir $dest
         cmd /c xcopy $src $dest /e /f
     }
@@ -43,12 +47,6 @@ function Install-EnvVar($name, $value) {
     write-host "setx $name $value"
     setx $name $value >$null
 }
-
-$jachymko = (Split-Path -Parent $MyInvocation.MyCommand.Definition)
-$jachymkoPS1 = "$jachymko\Windows\ps1"
-$prefix = $Env:UserProfile
-
-import-module "$jachymkoPS1\Utils.psm1" -force
 
 if (-not (Test-IsAdmin) -and -not $nolink) {
     throw "This script should be ran elevated because it creates directory junctions.`r`n" +
@@ -88,4 +86,4 @@ Get-ChildItem $jachymko\Windows\install-* |% {
     }
 }
 
-powershell -command "cd '$jachymko'; git submodule update --init"
+git submodule update --init
