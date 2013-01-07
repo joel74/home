@@ -1,4 +1,6 @@
 #requires -version 2
+#(c) by Oisin Grehan
+
 $typename = 'SendMessageTimeout_6a057adb_f92f_4e34_bda2_42bc79d05f5c'
 $type     = $typename -as [type]
 if (-not $type) {
