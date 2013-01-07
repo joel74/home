@@ -1,10 +1,10 @@
 if has("gui_win32")
-    set guifont=Consolas:h10:cEASTEUROPE
+    set guifont=Consolas:h14:cEASTEUROPE
 endif
 
 if has("mac")
     set fullscreen
-    set guifont=Menlo:h12
+    set guifont=Menlo:h14
 endif
 
 set guioptions=c " c - use console dialogs for simple questions

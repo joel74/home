@@ -56,9 +56,6 @@ if $TERM_PROGRAM == 'Apple_Terminal' || $TERM_PROGRAM == 'iTerm.app'
     let g:solarized_termtrans = 1
 endif
 
-" Disable solarized menu
-let g:solarized_menu = 0
-
 " Set colorscheme
 if has('gui_running')
     set background=light
@@ -67,18 +64,6 @@ else
 endif
 
 silent! colorscheme solarized
-
-" Load files for specific filetypes
-if has('autocmd')
-    filetype on
-    filetype indent on
-    filetype plugin on
-endif
-
-" Enable syntax highlighting
-if has('syntax')
-    syntax enable
-endif
 
 if has('cmdline_info')
     " Show the cursor line and column number
@@ -182,12 +167,24 @@ nnoremap ; :
 " <Leader>, W remove trailing whitespace
 nnoremap <Leader>W :s/\v\s+$<CR>
 
-" remove all auto commands
-autocmd!
+if has('autocmd')
+    " remove all auto commands
+    autocmd!
 
-" automatically reload vimrc, gvimrc when edited
-autocmd! bufwritepost vimrc source %
-autocmd! bufwritepost gvimrc source %
+    " Load files for specific filetypes
+    filetype on
+    filetype indent on
+    filetype plugin on
 
-" save everything when focus lost
-autocmd! FocusLost * :wa
+    " automatically reload vimrc, gvimrc when edited
+    autocmd! bufwritepost vimrc source %
+    autocmd! bufwritepost gvimrc source %
+
+    " save everything when focus lost
+    autocmd! FocusLost * :wa
+endif
+
+" Enable syntax highlighting
+if has('syntax')
+    syntax enable
+endif
