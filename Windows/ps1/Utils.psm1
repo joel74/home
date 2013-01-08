@@ -33,5 +33,10 @@ function guid($f)
     [Guid]::NewGuid().ToString($f)
 }
 
+function deurl($s)
+{
+    [web.httputility]::UrlDecode($s)
+}
+
 set-alias la Get-ChildItem
 export-modulemember -alias * -function *
