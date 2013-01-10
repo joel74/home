@@ -180,8 +180,8 @@ if has('autocmd')
     autocmd! bufwritepost vimrc source %
     autocmd! bufwritepost gvimrc source %
 
-    " save everything when focus lost
-    autocmd! FocusLost * :wa
+    " save everything when focus lost, except unnamed buffers
+    autocmd! FocusLost * :wa!
 endif
 
 " Enable syntax highlighting
