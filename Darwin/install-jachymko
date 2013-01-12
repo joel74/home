@@ -10,3 +10,6 @@ curl -fsSL $get_rvm | bash -s stable --ruby
 
 hash -r # use the git from homebrew
 git config --global credential.helper osxkeychain
+
+ln -sfv /usr/local/opt/offline-imap/homebrew.mxcl.offline-imap.plist ~/Library/LaunchAgents
+launchctl load ~/Library/LaunchAgents/homebrew.mxcl.offline-imap.plist
