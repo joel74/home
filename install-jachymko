@@ -33,6 +33,7 @@ fi
 copy $JACHYMKO/gitconfig      $prefix/.gitconfig
 link $JACHYMKO/gitignore      $prefix/.gitignore
 link $JACHYMKO/ircrc          $prefix/.ircrc
+link $JACHYMKO/offlineimaprc  $prefix/.offlineimaprc
 link $JACHYMKO/tmux/tmux.conf $prefix/.tmux.conf
 link $JACHYMKO/vim            $prefix/.vim
 link $JACHYMKO/vim/vimrc      $prefix/.vimrc
