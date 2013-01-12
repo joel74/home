@@ -1,5 +1,11 @@
 if has("gui_win32")
     set guifont=Consolas:h14:cEASTEUROPE
+
+    function! ToggleFullscreen()
+        call libcallnr("gvimfullscreen.dll", "ToggleFullScreen", 0)
+    endfunction
+
+    call ToggleFullscreen()
 endif
 
 if has("mac")
