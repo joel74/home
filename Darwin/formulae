@@ -14,5 +14,3 @@ for file ($(dirname $0)/formulae.d/*); do
         brew upgrade $formula $formula_opts
     fi
 done
-
-brew linkapps
