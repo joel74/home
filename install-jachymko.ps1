@@ -6,17 +6,13 @@ $prefix = $Env:UserProfile
 
 ls $jachymkoPS1\*.psm1 | import-module -force
 
-function IsDir($p) {
-    (Get-Item $p -ea stop).PSIsContainer
-}
-
 function Install-Link($src, $dest) {
-    if (IsDir $dest) {
+    if (Test-Path $dest -PathType Leaf) {
         # delete destination using rmdir
         # removes junctions but doesn't delete the linked content
         cmd /c rmdir $dest /s /q
     }
-    else {
+    elseif (Test-Path $dest -PathType Leaf) {
         cmd /c del $dest /f
     }
 
@@ -24,7 +20,7 @@ function Install-Link($src, $dest) {
         Install-Copy $src $dest
     }
     else {
-        if (IsDir $src) {
+        if ($src.PSIsContainer) {
             cmd /c mklink /j $dest $src
         }
         else {
@@ -34,7 +30,7 @@ function Install-Link($src, $dest) {
 }
 
 function Install-Copy($src, $dest) {
-    if (IsDir $src) {
+    if (Test-Path $src -PathType Container) {
         cmd /c mkdir $dest
         cmd /c xcopy $src $dest /e /f
     }
