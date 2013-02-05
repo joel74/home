@@ -7,7 +7,7 @@ $prefix = $Env:UserProfile
 ls $jachymkoPS1\*.psm1 | import-module -force
 
 function Install-Link($src, $dest) {
-    if (Test-Path $dest -PathType Leaf) {
+    if (Test-Path $dest -PathType Container) {
         # delete destination using rmdir
         # removes junctions but doesn't delete the linked content
         cmd /c rmdir $dest /s /q
@@ -20,11 +20,14 @@ function Install-Link($src, $dest) {
         Install-Copy $src $dest
     }
     else {
-        if ($src.PSIsContainer) {
+        if (Test-Path $src -PathType Container) {
             cmd /c mklink /j $dest $src
         }
-        else {
+        elseif (Test-Path $src -PathTy Leaf) {
             cmd /c mklink $dest $src
+        }
+        else {
+            Write-Warning "$src not found"
         }
     }
 }
@@ -82,4 +85,5 @@ Get-ChildItem $jachymko\Windows\install-* |% {
     }
 }
 
+cd $jachymko
 git submodule update --init
