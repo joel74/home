@@ -6,7 +6,11 @@ get_rvm=https://get.rvm.io
 curl -fsSL $get_homebrew | ruby
 curl -fsSL $get_rvm | bash -s stable --ruby
 
+~/.jachymko/Darwin/defaults
 ~/.jachymko/Darwin/formulae
 
 hash -r # use the git from homebrew
 git config --global credential.helper osxkeychain
+
+ln -sfv /usr/local/opt/offline-imap/homebrew.mxcl.offline-imap.plist ~/Library/LaunchAgents
+launchctl load ~/Library/LaunchAgents/homebrew.mxcl.offline-imap.plist
