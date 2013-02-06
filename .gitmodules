@@ -31,6 +31,3 @@
 [submodule "vim/bundle/vim-colors-solarized"]
 	path = vim/bundle/vim-colors-solarized
 	url = https://github.com/altercation/vim-colors-solarized.git
-[submodule ".\\vim\\plugins/gvimfullscreen_win32"]
-	path = .\\vim\\plugins/gvimfullscreen_win32
-	url = https://github.com/derekmcloughlin/gvimfullscreen_win32.git
