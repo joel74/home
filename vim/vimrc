@@ -1,7 +1,9 @@
 set nocompatible  " disable vi compatibility
 set ttyfast       " Optimize for fast terminal connections
 
-language en_US.UTF-8 " English, motherfucker! do you speak it?
+language ctype    en_US.UTF-8 " English, motherfucker! do you speak it?
+language time     en_US.UTF-8 " English, motherfucker! do you speak it?
+language messages en_US.UTF-8 " English, motherfucker! do you speak it?
 
 set shiftwidth=4   " Use 4 spaces for indentation
 set softtabstop=4  " Use 4 spaces for soft tab
