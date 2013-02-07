@@ -15,6 +15,11 @@ bindkey "^[[B" history-search-forward
 autoload -U colors && colors
 autoload -U compinit && compinit -U
 
+function precmd {
+  tab_label=${PWD/${HOME}/\~} # use 'relative' path
+  echo -ne "\e]2;${tab_label: -24}\a" # set window title to full string
+}
+
 # If I am using vi keys, I want to know what mode I'm currently using.
 # zle-keymap-select is executed every time KEYMAP changes.
 # From http://zshwiki.org/home/examples/zlewidgets
