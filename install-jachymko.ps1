@@ -66,7 +66,7 @@ Install-Link "$jachymko\gitignore"   "$prefix\.gitignore"
 Install-Link "$jachymko\vim"         "$prefix\vimfiles"
 Install-Link "$jachymko\vim\vimrc"   "$prefix\_vimrc"
 Install-Link "$jachymko\vim\gvimrc"  "$prefix\_gvimrc"
-Install-Link "$jachymko\Windows\ps1" "$prefix\Documents\WindowsPowerShell" 
+Install-Link "$jachymko\Windows\ps1" "$prefix\Documents\WindowsPowerShell"
 
 $Env:Editor  = "$jachymko\Windows\bin\vim\gvim.exe"
 
