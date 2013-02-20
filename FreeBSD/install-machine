@@ -1,0 +1,13 @@
+#!/bin/sh
+
+if [ `id -u` != 0 ]; then
+    echo Must be root
+    exit 1
+fi
+
+BIN=$(dirname %0)/bin
+
+$BIN/ensure-user jachymko
+$BIN/install-sudoers
+$BIN/lock-root-password
+$BIN/update-ports

@@ -1,5 +1,5 @@
 #!/bin/sh
-SUDOERS=$(dirname $0)/sudoers
+SUDOERS=$(dirname $0)/install-sudoers.sudoers
 if [ -z "$1" ]; then
 	echo Replace system sudoers with $SUDOERS 
 	export VISUAL=$0 && visudo
