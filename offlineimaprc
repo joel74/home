@@ -20,6 +20,7 @@ nametrans = lambda folder: {'drafts':  '[Gmail]/Drafts',
 
 [Repository jachymko-remote]
 maxconnections = 1
+createfolders = False
 type = Gmail
 remoteuser = jachymko@gmail.com
 remotepasseval = get_keychain_pass(account="jachymko@gmail.com", server="imap.gmail.com")
