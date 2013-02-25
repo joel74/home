@@ -1,0 +1,68 @@
+#!/bin/sh
+
+if [ `id -u` != 0 ]; then
+    echo Must be root
+    exit 1
+fi
+
+export zroot=zroot
+export swap=4G
+export destdir=/mnt
+
+zpool set bootfs=$zroot        $zroot
+zpool set lz4_compress=enabled $zroot
+
+zfs set checksum=fletcher4  $zroot
+zfs set mountpoint=$destdir $zroot
+
+zpool export $zroot
+zpool import -o cachefile=/var/tmp/zpool.cache $zroot
+
+if [ $swap ]; then
+    zfs create -V 4G $zroot/swap
+    zfs set org.freebsd:swap=on $zroot/swap
+    zfs set checksum=off $zroot/swap
+fi
+
+zfs create -o exec=on  -o setuid=off -o compression=lz4 $zroot/tmp
+zfs create -o exec=on  -o setuid=on  -o compression=off $zroot/usr
+zfs create -o exec=on  -o setuid=on  -o compression=off $zroot/usr/home
+zfs create -o exec=on  -o setuid=off -o compression=lz4 $zroot/usr/ports
+zfs create -o exec=off -o setuid=off -o compression=off $zroot/usr/ports/distfiles
+zfs create -o exec=off -o setuid=off -o compression=off $zroot/usr/ports/packages
+zfs create -o exec=off -o setuid=off -o compression=lz4 $zroot/usr/src
+zfs create -o exec=off -o setuid=off -o compression=off $zroot/var
+zfs create -o exec=off -o setuid=off -o compression=lz4 $zroot/var/crash
+zfs create -o exec=off -o setuid=off -o compression=lz4 $zroot/var/db
+zfs create -o exec=on  -o setuid=off -o compression=lz4 $zroot/var/db/pkg
+zfs create -o exec=off -o setuid=off -o compression=off $zroot/var/empty
+zfs create -o exec=off -o setuid=off -o compression=lz4 $zroot/var/log
+zfs create -o exec=off -o setuid=off -o compression=lz4 $zroot/var/mail
+zfs create -o exec=off -o setuid=off -o compression=off $zroot/var/run
+zfs create -o exec=on  -o setuid=off -o compression=lz4 $zroot/var/tmp
+
+chmod 1777 $destdir/tmp
+chmod 1777 $destdir/var/tmp
+
+cd $destdir
+ln -s usr/home home
+
+cd /usr/freebsd-dist
+
+for file in base.txz kernel.txz doc.txz src.txz; do
+    cat $file | tar --unlink -xpJf - -C $destdir
+done
+
+cp /var/tmp/zpool.cache $destdir/boot/zfs/zpool.cache
+
+echo 'zfs_enable="YES"'                  >> $destdir/etc/rc.conf
+echo 'zfs_load="YES"'                    >> $destdir/boot/loader.conf
+echo "vfs.root.mountfrom=\"zfs:$zroot\"" >> $destdir/boot/loader.conf
+touch $destdir/etc/fstab
+
+zfs setreadonly=on $zroot/var/empty
+zfs umount -af
+zfs setmountpoint=legacy $zroot
+zfs setmountpoint=/tmp   $zroot/tmp
+zfs setmountpoint=/usr   $zroot/usr
+zfs setmountpoint=/var   $zroot/var

@@ -5,9 +5,9 @@ if [ `id -u` != 0 ]; then
     exit 1
 fi
 
-BIN=$(dirname %0)/bin
+dir=$(dirname %0)
 
-$BIN/ensure-user jachymko
-$BIN/install-sudoers
-$BIN/lock-root-password
-$BIN/update-ports
+$dir/ensure-user jachymko
+$dir/install-sudoers
+$dir/lock-root-password
+$dir/update-ports
