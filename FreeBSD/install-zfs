@@ -3,9 +3,9 @@
 # 1. Create the necessary partitions on the disk(s) and add ZFS aware boot code.
 #
 #       gpart create -s gpt ada0
-#       gpart add -b34-s94-t freebsd-boot ada0
+#       gpart add -t freebsd-boot -s 94 ada0
 #       gpart add -t freebsd-zfs -l disk0 ada0
-#       gpart bootcode -b/boot/pmbr -p/boot/gptzfsboot -i1 ada0
+#       gpart bootcode -b/boot/pmbr -p/boot/gptzfsboot -i 1 ada0
 #
 # 2. Create the pool (ignore any warnings regarding mounting)
 #
@@ -59,6 +59,8 @@ zfs create -o exec=off -o setuid=off -o compression=$compress $zroot/var/mail
 zfs create -o exec=off -o setuid=off -o compression=off       $zroot/var/run
 zfs create -o exec=on  -o setuid=off -o compression=$compress $zroot/var/tmp
 
+zfs show
+
 chmod 1777 $destdir/tmp
 chmod 1777 $destdir/var/tmp
 
@@ -78,9 +80,9 @@ echo 'zfs_load="YES"'                    >> $destdir/boot/loader.conf
 echo "vfs.root.mountfrom=\"zfs:$zroot\"" >> $destdir/boot/loader.conf
 touch $destdir/etc/fstab
 
-zfs setreadonly=on $zroot/var/empty
+zfs set readonly=on $zroot/var/empty
 zfs umount -af
-zfs setmountpoint=legacy $zroot
-zfs setmountpoint=/tmp   $zroot/tmp
-zfs setmountpoint=/usr   $zroot/usr
-zfs setmountpoint=/var   $zroot/var
+zfs set mountpoint=legacy $zroot
+zfs set mountpoint=/tmp   $zroot/tmp
+zfs set mountpoint=/usr   $zroot/usr
+zfs set mountpoint=/var   $zroot/var
