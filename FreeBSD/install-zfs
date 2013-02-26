@@ -24,6 +24,8 @@ export zroot=zroot
 export swap=4G
 export destdir=/mnt
 
+zpool status $zroot || exit $?
+
 zpool set bootfs=$zroot        $zroot
 zpool set lz4_compress=enabled $zroot
 
