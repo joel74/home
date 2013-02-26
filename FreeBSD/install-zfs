@@ -23,11 +23,12 @@ fi
 export zroot=zroot
 export swap=4G
 export destdir=/mnt
+export compress=lz4
 
 zpool status $zroot || exit $?
 
 zpool set bootfs=$zroot        $zroot
-zpool set lz4_compress=enabled $zroot
+zpool set lz4_compress=enabled $zroot 2>/dev/null || export compress=on
 
 zfs set checksum=fletcher4  $zroot
 zfs set mountpoint=$destdir $zroot
@@ -41,22 +42,22 @@ if [ $swap ]; then
     zfs set checksum=off $zroot/swap
 fi
 
-zfs create -o exec=on  -o setuid=off -o compression=lz4 $zroot/tmp
-zfs create -o exec=on  -o setuid=on  -o compression=off $zroot/usr
-zfs create -o exec=on  -o setuid=on  -o compression=off $zroot/usr/home
-zfs create -o exec=on  -o setuid=off -o compression=lz4 $zroot/usr/ports
-zfs create -o exec=off -o setuid=off -o compression=off $zroot/usr/ports/distfiles
-zfs create -o exec=off -o setuid=off -o compression=off $zroot/usr/ports/packages
-zfs create -o exec=off -o setuid=off -o compression=lz4 $zroot/usr/src
-zfs create -o exec=off -o setuid=off -o compression=off $zroot/var
-zfs create -o exec=off -o setuid=off -o compression=lz4 $zroot/var/crash
-zfs create -o exec=off -o setuid=off -o compression=lz4 $zroot/var/db
-zfs create -o exec=on  -o setuid=off -o compression=lz4 $zroot/var/db/pkg
-zfs create -o exec=off -o setuid=off -o compression=off $zroot/var/empty
-zfs create -o exec=off -o setuid=off -o compression=lz4 $zroot/var/log
-zfs create -o exec=off -o setuid=off -o compression=lz4 $zroot/var/mail
-zfs create -o exec=off -o setuid=off -o compression=off $zroot/var/run
-zfs create -o exec=on  -o setuid=off -o compression=lz4 $zroot/var/tmp
+zfs create -o exec=on  -o setuid=off -o compression=$compress $zroot/tmp
+zfs create -o exec=on  -o setuid=on  -o compression=off       $zroot/usr
+zfs create -o exec=on  -o setuid=on  -o compression=off       $zroot/usr/home
+zfs create -o exec=on  -o setuid=off -o compression=$compress $zroot/usr/ports
+zfs create -o exec=off -o setuid=off -o compression=off       $zroot/usr/ports/distfiles
+zfs create -o exec=off -o setuid=off -o compression=off       $zroot/usr/ports/packages
+zfs create -o exec=off -o setuid=off -o compression=$compress $zroot/usr/src
+zfs create -o exec=off -o setuid=off -o compression=off       $zroot/var
+zfs create -o exec=off -o setuid=off -o compression=$compress $zroot/var/crash
+zfs create -o exec=off -o setuid=off -o compression=$compress $zroot/var/db
+zfs create -o exec=on  -o setuid=off -o compression=$compress $zroot/var/db/pkg
+zfs create -o exec=off -o setuid=off -o compression=off       $zroot/var/empty
+zfs create -o exec=off -o setuid=off -o compression=$compress $zroot/var/log
+zfs create -o exec=off -o setuid=off -o compression=$compress $zroot/var/mail
+zfs create -o exec=off -o setuid=off -o compression=off       $zroot/var/run
+zfs create -o exec=on  -o setuid=off -o compression=$compress $zroot/var/tmp
 
 chmod 1777 $destdir/tmp
 chmod 1777 $destdir/var/tmp
