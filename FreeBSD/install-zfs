@@ -59,7 +59,7 @@ zfs create -o exec=off -o setuid=off -o compression=$compress $zroot/var/mail
 zfs create -o exec=off -o setuid=off -o compression=off       $zroot/var/run
 zfs create -o exec=on  -o setuid=off -o compression=$compress $zroot/var/tmp
 
-zfs show
+zfs show $zroot
 
 chmod 1777 $destdir/tmp
 chmod 1777 $destdir/var/tmp
