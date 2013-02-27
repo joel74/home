@@ -23,17 +23,17 @@ fi
 ZROOT=zroot
 SWAP=4G
 DESTDIR=/mnt
-COMPRESS_ALG=lz4
+COMPRESS=lz4
 
 # Test if $ZROOT exists
 zpool status $ZROOT >/dev/null || exit $?
 
 # Try to enable lz4 compression
-if [ "$COMPRESS_ALG" = "lz4" ]; then
-    zpool set lz4_compress=enabled $ZROOT 2>/dev/null || COMPRESS_ALG=on
+if [ "$COMPRESS" = "lz4" ]; then
+    zpool set lz4_compress=enabled $ZROOT 2>/dev/null || COMPRESS=on
 fi
 
-if [ "$COMPRESS_ALG" = "lz4" ]; then
+if [ "$COMPRESS" = "lz4" ]; then
     echo "LZ4 compression enabled."
 fi
 
