@@ -7,9 +7,9 @@
 #       gpart add -t freebsd-zfs -l disk0 ada0
 #       gpart bootcode -b/boot/pmbr -p/boot/gptzfsboot -i 1 ada0
 #
-# 2. Create the pool (ignore any warnings regarding mounting)
+# 2. Create the pool
 #
-#       zpool create zroot /dev/gpt/disk0
+#       zpool create -m /mnt zroot /dev/gpt/disk0
 #
 # 3. Run this script
 #
@@ -20,69 +20,92 @@ if [ `id -u` != 0 ]; then
     exit 1
 fi
 
-export zroot=zroot
-export swap=4G
-export destdir=/mnt
-export compress=lz4
+ZROOT=zroot
+SWAP=4G
+DESTDIR=/mnt
+COMPRESS_ALG=lz4
 
-zpool status $zroot || exit $?
+# Test if $ZROOT exists
+zpool status $ZROOT >/dev/null || exit $?
 
-zpool set bootfs=$zroot        $zroot
-zpool set lz4_compress=enabled $zroot 2>/dev/null || export compress=on
-
-zfs set checksum=fletcher4  $zroot
-zfs set mountpoint=$destdir $zroot
-
-zpool export $zroot
-zpool import -o cachefile=/var/tmp/zpool.cache $zroot
-
-if [ $swap ]; then
-    zfs create -V $swap $zroot/swap
-    zfs set org.freebsd:swap=on $zroot/swap
-    zfs set checksum=off $zroot/swap
+# Try to enable lz4 compression
+if [ "$COMPRESS_ALG" = "lz4" ]; then
+    zpool set lz4_compress=enabled $ZROOT 2>/dev/null || COMPRESS_ALG=on
 fi
 
-zfs create -o exec=on  -o setuid=off -o compression=$compress $zroot/tmp
-zfs create -o exec=on  -o setuid=on  -o compression=off       $zroot/usr
-zfs create -o exec=on  -o setuid=on  -o compression=off       $zroot/usr/home
-zfs create -o exec=on  -o setuid=off -o compression=$compress $zroot/usr/ports
-zfs create -o exec=off -o setuid=off -o compression=off       $zroot/usr/ports/distfiles
-zfs create -o exec=off -o setuid=off -o compression=off       $zroot/usr/ports/packages
-zfs create -o exec=off -o setuid=off -o compression=$compress $zroot/usr/src
-zfs create -o exec=off -o setuid=off -o compression=off       $zroot/var
-zfs create -o exec=off -o setuid=off -o compression=$compress $zroot/var/crash
-zfs create -o exec=off -o setuid=off -o compression=$compress $zroot/var/db
-zfs create -o exec=on  -o setuid=off -o compression=$compress $zroot/var/db/pkg
-zfs create -o exec=off -o setuid=off -o compression=off       $zroot/var/empty
-zfs create -o exec=off -o setuid=off -o compression=$compress $zroot/var/log
-zfs create -o exec=off -o setuid=off -o compression=$compress $zroot/var/mail
-zfs create -o exec=off -o setuid=off -o compression=off       $zroot/var/run
-zfs create -o exec=on  -o setuid=off -o compression=$compress $zroot/var/tmp
+if [ "$COMPRESS_ALG" = "lz4" ]; then
+    echo "LZ4 compression enabled."
+fi
 
-zfs list -r $zroot
+# Make sure $ZROOT is mounted on $DESTDIR
+zfs set mountpoint=$DESTDIR $ZROOT
 
-chmod 1777 $destdir/tmp
-chmod 1777 $destdir/var/tmp
+# Set $ZROOT as bootable
+zpool set bootfs=$ZROOT $ZROOT
 
-cd $destdir
+# Import $ZROOT using known cache file--will be copied to
+# the $DESTDIR/boot when done.
+zpool export $ZROOT; zpool import -o cachefile=/var/tmp/zpool.cache $ZROOT
+
+# Swap, maybe?
+if [ $SWAP ]; then
+    zfs create -V $SWAP $ZROOT/swap
+    zfs set org.freebsd:swap=on $ZROOT/swap
+    zfs set checksum=off $ZROOT/swap
+fi
+
+mkzfs() {
+    echo "zfs create $*" ; zfs create $*
+}
+
+mkzfs -o exec=on  -o setuid=off -o compression=$COMPRESS $ZROOT/tmp
+mkzfs -o exec=on  -o setuid=on  -o compression=off       $ZROOT/usr
+mkzfs -o exec=on  -o setuid=on  -o compression=off       $ZROOT/usr/home
+mkzfs -o exec=on  -o setuid=off -o compression=$COMPRESS $ZROOT/usr/ports
+mkzfs -o exec=off -o setuid=off -o compression=off       $ZROOT/usr/ports/distfiles
+mkzfs -o exec=off -o setuid=off -o compression=off       $ZROOT/usr/ports/packages
+mkzfs -o exec=off -o setuid=off -o compression=$COMPRESS $ZROOT/usr/src
+mkzfs -o exec=off -o setuid=off -o compression=off       $ZROOT/var
+mkzfs -o exec=off -o setuid=off -o compression=$COMPRESS $ZROOT/var/crash
+mkzfs -o exec=off -o setuid=off -o compression=$COMPRESS $ZROOT/var/db
+mkzfs -o exec=on  -o setuid=off -o compression=$COMPRESS $ZROOT/var/db/pkg
+mkzfs -o exec=off -o setuid=off -o compression=off       $ZROOT/var/empty
+mkzfs -o exec=off -o setuid=off -o compression=$COMPRESS $ZROOT/var/log
+mkzfs -o exec=off -o setuid=off -o compression=$COMPRESS $ZROOT/var/mail
+mkzfs -o exec=off -o setuid=off -o compression=off       $ZROOT/var/run
+mkzfs -o exec=on  -o setuid=off -o compression=$COMPRESS $ZROOT/var/tmp
+
+# Unprivileged user may not delete or rename files of other users in temp directories.
+chmod 1777 $DESTDIR/tmp
+chmod 1777 $DESTDIR/var/tmp
+
+# Link /usr/home to /home
+cd $DESTDIR
 ln -s usr/home home
 
 cd /usr/freebsd-dist
 
+# Install FreeBSD
 for file in base.txz kernel.txz doc.txz src.txz; do
-    cat $file | tar --unlink -xpJf - -C $destdir
+    cat $file | tar --unlink -xpJf - -C $DESTDIR
 done
 
-cp /var/tmp/zpool.cache $destdir/boot/zfs/zpool.cache
+# Copy zpool.cache so the boot loader is able to locate the pool.
+cp /var/tmp/zpool.cache $DESTDIR/boot/zfs/zpool.cache
 
-echo 'zfs_enable="YES"'                  >> $destdir/etc/rc.conf
-echo 'zfs_load="YES"'                    >> $destdir/boot/loader.conf
-echo "vfs.root.mountfrom=\"zfs:$zroot\"" >> $destdir/boot/loader.conf
-touch $destdir/etc/fstab
+# Enable ZFS in kernel and loader.
+echo 'zfs_enable="YES"'                  >> $DESTDIR/etc/rc.conf
+echo 'zfs_load="YES"'                    >> $DESTDIR/boot/loader.conf
+echo "vfs.root.mountfrom=\"zfs:$ZROOT\"" >> $DESTDIR/boot/loader.conf
 
-zfs set readonly=on $zroot/var/empty
+# Apparently an fstab file is required.
+touch $DESTDIR/etc/fstab
+
 zfs umount -af
-zfs set mountpoint=legacy $zroot
-zfs set mountpoint=/tmp   $zroot/tmp
-zfs set mountpoint=/usr   $zroot/usr
-zfs set mountpoint=/var   $zroot/var
+zfs set mountpoint=legacy $ZROOT
+zfs set mountpoint=/tmp   $ZROOT/tmp
+zfs set mountpoint=/usr   $ZROOT/usr
+zfs set mountpoint=/var   $ZROOT/var
+zfs set readonly=on       $ZROOT/var/empty
+
+echo "Ready to boot!"
