@@ -20,10 +20,10 @@ if [ `id -u` != 0 ]; then
     exit 1
 fi
 
-ZROOT=zroot
-SWAP=4G
-DESTDIR=/mnt
-COMPRESS=lz4
+COMPRESS=${COMPRESS-lz4}
+DESTDIR=${DESTDIR-/mnt}
+ZROOT=${ZROOT-zroot}
+SWAP=${SWAP-}
 
 # Test if $ZROOT exists
 zpool status $ZROOT >/dev/null || exit $?
