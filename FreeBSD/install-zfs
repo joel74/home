@@ -87,6 +87,7 @@ cd /usr/freebsd-dist
 
 # Install FreeBSD
 for file in base.txz kernel.txz doc.txz src.txz; do
+    echo "Extracting $file to $DESTDIR"
     cat $file | tar --unlink -xpJf - -C $DESTDIR
 done
 
