@@ -1,35 +1,44 @@
-#!/usr/bin/env zsh
+#!/bin/sh
 
 if [ `id -u` != 0 ]; then
-    echo Must be root
+    echo Must be root >&2
     exit 1
 fi
 
-[[ -z "$JACHYMKO" ]] && JACHYMKO=$(echo `dirname $0`(:A))
-
-uname=${uname-`uname -s`}
-dotfiles=$JACHYMKO/$uname
-
-install-dir() {
-    if [[ -d $dotfiles/$1 ]]; then
-        cp -PRvp $dotfiles/$1 $prefix/
-        chown -vv -R 0:0 $prefix/$1
-    fi
-}
-
-install-link() {
-    local dest=$prefix/$2
-    if [[ -d $(dirname $dest) ]]; then
-        ln -fsv $dotfiles/$1 $dest
-    else
-        echo Directory $(dirname $dest) does not exist.
-        echo Skipped linking $dotfiles/$1
-    fi
-}
-
-install-dir etc
-install-dir root
-
-if [[ -x "$JACHYMKO/`uname`/install-machine" ]]; then
-    $JACHYMKO/`uname`/install-machine
+if [ -z "$1" ]; then
+    echo usage: $0 hostname >&2
+    exit 1
 fi
+
+if [ -z "$JACHYMKO" ]; then
+    JACHYMKO=$(cd -P -- "$(dirname $0)" && pwd -P)
+fi
+
+UNAME=`uname -s` # -s return system name, ie. Darwin or FreeBSD
+HOSTNAME=$1
+
+trycd() {
+    cd $1 >/dev/null 2>&1
+}
+
+copydir() {
+    if [ -d $1 ]; then
+        find $1 -not -type d -print0 | xargs -I{} -0 cp -v {} /{}
+    fi
+}
+
+provision() {
+    (
+    if trycd $1; then
+        copydir etc
+        copydir root
+
+        if [ -x ./install-machine ]; then
+            ./install-machine $HOSTNAME
+        fi
+    fi
+    )
+}
+
+provision $JACHYMKO/$UNAME
+provision $JACHYMKO/$UNAME/$HOSTNAME

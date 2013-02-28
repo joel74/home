@@ -1,6 +1,12 @@
-#!/usr/bin/env zsh
+#!/bin/sh
 
-MachineName=${1-jachym-mbpr}
-scutil --set ComputerName $MachineName
-scutil --set HostName $MachineName
-scutil --set LocalHostName $MachineName
+if [ -z "$1" ]; then
+    echo usage: $0 hostname >&2
+    exit 1
+fi
+
+echo "Setting ComputerName, HostName, LocalHostName to $1"
+
+scutil --set ComputerName $1
+scutil --set HostName $1
+scutil --set LocalHostName $1
