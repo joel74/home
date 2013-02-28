@@ -1,5 +1,8 @@
 #!/bin/sh
 
+PORTSDIR=/usr/ports
+UNAMEDIR=$(dirname $0)
+
 if [ `id -u` != 0 ]; then
     echo Must be root >&2
     exit 1
@@ -21,14 +24,11 @@ provision() {
     fi
 }
 
-PORTSDIR=/usr/ports
-UNAMEDIR=$(dirname $0)
-
-portsnap update 2>/dev/null || (
+if ! portsnap update 2>/dev/null; then
     portsnap fetch &&
     portsnap extract &&
     portsnap update
-)
+fi
 
 provision $UNAMEDIR/ports.d
 provision $UNAMEDIR/host-$1/ports.d
