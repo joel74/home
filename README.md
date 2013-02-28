@@ -5,11 +5,14 @@ jachymko's home directory
 Readme work in progress, sorry.
 
 ## Install on OS X or FreeBSD
-<pre>git clone https://github.com/jachymko/home.git ~/.jachymko</pre>
+```sh
+git clone https://github.com/jachymko/home.git ~/.jachymko
+```
 
 ## Install on FreeBSD without git
-<pre>fetch -o - http://github.com/jachymko/home/tarball/master |
-    pax -z -r -s,jachymko[^/]*/,$HOME/.jachymko/,p</pre>
+```sh
+fetch -o - http://github.com/jachymko/home/tarball/master | pax -z -r -s,jachymko[^/]*,$HOME/.jachymko,p
+```
 
 ## Install on Windows
 1. Install [GitHub for Windows](http://windows.github.com/).
