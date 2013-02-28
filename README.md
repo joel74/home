@@ -9,7 +9,7 @@ Readme work in progress, sorry.
 
 ## Install on FreeBSD without git
 <pre>fetch -o - http://github.com/jachymko/home/tarball/master |
-    pax -z -r -s,jachymko.*/,~/.jachymko,p</pre>
+    pax -z -r -s,jachymko[^/]*/,$HOME/.jachymko/,p</pre>
 
 ## Install on Windows
 1. Install [GitHub for Windows](http://windows.github.com/).
