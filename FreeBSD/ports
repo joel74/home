@@ -42,4 +42,4 @@ provision() {
 }
 
 provision ports.d
-provision $1/ports.d
+provision host-$1/ports.d
