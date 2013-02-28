@@ -10,9 +10,19 @@ if [ -z "$1" ]; then
     exit 1
 fi
 
-cd $(dirname $0)
+trycd() {
+    cd $1 >/dev/null 2>&1
+}
+
+provision() {
+    if trycd $1; then
+        find * -not -type d -print0 | \
+            xargs -I{} -0 sh -c 'make -C $PORTSDIR/{} -DBATCH $(cat {}) install clean'
+    fi
+}
 
 PORTSDIR=/usr/ports
+UNAMEDIR=$(dirname $0)
 
 portsnap update 2>/dev/null || (
     portsnap fetch &&
@@ -20,26 +30,5 @@ portsnap update 2>/dev/null || (
     portsnap update
 )
 
-if ! [ which portmaster ]; then
-    make -C $PORTSDIR/ports-mgmt/portmaster \
-         -DBATCH                            \
-         -DWITH_PKGNGPATCH                  \
-         -DWITH_ZSH                         \
-         install clean
-fi
-
-trycd() {
-    cd $1 >/dev/null 2>&1
-}
-
-provision() {
-    (
-        if trycd $1; then
-            find * -not -type d -print0 | \
-                xargs -I{} -0 sh -c 'make -C $PORTSDIR/{} -DBATCH $(cat {}) install clean'
-        fi
-    )
-}
-
-provision ports.d
-provision host-$1/ports.d
+provision $UNAMEDIR/ports.d
+provision $UNAMEDIR/host-$1/ports.d
