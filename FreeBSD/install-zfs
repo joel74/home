@@ -16,7 +16,7 @@
 #       fetch -o - https://raw.github.com/jachymko/home/master/FreeBSD/install-zfs | sh
 
 if [ `id -u` != 0 ]; then
-    echo Must be root
+    echo Must be root >&2
     exit 1
 fi
 
@@ -24,6 +24,10 @@ COMPRESS=${COMPRESS-lz4}
 DESTDIR=${DESTDIR-/mnt}
 ZROOT=${ZROOT-zroot}
 SWAP=${SWAP-}
+
+mkzfs() {
+    echo "zfs create -o atime=off $*" ; zfs create -o atime=off $*
+}
 
 # Test if $ZROOT exists
 zpool status $ZROOT >/dev/null || exit $?
@@ -43,20 +47,13 @@ zfs set mountpoint=$DESTDIR $ZROOT
 # Set $ZROOT as bootable
 zpool set bootfs=$ZROOT $ZROOT
 
-# Import $ZROOT using known cache file--will be copied to
-# the $DESTDIR/boot when done.
+# Import $ZROOT using known cache file--will be copied to $DESTDIR/boot when done.
 zpool export $ZROOT; zpool import -o cachefile=/var/tmp/zpool.cache $ZROOT
 
 # Swap, maybe?
 if [ $SWAP ]; then
-    zfs create -V $SWAP $ZROOT/swap
-    zfs set org.freebsd:swap=on $ZROOT/swap
-    zfs set checksum=off $ZROOT/swap
+    mkzfs -o checksum=off -o org.freebsd:swap=on -V $SWAP $ZROOT/swap
 fi
-
-mkzfs() {
-    echo "zfs create $*" ; zfs create $*
-}
 
 mkzfs -o exec=on  -o setuid=off -o compression=$COMPRESS $ZROOT/tmp
 mkzfs -o exec=on  -o setuid=on  -o compression=off       $ZROOT/usr
@@ -83,12 +80,11 @@ chmod 1777 $DESTDIR/var/tmp
 cd $DESTDIR
 ln -s usr/home home
 
-cd /usr/freebsd-dist
-
 # Install FreeBSD
-for file in base.txz kernel.txz doc.txz src.txz; do
+cd /usr/freebsd-dist
+for file in base.txz kernel.txz doc.txz; do
     echo "Extracting $file to $DESTDIR"
-    cat $file | tar --unlink -xpJf - -C $DESTDIR
+    tar -xpf $file -C $DESTDIR
 done
 
 # Copy zpool.cache so the boot loader is able to locate the pool.
@@ -102,7 +98,7 @@ echo "vfs.root.mountfrom=\"zfs:$ZROOT\"" >> $DESTDIR/boot/loader.conf
 # Apparently an fstab file is required.
 touch $DESTDIR/etc/fstab
 
-zfs umount -af
+zfs umount -a
 zfs set mountpoint=legacy $ZROOT
 zfs set mountpoint=/tmp   $ZROOT/tmp
 zfs set mountpoint=/usr   $ZROOT/usr
