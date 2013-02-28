@@ -24,11 +24,9 @@ provision() {
     fi
 }
 
-if ! portsnap update 2>/dev/null; then
-    portsnap fetch &&
-    portsnap extract &&
-    portsnap update
-fi
+portsnap fetch
+portsnap update 2>/dev/null || portsnap extract
+portsnap update
 
 provision $UNAMEDIR/ports.d
 provision $UNAMEDIR/host-$1/ports.d
