@@ -5,8 +5,13 @@ if [ `id -u` != 0 ]; then
     exit 1
 fi
 
+if [ -z "$1" ]; then
+    echo usage: $0 hostname >&2
+    exit 1
+fi
+
 cd $(dirname $0)
 
+./ports $1
 ./install-sudoers
 ./lock-root-password
-./update-ports

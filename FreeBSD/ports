@@ -1,0 +1,45 @@
+#!/bin/sh
+
+if [ `id -u` != 0 ]; then
+    echo Must be root >&2
+    exit 1
+fi
+
+if [ -z "$1" ]; then
+    echo usage: $0 hostname >&2
+    exit 1
+fi
+
+cd $(dirname $0)
+
+PORTSDIR=/usr/ports
+
+portsnap update 2>/dev/null || (
+    portsnap fetch &&
+    portsnap extract &&
+    portsnap update
+)
+
+if ! [ which portmaster ]; then
+    make -C $PORTSDIR/ports-mgmt/portmaster \
+         -DBATCH                            \
+         -DWITH_PKGNGPATCH                  \
+         -DWITH_ZSH                         \
+         install clean
+fi
+
+trycd() {
+    cd $1 >/dev/null 2>&1
+}
+
+provision() {
+    (
+        if trycd $1; then
+            find * -not -type d -print0 | \
+                xargs -I{} -0 sh -c 'make -C $PORTSDIR/{} -DBATCH $(cat {}) install clean'
+        fi
+    )
+}
+
+provision ports.d
+provision $1/ports.d
