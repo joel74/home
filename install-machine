@@ -10,12 +10,10 @@ if [ -z "$1" ]; then
     exit 1
 fi
 
-if [ -z "$JACHYMKO" ]; then
-    JACHYMKO=$(cd -P -- "$(dirname $0)" && pwd -P)
-fi
 
-UNAME=`uname -s` # -s return system name, ie. Darwin or FreeBSD
+UNAME=$(uname)
 HOSTNAME=$1
+JACHYMKO=$(cd -- $(dirname $0) && pwd -P)
 
 trycd() {
     cd $1 >/dev/null 2>&1
@@ -28,7 +26,6 @@ copydir() {
 }
 
 provision() {
-    (
     if trycd $1; then
         copydir etc
         copydir root
@@ -37,7 +34,6 @@ provision() {
             ./install-machine $HOSTNAME
         fi
     fi
-    )
 }
 
 provision $JACHYMKO/$UNAME
