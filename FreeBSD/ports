@@ -20,10 +20,13 @@ trycd() {
 }
 
 provision() {
-    if trycd $1; then
-        find * -not -type d -print0 | \
-            xargs -I{} -0 sh -c 'make -C $PORTSDIR/{} -DBATCH $(cat {}) install clean'
+    if ! trycd $1; then
+        return
     fi
+
+    for action in fetch-recursive config-recursive install clean; do
+        find * -type f -print0 | xargs -I{} -0 sh -c "make -C $PORTSDIR/{} -DBATCH \$(cat {}) $action"
+    done
 }
 
 portsnap fetch
