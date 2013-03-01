@@ -110,7 +110,7 @@ echo "Disable root password"
 #chroot /mnt /usr/bin/chpass -p \* root
 
 echo "When finished, type 'exit' to unmount $ZROOT and reboot."
-sh
+sh -i
 
 echo "Unmounting filesystems..."
 zfs umount -a
