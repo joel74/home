@@ -23,7 +23,6 @@ fi
 COMPRESS=${COMPRESS-lz4}
 DESTDIR=${DESTDIR-/mnt}
 SWAP=${SWAP-}
-WHEEL_USERS=${WHEEL_USERS-jachymko}
 ZROOT=${ZROOT-zroot}
 
 mkzfs() {
@@ -99,18 +98,8 @@ echo "vfs.root.mountfrom=\"zfs:$ZROOT\"" >> $DESTDIR/boot/loader.conf
 # Apparently an fstab file is required.
 touch $DESTDIR/etc/fstab
 
-# Mount dev for chroot
-mount_nullfs /dev $DESTDIR/dev
-
-# Create users
-for user in ${WHEEL_USERS}; do
-    echo "Adding user $user"
-    chroot $DESTDIR /usr/sbin/pw    user add $user -g wheel
-    chroot $DESTDIR /usr/bin/passwd $user
-done
-
-echo "Disable root password"
-chroot $DESTDIR /usr/bin/chpass -p \* root
+echo "Type exit to leave chroot and unmount the filesystem."
+chroot /mnt
 
 echo "Unmounting filesystems..."
 zfs umount -a
