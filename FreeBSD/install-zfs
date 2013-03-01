@@ -106,10 +106,10 @@ for user in ${WHEEL_USERS}; do
     #chroot /mnt /usr/bin/passwd $user
 done
 
-echo "Disable root password"
+#echo "Disable root password"
 #chroot /mnt /usr/bin/chpass -p \* root
 
-echo "When finished, type 'exit' to unmount $ZROOT and reboot."
+echo "When finished, type 'exit' to unmount $ZROOT."
 sh -i
 
 echo "Unmounting filesystems..."
@@ -119,9 +119,4 @@ zfs set mountpoint=legacy $ZROOT
 zfs set mountpoint=/tmp   $ZROOT/tmp
 zfs set mountpoint=/usr   $ZROOT/usr
 zfs set mountpoint=/var   $ZROOT/var
-zfs set readonly=on $ZROOT/var/empty
-
-echo "Rebooting..."
-sleep 2
-
-reboot
+zfs set readonly=on       $ZROOT/var/empty
