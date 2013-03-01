@@ -100,7 +100,7 @@ echo "vfs.root.mountfrom=\"zfs:$ZROOT\"" >> $DESTDIR/boot/loader.conf
 touch $DESTDIR/etc/fstab
 
 # Mount dev for chroot
-mount -o bind /dev $DESTDIR/dev
+mount_nullfs /dev $DESTDIR/dev
 
 # Create users
 for user in ${WHEEL_USERS}; do
