@@ -22,11 +22,12 @@ fi
 
 COMPRESS=${COMPRESS-lz4}
 DESTDIR=${DESTDIR-/mnt}
-ZROOT=${ZROOT-zroot}
 SWAP=${SWAP-}
+WHEEL_USERS=${WHEEL_USERS-jachymko}
+ZROOT=${ZROOT-zroot}
 
 mkzfs() {
-    echo "zfs create -o atime=off $*" ; zfs create -o atime=off $*
+    echo "zfs create $*" ; zfs create $*
 }
 
 # Test if $ZROOT exists
@@ -55,22 +56,22 @@ if [ $SWAP ]; then
     mkzfs -o checksum=off -o org.freebsd:swap=on -V $SWAP $ZROOT/swap
 fi
 
-mkzfs -o exec=on  -o setuid=off -o compression=$COMPRESS $ZROOT/tmp
-mkzfs -o exec=on  -o setuid=on  -o compression=off       $ZROOT/usr
-mkzfs -o exec=on  -o setuid=on  -o compression=off       $ZROOT/usr/home
-mkzfs -o exec=on  -o setuid=off -o compression=$COMPRESS $ZROOT/usr/ports
-mkzfs -o exec=off -o setuid=off -o compression=off       $ZROOT/usr/ports/distfiles
-mkzfs -o exec=off -o setuid=off -o compression=off       $ZROOT/usr/ports/packages
-mkzfs -o exec=off -o setuid=off -o compression=$COMPRESS $ZROOT/usr/src
-mkzfs -o exec=off -o setuid=off -o compression=off       $ZROOT/var
-mkzfs -o exec=off -o setuid=off -o compression=$COMPRESS $ZROOT/var/crash
-mkzfs -o exec=off -o setuid=off -o compression=$COMPRESS $ZROOT/var/db
-mkzfs -o exec=on  -o setuid=off -o compression=$COMPRESS $ZROOT/var/db/pkg
-mkzfs -o exec=off -o setuid=off -o compression=off       $ZROOT/var/empty
-mkzfs -o exec=off -o setuid=off -o compression=$COMPRESS $ZROOT/var/log
-mkzfs -o exec=off -o setuid=off -o compression=$COMPRESS $ZROOT/var/mail
-mkzfs -o exec=off -o setuid=off -o compression=off       $ZROOT/var/run
-mkzfs -o exec=on  -o setuid=off -o compression=$COMPRESS $ZROOT/var/tmp
+mkzfs -o atime=off -o exec=on  -o setuid=off -o compression=$COMPRESS $ZROOT/tmp
+mkzfs -o atime=off -o exec=on  -o setuid=on  -o compression=off       $ZROOT/usr
+mkzfs -o atime=off -o exec=on  -o setuid=on  -o compression=off       $ZROOT/usr/home
+mkzfs -o atime=off -o exec=on  -o setuid=off -o compression=$COMPRESS $ZROOT/usr/ports
+mkzfs -o atime=off -o exec=off -o setuid=off -o compression=off       $ZROOT/usr/ports/distfiles
+mkzfs -o atime=off -o exec=off -o setuid=off -o compression=off       $ZROOT/usr/ports/packages
+mkzfs -o atime=off -o exec=off -o setuid=off -o compression=$COMPRESS $ZROOT/usr/src
+mkzfs -o atime=off -o exec=off -o setuid=off -o compression=off       $ZROOT/var
+mkzfs -o atime=off -o exec=off -o setuid=off -o compression=$COMPRESS $ZROOT/var/crash
+mkzfs -o atime=off -o exec=off -o setuid=off -o compression=$COMPRESS $ZROOT/var/db
+mkzfs -o atime=off -o exec=on  -o setuid=off -o compression=$COMPRESS $ZROOT/var/db/pkg
+mkzfs -o atime=off -o exec=off -o setuid=off -o compression=off       $ZROOT/var/empty
+mkzfs -o atime=off -o exec=off -o setuid=off -o compression=$COMPRESS $ZROOT/var/log
+mkzfs -o atime=off -o exec=off -o setuid=off -o compression=$COMPRESS $ZROOT/var/mail
+mkzfs -o atime=off -o exec=off -o setuid=off -o compression=off       $ZROOT/var/run
+mkzfs -o atime=off -o exec=on  -o setuid=off -o compression=$COMPRESS $ZROOT/var/tmp
 
 # Unprivileged user may not delete or rename files of other users in temp directories.
 chmod 1777 $DESTDIR/tmp
@@ -98,6 +99,13 @@ echo "vfs.root.mountfrom=\"zfs:$ZROOT\"" >> $DESTDIR/boot/loader.conf
 # Apparently an fstab file is required.
 touch $DESTDIR/etc/fstab
 
+# Create users
+for user in ${WHEEL_USERS}; do
+    echo "Adding user $user"
+    pw -V $DESTDIR/etc user add $user -g wheel
+done
+
+echo "Unmounting filesystems..."
 zfs umount -a
 zfs set mountpoint=legacy $ZROOT
 zfs set mountpoint=/tmp   $ZROOT/tmp

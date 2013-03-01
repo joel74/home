@@ -1,0 +1,2 @@
+hostname=jachym-fbsd
+ifconfig_em0="DHCP"
