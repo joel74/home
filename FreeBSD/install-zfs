@@ -73,8 +73,6 @@ mkzfs -o atime=off -o exec=off -o setuid=off -o compression=$COMPRESS $ZROOT/var
 mkzfs -o atime=off -o exec=off -o setuid=off -o compression=off       $ZROOT/var/run
 mkzfs -o atime=off -o exec=on  -o setuid=off -o compression=$COMPRESS $ZROOT/var/tmp
 
-zfs set readonly=on $ZROOT/var/empty
-
 # Unprivileged user may not delete or rename files of other users in temp directories.
 chmod 1777 $DESTDIR/tmp
 chmod 1777 $DESTDIR/var/tmp
@@ -121,6 +119,7 @@ zfs set mountpoint=legacy $ZROOT
 zfs set mountpoint=/tmp   $ZROOT/tmp
 zfs set mountpoint=/usr   $ZROOT/usr
 zfs set mountpoint=/var   $ZROOT/var
+zfs set readonly=on $ZROOT/var/empty
 
 echo "Rebooting..."
 sleep 2
