@@ -109,9 +109,6 @@ done
 echo "Disable root password"
 chroot /mnt /usr/bin/chpass -p \* root
 
-echo "Type 'exit' to unmount the filesystems."
-chroot /mnt /bin/sh
-
 echo "Unmounting filesystems..."
 zfs umount -a
 
@@ -120,3 +117,5 @@ zfs set mountpoint=/tmp   $ZROOT/tmp
 zfs set mountpoint=/usr   $ZROOT/usr
 zfs set mountpoint=/var   $ZROOT/var
 zfs set readonly=on       $ZROOT/var/empty
+
+echo "Done"
