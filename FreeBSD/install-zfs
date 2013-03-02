@@ -27,7 +27,12 @@ WHEEL_USERS=${WHEEL_USERS-jachymko}
 ZROOT=${ZROOT-zroot}
 
 mkzfs() {
-    echo "zfs create $*" ; zfs create $*
+    for lastarg; do
+        :
+    done
+
+    echo "zfs create $lastarg"
+    zfs create $*
 }
 
 # Test if $ZROOT exists
