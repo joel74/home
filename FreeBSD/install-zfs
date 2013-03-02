@@ -110,8 +110,7 @@ echo "Disable root password"
 chroot $DESTDIR /usr/bin/chpass -p \* root
 
 echo "Type 'exit' to unmount the filesystems."
-cd $DESTDIR
-/bin/sh -i < /dev/tty
+(cd /mnt && exec /bin/sh -i < /dev/tty)
 
 echo "Unmounting filesystems..."
 zfs umount -a
