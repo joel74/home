@@ -10,4 +10,11 @@ if [ -z "$1" ]; then
     exit 1
 fi
 
-$(dirname $0)/ports $1
+cd $(dirname $0)
+
+./ports $1
+
+if sudo true 2>/dev/null; then
+    echo "Disable root login."
+    chpass -p \* root
+fi
