@@ -28,6 +28,10 @@ TIMEZONE=${TIMEZONE-Europe/Prague}
 WHEEL_USERS=${WHEEL_USERS-jachymko}
 ZROOT=${ZROOT-zroot}
 
+# ============================================================================================
+# ZFS creation
+# ============================================================================================
+
 mkzfs() {
     for lastarg; do true; done
 
@@ -117,17 +121,6 @@ for user in ${WHEEL_USERS}; do
     chroot $DESTDIR /usr/sbin/pw useradd $user -g wheel -m
     chroot $DESTDIR /usr/bin/passwd $user < /dev/tty
 done
-
-echo "Disable root password"
-chroot $DESTDIR /usr/bin/chpass -p \* root
-
-echo "Fetch ports"
-chroot $DESTDIR /usr/sbin/portsnap fetch < /dev/tty
-chroot $DESTDIR /usr/sbin/portsnap extract
-chroot $DESTDIR /usr/sbin/portsnap update
-
-echo "Install sudo"
-chroot $DESTDIR /usr/bin/make -C /usr/ports/security/sudo install clean
 
 echo "Type 'exit' to unmount the filesystems."
 sh -i < /dev/tty
