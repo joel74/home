@@ -121,6 +121,12 @@ done
 echo "Disable root password"
 chroot $DESTDIR /usr/bin/chpass -p \* root
 
+echo "Fetch ports"
+chroot $DESTDIR /usr/sbin/portsnap fetch extract update
+
+echo "Install sudo"
+chroot $DESTDIR /usr/bin/make -C /usr/ports/security/sudo install clean
+
 echo "Type 'exit' to unmount the filesystems."
 sh -i < /dev/tty
 
