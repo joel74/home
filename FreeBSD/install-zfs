@@ -122,7 +122,9 @@ echo "Disable root password"
 chroot $DESTDIR /usr/bin/chpass -p \* root
 
 echo "Fetch ports"
-chroot $DESTDIR /usr/sbin/portsnap fetch extract update
+chroot $DESTDIR /usr/sbin/portsnap fetch < /dev/tty
+chroot $DESTDIR /usr/sbin/portsnap extract
+chroot $DESTDIR /usr/sbin/portsnap update
 
 echo "Install sudo"
 chroot $DESTDIR /usr/bin/make -C /usr/ports/security/sudo install clean
