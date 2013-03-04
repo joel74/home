@@ -10,8 +10,4 @@ if [ -z "$1" ]; then
     exit 1
 fi
 
-cd $(dirname $0)
-
-./ports $1
-./install-sudoers
-./lock-root-password
+$(dirname $0)/ports $1

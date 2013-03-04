@@ -22,14 +22,14 @@ fi
 
 COMPRESS=${COMPRESS-lz4}
 DESTDIR=${DESTDIR-/mnt}
+DISTDIR=${DISTDIR-/usr/freebsd-dist}
 SWAP=${SWAP-}
+TIMEZONE=${TIMEZONE-Europe/Prague}
 WHEEL_USERS=${WHEEL_USERS-jachymko}
 ZROOT=${ZROOT-zroot}
 
 mkzfs() {
-    for lastarg; do
-        :
-    done
+    for lastarg; do; true; done
 
     echo "zfs create $lastarg"
     zfs create $*
@@ -78,36 +78,43 @@ mkzfs -o atime=off -o exec=off -o setuid=off -o compression=$COMPRESS $ZROOT/var
 mkzfs -o atime=off -o exec=off -o setuid=off -o compression=off       $ZROOT/var/run
 mkzfs -o atime=off -o exec=on  -o setuid=off -o compression=$COMPRESS $ZROOT/var/tmp
 
-# Unprivileged user may not delete or rename files of other users in temp directories.
-chmod 1777 $DESTDIR/tmp
-chmod 1777 $DESTDIR/var/tmp
+# ============================================================================================
+# FreeBSD Installation
+# ============================================================================================
 
-# Link /usr/home to /home
 cd $DESTDIR
-ln -s usr/home home
 
 # Install FreeBSD
-cd /usr/freebsd-dist
 for file in base.txz kernel.txz doc.txz; do
     echo "Extracting $file to $DESTDIR"
-    tar -xpf $file -C $DESTDIR
+    tar -xpf $DISTDIR/$file
 done
 
+# Apparently an fstab file is required.
+touch etc/fstab
+
+# Unprivileged user may not delete or rename files of other users in temp directories.
+chmod 1777 tmp
+chmod 1777 var/tmp
+
+# Link /usr/home to /home
+ln -s usr/home home
+
+# Link timezone to localtime
+ln -s usr/share/zoneinfo/$TIMEZONE etc/localtime
+
 # Copy zpool.cache so the boot loader is able to locate the pool.
-cp /var/tmp/zpool.cache $DESTDIR/boot/zfs/zpool.cache
+cp /var/tmp/zpool.cache boot/zfs/zpool.cache
 
 # Enable ZFS in kernel and loader.
-echo 'zfs_enable="YES"'                  >> $DESTDIR/etc/rc.conf
-echo 'zfs_load="YES"'                    >> $DESTDIR/boot/loader.conf
-echo "vfs.root.mountfrom=\"zfs:$ZROOT\"" >> $DESTDIR/boot/loader.conf
-
-# Apparently an fstab file is required.
-touch $DESTDIR/etc/fstab
+echo 'zfs_enable="YES"'                  >> etc/rc.conf
+echo 'zfs_load="YES"'                    >> boot/loader.conf
+echo "vfs.root.mountfrom=\"zfs:$ZROOT\"" >> boot/loader.conf
 
 # Create users
 for user in ${WHEEL_USERS}; do
     echo "Adding user $user"
-    chroot $DESTDIR /usr/sbin/pw    user add $user -g wheel
+    chroot $DESTDIR /usr/sbin/pw useradd $user -g wheel -m
     chroot $DESTDIR /usr/bin/passwd $user < /dev/tty
 done
 
@@ -115,7 +122,7 @@ echo "Disable root password"
 chroot $DESTDIR /usr/bin/chpass -p \* root
 
 echo "Type 'exit' to unmount the filesystems."
-(cd /mnt && exec /bin/sh -i < /dev/tty)
+sh -i < /dev/tty
 
 echo "Unmounting filesystems..."
 zfs umount -a
