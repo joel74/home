@@ -147,6 +147,7 @@ for user in ${WHEEL_USERS}; do
     if [ -e $HOME_TARBALL ]; then
         echo "Extracting $HOME_TARBALL to $DESTDIR/home/$user/.jachymko"
         pax -z -r -f $HOME_TARBALL "-s,jachymko[^/]*,$DESTDIR/home/$user/.jachymko,p"
+        rm pax_global_header 2>/dev/null
     fi
 
     echo Changing ownership of $DESTDIR/home/$user
