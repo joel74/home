@@ -15,18 +15,30 @@
 #
 #       fetch -o - https://raw.github.com/jachymko/home/master/FreeBSD/install-zfs | sh
 
+# ============================================================================================
+# Configuration
+# ============================================================================================
+
+COMPRESS=${COMPRESS-lz4} # ZFS compression algorithm
+    SWAP=${SWAP-}        # swap dataset size
+   ZROOT=${ZROOT-zroot}  # ZFS pool name
+
+DESTDIR=${DESTDIR-/mnt}              # mount point for the new filesystem
+DISTDIR=${DISTDIR-/usr/freebsd-dist} # where the FreeBSD distribution files are
+
+   TIMEZONE=${TIMEZONE-Europe/Prague}  # local timezone
+WHEEL_USERS=${WHEEL_USERS-jachymko}    # name of the users to be created and added to the wheel group
+
+# ============================================================================================
+# Validation
+# ============================================================================================
+
 if [ `id -u` != 0 ]; then
     echo Must be root >&2
     exit 1
 fi
 
-COMPRESS=${COMPRESS-lz4}
-DESTDIR=${DESTDIR-/mnt}
-DISTDIR=${DISTDIR-/usr/freebsd-dist}
-SWAP=${SWAP-}
-TIMEZONE=${TIMEZONE-Europe/Prague}
-WHEEL_USERS=${WHEEL_USERS-jachymko}
-ZROOT=${ZROOT-zroot}
+zpool status $ZROOT >/dev/null || exit $?
 
 # ============================================================================================
 # ZFS creation
@@ -38,9 +50,6 @@ mkzfs() {
     echo "zfs create $lastarg"
     zfs create $*
 }
-
-# Test if $ZROOT exists
-zpool status $ZROOT >/dev/null || exit $?
 
 # Try to enable lz4 compression
 if [ "$COMPRESS" = "lz4" ]; then
@@ -115,17 +124,28 @@ echo 'zfs_enable="YES"'                  >> etc/rc.conf
 echo 'zfs_load="YES"'                    >> boot/loader.conf
 echo "vfs.root.mountfrom=\"zfs:$ZROOT\"" >> boot/loader.conf
 
+# ============================================================================================
 # Create users
+# ============================================================================================
+
+echo "Downloading jachymko/home..."
+fetch -o /tmp/jachymko.tgz http://github.com/jachymko/home/tarball/master
+
 for user in ${WHEEL_USERS}; do
     echo "Adding user $user"
     chroot $DESTDIR /usr/sbin/pw useradd $user -g wheel -m
     chroot $DESTDIR /usr/bin/passwd $user < /dev/tty
+
+    echo "Installing jachymko/home for $user"
+    pax -z -r -f /tmp/jachymko.tgz "-s,jachymko[^/]*,$DESTDIR/home/$user/.jachymko,p"
+    chown -R $user:wheel $DESTDIR/home/$user
 done
 
 echo "Type 'exit' to unmount the filesystems."
 sh -i < /dev/tty
 
 echo "Unmounting filesystems..."
+cd /
 zfs umount -a
 
 zfs set mountpoint=legacy $ZROOT
