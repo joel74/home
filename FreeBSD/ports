@@ -1,5 +1,6 @@
 #!/bin/sh
 
+ ACTIONS=fetch-recursive install clean
 PORTSDIR=${PORTSDIR-/usr/ports}
 UNAMEDIR=$(cd -- $(dirname $0) && pwd -P)
 
@@ -9,30 +10,45 @@ if [ `id -u` != 0 ]; then
 fi
 
 if [ -z "$1" ]; then
-    echo usage: $0 hostname >&2
+    echo usage: $0 hostname \[ portname \[ action \] \] >&2
     exit 1
 fi
 
-trycd() {
-    cd $1 >/dev/null 2>&1
-}
-
-provision() {
-    if ! trycd $1; then
-        return
+if ! [ -z "$2" ]; then
+    if ! [ -d "$PORTSDIR/$2" ]; then
+        echo port $2 not found in $PORTSDIR >&2
+        exit 1
     fi
 
-    for action in fetch-recursive install clean; do
-        find * -type f -print0 | xargs -I{} -0 sh -c "cd $PORTSDIR/{} && make -DBATCH \$(cat {}) $action"
+    if ! [ -z "$3" ]; then
+        ACTIONS=$3
+    fi
+
+    for action in $ACTIONS; do
+        # exit 255 to stop enumeration when called from xargs
+        make -C $PORTSDIR/$2 -DBATCH $(cat $2) $action || exit 255
     done
-}
+else
+    trycd() {
+        cd $1 >/dev/null 2>&1
+    }
 
-portsnap fetch
+    provision() {
+        if ! trycd $1; then
+            return
+        fi
 
-if ! portsnap update 2>/dev/null; then
-    portsnap extract
-    portsnap update
+        for action in $ACTIONS; do
+            find * -type f -print0 | xargs -I{} -0 sh -c "$0 {} $action"
+        done
+    }
+
+    portsnap fetch
+
+    if ! portsnap update 2>/dev/null; then
+        portsnap extract update
+    fi
+
+    provision $UNAMEDIR/ports.d || exit 2
+    provision $UNAMEDIR/host-$1/ports.d || exit 2
 fi
-
-provision $UNAMEDIR/ports.d
-provision $UNAMEDIR/host-$1/ports.d
