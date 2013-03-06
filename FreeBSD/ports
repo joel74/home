@@ -1,9 +1,5 @@
 #!/bin/sh
 
- ACTIONS=fetch-recursive install clean
-PORTSDIR=${PORTSDIR-/usr/ports}
-UNAMEDIR=$(cd -- $(dirname $0) && pwd -P)
-
 if [ `id -u` != 0 ]; then
     echo Must be root >&2
     exit 1
@@ -13,6 +9,20 @@ if [ -z "$1" ]; then
     echo usage: $0 hostname \[ portname \[ action \] \] >&2
     exit 1
 fi
+
+# ============================================================================================
+# Configuration
+# ============================================================================================
+
+ ACTIONS=${ACTIONS-fetch-recursive install clean} # actions to be made on ports
+PORTSDIR=${PORTSDIR-/usr/ports}                   # where the port repository lives
+
+UNAMEDIR=$(cd -- $(dirname $0) && pwd -P) # path to the directory containing this script
+    SELF=$UNAMEDIR/$(basename $0)         # full path to this script
+
+# ============================================================================================
+# One port
+# ============================================================================================
 
 if ! [ -z "$2" ]; then
     if ! [ -d "$PORTSDIR/$2" ]; then
@@ -28,27 +38,31 @@ if ! [ -z "$2" ]; then
         # exit 255 to stop enumeration when called from xargs
         make -C $PORTSDIR/$2 -DBATCH $(cat $2) $action || exit 255
     done
-else
-    trycd() {
-        cd $1 >/dev/null 2>&1
-    }
 
-    provision() {
-        if ! trycd $1; then
-            return
-        fi
+    exit 0
+fi
 
+# ============================================================================================
+# All ports
+# ============================================================================================
+
+trycd() {
+    cd $1 >/dev/null 2>&1
+}
+
+provision() {
+    if trycd $1; then
         for action in $ACTIONS; do
             find * -type f -print0 | xargs -I{} -0 sh -c "$0 {} $action"
         done
-    }
-
-    portsnap fetch
-
-    if ! portsnap update 2>/dev/null; then
-        portsnap extract update
     fi
+}
 
-    provision $UNAMEDIR/ports.d || exit 2
-    provision $UNAMEDIR/host-$1/ports.d || exit 2
+portsnap fetch
+
+if ! portsnap update 2>/dev/null; then
+    portsnap extract update
 fi
+
+provision $UNAMEDIR/ports.d || exit 2
+provision $UNAMEDIR/host-$1/ports.d || exit 2
