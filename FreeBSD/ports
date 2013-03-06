@@ -58,7 +58,7 @@ if [ -f "$1" ]; then
         TARGETS=$*
     fi
 
-    echo make -C $PORTSDIR/$portname -DBATCH $portconfig $TARGETS || exit $BREAK_XARGS_LOOP
+    make -C $PORTSDIR/$portname -DBATCH $portconfig $TARGETS || exit $BREAK_XARGS_LOOP
     exit 0
 fi
 
