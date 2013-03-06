@@ -5,14 +5,14 @@
 ##
 ## ports ports.d/devel/git [ targets ]
 ##     Installs devel/git using options specified in ports.d/devel/git file.
-##     When no targets specified, makes install clean.
+##     Default targets are: rmconfig fetch-recursive install clean.
 
 # ============================================================================================
 # Configuration
 # ============================================================================================
 
- TARGETS=${TARGETS-fetch-recursive install clean} # targets to be made on ports
-PORTSDIR=${PORTSDIR-/usr/ports}                   # where the port repository lives
+ TARGETS=${TARGETS-rmconfig fetch-recursive install clean} # targets to be made on ports
+PORTSDIR=${PORTSDIR-/usr/ports}                            # where the port repository lives
 
 # ============================================================================================
 # Constants
@@ -72,10 +72,10 @@ if ! portsnap update 2>/dev/null; then
     portsnap extract update || exit $EPORTSNAP
 fi
 
-for dir in $SELFDIR/ports.d $SELFDIR/host-$1/ports.d; do
-    if [ -d "$dir" ]; then
-        for tgt in $TARGETS; do
+for tgt in $TARGETS; do
+    for dir in $SELFDIR/ports.d $SELFDIR/host-$1/ports.d; do
+        if [ -d "$dir" ]; then
             find $dir -type f -not -name '.*' -print0 | xargs -I{} -0 sh -c "$SELF {} $tgt" || exit $EMAKE
-        done
-    fi
+        fi
+    done
 done
