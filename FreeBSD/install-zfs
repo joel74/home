@@ -1,5 +1,10 @@
 #!/bin/sh
 
+if [ `id -u` != 0 ]; then
+    echo Must be root >&2
+    exit 1
+fi
+
 # 1. Create the necessary partitions on the disk(s) and add ZFS aware boot code.
 #
 #       gpart create -s gpt ada0
@@ -26,23 +31,16 @@ COMPRESS=${COMPRESS-lz4} # ZFS compression algorithm
 DESTDIR=${DESTDIR-/mnt}              # mount point for the new filesystem
 DISTDIR=${DISTDIR-/usr/freebsd-dist} # where the FreeBSD distribution files are
 
-   TIMEZONE=${TIMEZONE-Europe/Prague}  # local timezone
-WHEEL_USERS=${WHEEL_USERS-jachymko}    # name of the users to be created and added to the wheel group
-
+   TIMEZONE=${TIMEZONE-Europe/Prague} # local timezone
+WHEEL_USERS=${WHEEL_USERS-jachymko}   # name of the users to be created and added to the wheel group
 
 HOME_TARBALL=/tmp/jachymko.tgz
  HOME_SOURCE=http://github.com/jachymko/home/tarball/master
-# ============================================================================================
-# Validation
-# ============================================================================================
 
-if [ `id -u` != 0 ]; then
-    echo Must be root >&2
-    exit 1
-fi
-
+# Ensure zpool $ZROOT exists
 zpool status $ZROOT >/dev/null || exit $?
 
+# Download latest home tarball
 if ! [ -e $HOME_TARBALL ]; then
     echo "Downloading $HOME_SOURCE..."
     fetch -o $HOME_TARBALL $HOME_SOURCE
@@ -53,10 +51,11 @@ fi
 # ============================================================================================
 
 mkzfs() {
-    for lastarg; do true; done
+    mountpoint=$1
+    shift
 
-    echo "zfs create $lastarg"
-    zfs create $*
+    echo "zfs create $mountpoint"
+    zfs create $* $mountpoint
 }
 
 # Try to enable lz4 compression
@@ -75,29 +74,30 @@ zfs set mountpoint=$DESTDIR $ZROOT
 zpool set bootfs=$ZROOT $ZROOT
 
 # Import $ZROOT using known cache file--will be copied to $DESTDIR/boot when done.
-zpool export $ZROOT; zpool import -o cachefile=/var/tmp/zpool.cache $ZROOT
+zpool export $ZROOT
+zpool import -o cachefile=/var/tmp/zpool.cache $ZROOT
 
 # Swap, maybe?
 if [ $SWAP ]; then
     mkzfs -o checksum=off -o org.freebsd:swap=on -V $SWAP $ZROOT/swap
 fi
 
-mkzfs -o atime=off -o exec=on  -o setuid=off -o compression=$COMPRESS $ZROOT/tmp
-mkzfs -o atime=off -o exec=on  -o setuid=on  -o compression=off       $ZROOT/usr
-mkzfs -o atime=off -o exec=on  -o setuid=on  -o compression=off       $ZROOT/usr/home
-mkzfs -o atime=off -o exec=on  -o setuid=off -o compression=$COMPRESS $ZROOT/usr/ports
-mkzfs -o atime=off -o exec=off -o setuid=off -o compression=off       $ZROOT/usr/ports/distfiles
-mkzfs -o atime=off -o exec=off -o setuid=off -o compression=off       $ZROOT/usr/ports/packages
-mkzfs -o atime=off -o exec=off -o setuid=off -o compression=$COMPRESS $ZROOT/usr/src
-mkzfs -o atime=off -o exec=off -o setuid=off -o compression=off       $ZROOT/var
-mkzfs -o atime=off -o exec=off -o setuid=off -o compression=$COMPRESS $ZROOT/var/crash
-mkzfs -o atime=off -o exec=off -o setuid=off -o compression=$COMPRESS $ZROOT/var/db
-mkzfs -o atime=off -o exec=on  -o setuid=off -o compression=$COMPRESS $ZROOT/var/db/pkg
-mkzfs -o atime=off -o exec=off -o setuid=off -o compression=off       $ZROOT/var/empty
-mkzfs -o atime=off -o exec=off -o setuid=off -o compression=$COMPRESS $ZROOT/var/log
-mkzfs -o atime=off -o exec=off -o setuid=off -o compression=$COMPRESS $ZROOT/var/mail
-mkzfs -o atime=off -o exec=off -o setuid=off -o compression=off       $ZROOT/var/run
-mkzfs -o atime=off -o exec=on  -o setuid=off -o compression=$COMPRESS $ZROOT/var/tmp
+mkzfs $ZROOT/tmp                 -o atime=off -o exec=on  -o setuid=off -o compression=$COMPRESS
+mkzfs $ZROOT/usr                 -o atime=off -o exec=on  -o setuid=on  -o compression=off
+mkzfs $ZROOT/usr/home            -o atime=off -o exec=on  -o setuid=on  -o compression=off
+mkzfs $ZROOT/usr/ports           -o atime=off -o exec=on  -o setuid=off -o compression=$COMPRESS
+mkzfs $ZROOT/usr/ports/distfiles -o atime=off -o exec=off -o setuid=off -o compression=off
+mkzfs $ZROOT/usr/ports/packages  -o atime=off -o exec=off -o setuid=off -o compression=off
+mkzfs $ZROOT/usr/src             -o atime=off -o exec=off -o setuid=off -o compression=$COMPRESS
+mkzfs $ZROOT/var                 -o atime=off -o exec=off -o setuid=off -o compression=off
+mkzfs $ZROOT/var/crash           -o atime=off -o exec=off -o setuid=off -o compression=$COMPRESS
+mkzfs $ZROOT/var/db              -o atime=off -o exec=off -o setuid=off -o compression=$COMPRESS
+mkzfs $ZROOT/var/db/pkg          -o atime=off -o exec=on  -o setuid=off -o compression=$COMPRESS
+mkzfs $ZROOT/var/empty           -o atime=off -o exec=off -o setuid=off -o compression=off
+mkzfs $ZROOT/var/log             -o atime=off -o exec=off -o setuid=off -o compression=$COMPRESS
+mkzfs $ZROOT/var/mail            -o atime=off -o exec=off -o setuid=off -o compression=$COMPRESS
+mkzfs $ZROOT/var/run             -o atime=off -o exec=off -o setuid=off -o compression=off
+mkzfs $ZROOT/var/tmp             -o atime=off -o exec=on  -o setuid=off -o compression=$COMPRESS
 
 # ============================================================================================
 # FreeBSD Installation
