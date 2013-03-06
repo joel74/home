@@ -1,68 +1,81 @@
 #!/bin/sh
 
-if [ `id -u` != 0 ]; then
-    echo Must be root >&2
-    exit 1
-fi
-
-if [ -z "$1" ]; then
-    echo usage: $0 hostname \[ portname \[ action \] \] >&2
-    exit 1
-fi
+## ports daemonik
+##     Installs all ports specified under ./ports.d and ./host-daemonik/ports.d
+##
+## ports ports.d/devel/git [ targets ]
+##     Installs devel/git using options specified in ports.d/devel/git file.
+##     When no targets specified, makes install clean.
 
 # ============================================================================================
 # Configuration
 # ============================================================================================
 
- ACTIONS=${ACTIONS-fetch-recursive install clean} # actions to be made on ports
+ TARGETS=${TARGETS-fetch-recursive install clean} # targets to be made on ports
 PORTSDIR=${PORTSDIR-/usr/ports}                   # where the port repository lives
 
-UNAMEDIR=$(cd -- $(dirname $0) && pwd -P) # path to the directory containing this script
-    SELF=$UNAMEDIR/$(basename $0)         # full path to this script
-
 # ============================================================================================
-# One port
+# Constants
 # ============================================================================================
 
-if ! [ -z "$2" ]; then
-    if ! [ -d "$PORTSDIR/$2" ]; then
-        echo port $2 not found in $PORTSDIR >&2
-        exit 1
+EARG=1
+EPORTSNAP=2
+EMAKE=3
+BREAK_XARGS_LOOP=255
+
+SELFDIR=$(cd -- $(dirname $0) && pwd -P) # path to the directory containing this script
+   SELF=$SELFDIR/$(basename $0)         # full path to this script
+
+# ============================================================================================
+# Validation
+# ============================================================================================
+
+if [ `id -u` != 0 ]; then
+    echo Must be root >&2
+    exit $EARG
+fi
+
+if [ -z "$1" ]; then
+    cat $0 | grep '^##' | cut -c 4- >&2
+    exit $EARG
+fi
+
+# ============================================================================================
+# $1 = port file path
+# ============================================================================================
+
+if [ -f "$1" ]; then
+    if ! [ -d "$PORTSDIR/$portname" ]; then
+        echo port $portname not found in $PORTSDIR >&2
+        exit $EARG
     fi
 
-    if ! [ -z "$3" ]; then
-        ACTIONS=$3
+    portname=$(echo $1 | awk -F/ '{print $(NF-1) "/" $NF}')
+    portconfig=$(cat $1)
+
+    shift
+    if ! [ -z "$1" ]; then
+        TARGETS=$*
     fi
 
-    for action in $ACTIONS; do
-        # exit 255 to stop enumeration when called from xargs
-        make -C $PORTSDIR/$2 -DBATCH $(cat $2) $action || exit 255
-    done
-
+    echo make -C $PORTSDIR/$portname -DBATCH $portconfig $TARGETS || exit $BREAK_XARGS_LOOP
     exit 0
 fi
 
 # ============================================================================================
-# All ports
+# $1 = host name
 # ============================================================================================
 
-trycd() {
-    cd $1 >/dev/null 2>&1
-}
-
-provision() {
-    if trycd $1; then
-        for action in $ACTIONS; do
-            find * -type f -print0 | xargs -I{} -0 sh -c "$SELF {} $action"
-        done
-    fi
-}
-
-portsnap fetch
+portsnap fetch || exit $EPORTSNAP
 
 if ! portsnap update 2>/dev/null; then
-    portsnap extract update
+    portsnap extract update || exit $EPORTSNAP
 fi
 
-provision $UNAMEDIR/ports.d || exit 2
-provision $UNAMEDIR/host-$1/ports.d || exit 2
+for dir in $SELFDIR/ports.d $SELFDIR/host-$1/ports.d; do
+    if [ -d "$dir" ]; then
+        for tgt in $TARGETS; do
+            find $dir -type f -not -name '.*' -print0 | xargs -I{} -0 sh -c "$SELF {} $tgt" || exit $EMAKE
+        done
+    fi
+done
