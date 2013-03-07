@@ -24,13 +24,13 @@ EMAKE=3
 BREAK_XARGS_LOOP=255
 
 SELFDIR=$(cd -- $(dirname $0) && pwd -P) # path to the directory containing this script
-   SELF=$SELFDIR/$(basename $0)         # full path to this script
+   SELF=$SELFDIR/$(basename $0)          # full path to this script
 
 # ============================================================================================
 # Validation
 # ============================================================================================
 
-if [ `id -u` != 0 ]; then
+if [ `id -u` -ne 0 ]; then
     echo Must be root >&2
     exit $EARG
 fi
@@ -45,13 +45,19 @@ fi
 # ============================================================================================
 
 if [ -f "$1" ]; then
-    if ! [ -d "$PORTSDIR/$portname" ]; then
+
+    function portexists() {
+        [ -d "$PORTSDIR/$1" ] || [ "$OSTYPE" != 'FreeBSD' ]
+    }
+
+       portdir=$(cd -- $(dirname $1) && pwd)
+      portname=$(basename $portdir)/$(basename $1)
+    portconfig=$(cat $1)
+
+    if ! portexists $portname; then
         echo port $portname not found in $PORTSDIR >&2
         exit $EARG
     fi
-
-    portname=$(echo $1 | awk -F/ '{print $(NF-1) "/" $NF}')
-    portconfig=$(cat $1)
 
     shift
     if ! [ -z "$1" ]; then
@@ -59,23 +65,30 @@ if [ -f "$1" ]; then
     fi
 
     make -C $PORTSDIR/$portname -DBATCH $portconfig $TARGETS || exit $BREAK_XARGS_LOOP
-    exit 0
-fi
 
 # ============================================================================================
 # $1 = host name
 # ============================================================================================
 
-portsnap fetch || exit $EPORTSNAP
+elif [ -d "$SELFDIR/host-$1" ]; then
 
-if ! portsnap update 2>/dev/null; then
-    portsnap extract update || exit $EPORTSNAP
-fi
+    portsnap fetch || exit $EPORTSNAP
 
-for tgt in $TARGETS; do
-    for dir in $SELFDIR/ports.d $SELFDIR/host-$1/ports.d; do
-        if [ -d "$dir" ]; then
-            find $dir -type f -not -name '.*' -print0 | xargs -I{} -0 sh -c "$SELF {} $tgt" || exit $EMAKE
-        fi
+    if ! portsnap update 2>/dev/null; then
+        portsnap extract update || exit $EPORTSNAP
+    fi
+
+    for tgt in $TARGETS; do
+        for dir in $SELFDIR/ports.d $SELFDIR/host-$1/ports.d; do
+            if [ -d "$dir" ]; then
+                find $dir -type f         \
+                          -not -name '.*' \
+                          -print0         \
+                | xargs -I{} -0 sh -c "$SELF {} $tgt" || exit $EMAKE
+            fi
+        done
     done
-done
+else
+    echo not a known host or port: $1 >&2
+    exit $EARG;
+fi
