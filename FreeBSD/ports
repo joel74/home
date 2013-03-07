@@ -36,7 +36,7 @@ if [ `id -u` -ne 0 ]; then
 fi
 
 if [ -z "$1" ]; then
-    cat $0 | grep '^##' | cut -c 4- >&2
+    grep '^##' $0 | cut -c 4- >&2
     exit $EARG
 fi
 
@@ -58,6 +58,15 @@ if [ -f "$1" ]; then
     shift
     if ! [ -z "$1" ]; then
         TARGETS=$*
+    fi
+
+    if [ -x pkg-static ]; then
+        pkgname=$(make -C $PORTSDIR/$portname package-name | awk -F- '{$NF=""; OFS="-"; NF=NF-1; print $0}')
+
+        if pkg-static info $pkgname >/dev/null 2>&1; then
+            echo $pkgname already installed, skipping
+            exit 0
+        fi
     fi
 
     make -C $PORTSDIR/$portname -DBATCH $portconfig $TARGETS || exit $BREAK_XARGS_LOOP
@@ -86,5 +95,5 @@ elif [ -d "$SELFDIR/host-$1" ]; then
     done
 else
     echo not a known host or port: $1 >&2
-    exit $EARG;
+    exit $EARG
 fi
