@@ -46,15 +46,11 @@ fi
 
 if [ -f "$1" ]; then
 
-    function portexists() {
-        [ -d "$PORTSDIR/$1" ] || [ "$OSTYPE" != 'FreeBSD' ]
-    }
-
        portdir=$(cd -- $(dirname $1) && pwd)
       portname=$(basename $portdir)/$(basename $1)
     portconfig=$(cat $1)
 
-    if ! portexists $portname; then
+    if [ ! -d "$PORTSDIR/$portname" ]; then
         echo port $portname not found in $PORTSDIR >&2
         exit $EARG
     fi
