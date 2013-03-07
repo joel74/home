@@ -25,7 +25,7 @@ fi
 # ============================================================================================
 
 COMPRESS=${COMPRESS-lz4} # ZFS compression algorithm
-    SWAP=${SWAP-}        # swap dataset size
+    SWAP=${SWAP-2G}      # swap dataset size
    ZROOT=${ZROOT-zroot}  # ZFS pool name
 
 DESTDIR=${DESTDIR-/mnt}              # mount point for the new filesystem
