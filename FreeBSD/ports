@@ -60,7 +60,7 @@ if [ -f "$1" ]; then
         TARGETS=$*
     fi
 
-    if $(echo $TARGETS | grep -w install) && [ -x "$(which pkg-static)" ]; then
+    if (echo $TARGETS | grep -q -w install) && [ -x "$(which pkg-static)" ]; then
         pkgname=$(make -C $PORTSDIR/$portname package-name | awk -F- '{$NF=""; OFS="-"; NF=NF-1; print $0}')
 
         if pkg-static info $pkgname >/dev/null 2>&1; then
