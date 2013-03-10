@@ -79,12 +79,10 @@ if [ -f "$1" ]; then
 elif [ -d "$SELFDIR/host-$1" ]; then
 
     do_target() {
-        local tgt=$1
-        local dir=$2
-        find $dir -type f         \
-                  -not -name '.*' \
-                  -print0         \
-        | xargs -I{} -0 sh -c "$SELF {} $tgt" || exit $EMAKE
+        find $1 -type f         \
+                -not -name '.*' \
+                -print0         \
+        | xargs -I{} -0 sh -c "$SELF {} $2" || exit $EMAKE
     }
 
     portsnap fetch || exit $EPORTSNAP
@@ -96,7 +94,7 @@ elif [ -d "$SELFDIR/host-$1" ]; then
     for tgt in $TARGETS; do
         for dir in $SELFDIR/ports.d $SELFDIR/host-$1/ports.d; do
             if [ -d "$dir" ]; then
-                do_target $tgt
+                do_target $dir $tgt
             fi
         done
     done
