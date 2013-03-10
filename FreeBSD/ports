@@ -11,8 +11,8 @@
 # Configuration
 # ============================================================================================
 
- TARGETS=${TARGETS-rmconfig fetch-recursive install clean} # targets to be made on ports
-PORTSDIR=${PORTSDIR-/usr/ports}                            # where the port repository lives
+export TARGETS=${TARGETS-fetch-recursive rmconfig install clean} # targets to be made on ports
+export PORTSDIR=${PORTSDIR-/usr/ports}                           # where the port repository lives
 
 # ============================================================================================
 # Constants
@@ -20,7 +20,8 @@ PORTSDIR=${PORTSDIR-/usr/ports}                            # where the port repo
 
 EARG=1
 EPORTSNAP=2
-EMAKE=3
+EPORTMASTER=3
+EMAKE=4
 BREAK_XARGS_LOOP=255
 
 SELFDIR=$(cd -- $(dirname $0) && pwd -P) # path to the directory containing this script
@@ -56,12 +57,12 @@ if [ -f "$1" ]; then
     fi
 
     shift
-    if ! [ -z "$1" ]; then
+    if [ -n "$1" ]; then
         TARGETS=$*
     fi
 
     if (echo $TARGETS | grep -q -w install) && [ -x "$(which pkg-static)" ]; then
-        pkgname=$(make -C $PORTSDIR/$portname package-name | awk -F- '{$NF=""; OFS="-"; NF=NF-1; print $0}')
+        local pkgname=$(make -C $PORTSDIR/$portname package-name | awk -F- '{$NF=""; OFS="-"; NF=NF-1; print $0}')
 
         if pkg-static info $pkgname >/dev/null 2>&1; then
             echo $pkgname already installed, skipping
@@ -77,6 +78,15 @@ if [ -f "$1" ]; then
 
 elif [ -d "$SELFDIR/host-$1" ]; then
 
+    do_target() {
+        local tgt=$1
+        local dir=$2
+        find $dir -type f         \
+                  -not -name '.*' \
+                  -print0         \
+        | xargs -I{} -0 sh -c "$SELF {} $tgt" || exit $EMAKE
+    }
+
     portsnap fetch || exit $EPORTSNAP
 
     if ! portsnap update 2>/dev/null; then
@@ -86,13 +96,15 @@ elif [ -d "$SELFDIR/host-$1" ]; then
     for tgt in $TARGETS; do
         for dir in $SELFDIR/ports.d $SELFDIR/host-$1/ports.d; do
             if [ -d "$dir" ]; then
-                find $dir -type f         \
-                          -not -name '.*' \
-                          -print0         \
-                | xargs -I{} -0 sh -c "$SELF {} $tgt" || exit $EMAKE
+                do_target $tgt
             fi
         done
     done
+
+    if [ -x "$(which portmaster)" ]; then
+        portmaster -a || exit $EPORTMASTER
+    fi
+
 else
     echo not a known host or port: $1 >&2
     exit $EARG
