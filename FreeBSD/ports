@@ -11,7 +11,7 @@
 # Configuration
 # ============================================================================================
 
-export TARGETS=${TARGETS-fetch-recursive rmconfig install clean} # targets to be made on ports
+export TARGETS=${TARGETS-rmconfig fetch-recursive install clean} # targets to be made on ports
 export PORTSDIR=${PORTSDIR-/usr/ports}                           # where the port repository lives
 
 # ============================================================================================
@@ -65,8 +65,8 @@ if [ -f "$1" ]; then
         local pkgname=$(make -C $PORTSDIR/$portname package-name | awk -F- '{$NF=""; OFS="-"; NF=NF-1; print $0}')
 
         if pkg-static info $pkgname >/dev/null 2>&1; then
-            echo $pkgname already installed, skipping
-            exit 0
+            echo $pkgname already installed, will only set configuration
+            TARGETS=rmconfig clean
         fi
     fi
 
