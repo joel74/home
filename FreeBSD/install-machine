@@ -20,9 +20,13 @@ if sudo true 2>/dev/null; then
 fi
 
 if [ -x "$(which git)" ] && ! git status >/dev/null 2>&1; then
-    cd ~
-    git clone https://github.com/jachymko/home .jachymko-tmp || exit 1
-    mv .jachymko .jachymko-old
-    mv .jachymko-tmp .jachymko
+
+    [ -d ~/src ] || mkdir ~/src || exit 1
+
+    cd ~/src && git clone https://github.com/jachymko/home || exit 1
+
+    if [ -d ~/.jachymko ]; then
+        rm -rf ~/.jachymko
+    fi
 fi
 
