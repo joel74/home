@@ -103,10 +103,9 @@ elif [ -d "$SELFDIR/host-$1" ]; then
         portsnap extract update || exit $EPORTSNAP
     fi
 
-    do_target fetch-recursive
-    do_target rmconfig
-    do_target install
-    do_target clean
+    for tgt in $TARGETS; do
+        do_target $tgt
+    done
 
     if [ -x "$(which portmaster)" ]; then
         portmaster -a || exit $EPORTMASTER
