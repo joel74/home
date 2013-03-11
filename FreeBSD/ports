@@ -11,8 +11,8 @@
 # Configuration
 # ============================================================================================
 
-export TARGETS=${TARGETS-'rmconfig fetch-recursive install clean'} # targets to be made on ports
-export PORTSDIR=${PORTSDIR-/usr/ports}                           # where the port repository lives
+TARGETS=${TARGETS-"rmconfig fetch-recursive install clean"} # targets to be made on ports
+PORTSDIR=${PORTSDIR-/usr/ports}                             # where the port repository lives
 
 # ============================================================================================
 # Constants
