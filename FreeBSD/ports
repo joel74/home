@@ -56,17 +56,18 @@ if [ -f "$1" ]; then
         exit $EARG
     fi
 
+    pkgname=$(make -C $PORTSDIR/$portname package-name | awk -F- '{$NF=""; OFS="-"; NF=NF-1; print $0}')
+
     shift
+
     if [ -n "$1" ]; then
         TARGETS=$*
     fi
 
-    if (echo $TARGETS | grep -q -w install) && [ -x "$(which pkg-static)" ]; then
-        local pkgname=$(make -C $PORTSDIR/$portname package-name | awk -F- '{$NF=""; OFS="-"; NF=NF-1; print $0}')
-
+    if [ -x "$(which pkg-static)" ]; then
         if pkg-static info $pkgname >/dev/null 2>&1; then
-            echo $pkgname already installed, will only set configuration
-            TARGETS=rmconfig clean
+            echo $pkgname already installed, will be upgraded by portmaster
+            TARGETS=$(echo $TARGETS | sed 's/fetch-recursive//;s/install//')
         fi
     fi
 
@@ -78,11 +79,22 @@ if [ -f "$1" ]; then
 
 elif [ -d "$SELFDIR/host-$1" ]; then
 
-    do_target() {
+    host=$1
+
+    do_dir_target() {
+        if ! [ -d $1 ]; then
+            return 0
+        fi
+
         find $1 -type f         \
                 -not -name '.*' \
                 -print0         \
         | xargs -I{} -0 sh -c "$SELF {} $2" || exit $EMAKE
+    }
+
+    do_target() {
+        do_dir_target "$SELFDIR/ports.d" $1
+        do_dir_target "$SELFDIR/host-$host/ports.d" $1
     }
 
     portsnap fetch || exit $EPORTSNAP
@@ -91,13 +103,10 @@ elif [ -d "$SELFDIR/host-$1" ]; then
         portsnap extract update || exit $EPORTSNAP
     fi
 
-    for tgt in $TARGETS; do
-        for dir in $SELFDIR/ports.d $SELFDIR/host-$1/ports.d; do
-            if [ -d "$dir" ]; then
-                do_target $dir $tgt
-            fi
-        done
-    done
+    do_target fetch-recursive
+    do_target rmconfig
+    do_target install
+    do_target clean
 
     if [ -x "$(which portmaster)" ]; then
         portmaster -a || exit $EPORTMASTER
