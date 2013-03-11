@@ -31,13 +31,13 @@ SELFDIR=$(cd -- $(dirname $0) && pwd -P) # path to the directory containing this
 # Validation
 # ============================================================================================
 
-if [ `id -u` -ne 0 ]; then
-    echo Must be root >&2
+if [ -z "$1" ]; then
+    grep '^##' $0 | cut -c 4- >&2
     exit $EARG
 fi
 
-if [ -z "$1" ]; then
-    grep '^##' $0 | cut -c 4- >&2
+if [ $(id -u) -ne 0 ]; then
+    echo Must be root >&2
     exit $EARG
 fi
 
