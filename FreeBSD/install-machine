@@ -12,10 +12,6 @@ fi
 
 cd $(dirname $0)
 
-# Restart network, there might've been /etc changes
-# copied in by the platform neutral install-machine.
-service netif restart
-
 # Install ports
 ./ports $1
 

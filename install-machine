@@ -31,14 +31,18 @@ provision_dirs() {
     fi
 }
 
-provision_scripts() {
-    if [ -x "$1/install-machine" ]; then
-        $1/install-machine $HOSTNAME
+provision_script() {
+    if [ -x "$1/$2" ]; then
+        $1/$2 $HOSTNAME
     fi
 }
 
+# Copy all platform- and host-specific files
 provision_dirs $JACHYMKO/$UNAME
 provision_dirs $JACHYMKO/$UNAME/host-$HOSTNAME
 
-provision_scripts $JACHYMKO/$UNAME
-provision_scripts $JACHYMKO/$UNAME/host-$HOSTNAME
+provision_script $JACHYMKO/$UNAME                install-network
+provision_script $JACHYMKO/$UNAME/host-$HOSTNAME install-network
+
+provision_script $JACHYMKO/$UNAME                install-machine
+provision_script $JACHYMKO/$UNAME/host-$HOSTNAME install-machine
