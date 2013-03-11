@@ -29,10 +29,8 @@ if [ -x "$(which git)" ] && ! git status >/dev/null 2>&1; then
 
     [ -d src ] || mkdir src || exit 1
 
-    (cd src && git clone https://github.com/jachymko/home) || exit 1
+    (cd src && git clone https://github.com/jachymko/home) && rm -rf .jachymko 2>/dev/null
 
-    if [ -d .jachymko ]; then
-        rm -rf .jachymko
-    fi
+    chown -R $(logname):wheel src
 fi
 
