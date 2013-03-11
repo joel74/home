@@ -12,13 +12,20 @@ fi
 
 cd $(dirname $0)
 
+# Restart network, there might've been /etc changes
+# copied in by the platform neutral install-machine.
+service netif restart
+
+# Install ports
 ./ports $1
 
+# Kill root if sudo installed successfully
 if sudo true 2>/dev/null; then
     echo "Disable root login."
     chpass -p \* root
 fi
 
+# Clone this repository if git available
 if [ -x "$(which git)" ] && ! git status >/dev/null 2>&1; then
 
     get_user_home() {
@@ -33,4 +40,3 @@ if [ -x "$(which git)" ] && ! git status >/dev/null 2>&1; then
 
     chown -R $(logname):wheel src
 fi
-

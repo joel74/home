@@ -1,15 +1,14 @@
 #!/bin/sh
 
-if [ `id -u` != 0 ]; then
-    echo Must be root >&2
-    exit 1
-fi
-
 if [ -z "$1" ]; then
     echo usage: $0 hostname >&2
     exit 1
 fi
 
+if [ `id -u` != 0 ]; then
+    echo Must be root >&2
+    exit 1
+fi
 
 UNAME=$(uname)
 HOSTNAME=$1
@@ -25,16 +24,21 @@ copydir() {
     fi
 }
 
-provision() {
+provision_dirs() {
     if trycd $1; then
         copydir etc
         copydir root
-
-        if [ -x ./install-machine ]; then
-            ./install-machine $HOSTNAME
-        fi
     fi
 }
 
-provision $JACHYMKO/$UNAME
-provision $JACHYMKO/$UNAME/host-$HOSTNAME
+provision_scripts() {
+    if [ -x "$1/install-machine" ]; then
+        $1/install-machine $HOSTNAME
+    fi
+}
+
+provision_dirs $JACHYMKO/$UNAME
+provision_dirs $JACHYMKO/$UNAME/host-$HOSTNAME
+
+provision_scripts $JACHYMKO/$UNAME
+provision_scripts $JACHYMKO/$UNAME/host-$HOSTNAME
