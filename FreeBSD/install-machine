@@ -12,27 +12,5 @@ fi
 
 cd $(dirname $0)
 
-# Install ports
 ./ports $1
-
-# Kill root if sudo installed successfully
-if sudo true 2>/dev/null; then
-    echo "Disable root login."
-    chpass -p \* root
-fi
-
-# Clone this repository if git available
-if [ -x "$(which git)" ] && ! git status >/dev/null 2>&1; then
-
-    get_user_home() {
-        pw usershow ${1-$(logname)} | awk -F: '{print $9}'
-    }
-
-    cd $(get_user_home) || exit 1
-
-    [ -d src ] || mkdir src || exit 1
-
-    (cd src && git clone https://github.com/jachymko/home) && rm -rf .jachymko 2>/dev/null
-
-    chown -R $(logname):wheel src
-fi
+./harden-machine $1
