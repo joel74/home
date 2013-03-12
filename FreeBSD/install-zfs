@@ -136,23 +136,27 @@ echo "vfs.root.mountfrom=\"zfs:$ZROOT\"" >> boot/loader.conf
 # Create users
 # ============================================================================================
 
-for user in ${WHEEL_USERS}; do
+for user in $WHEEL_USERS; do
     echo Adding wheel user $user
     chroot $DESTDIR /usr/sbin/pw useradd $user -g wheel
     chroot $DESTDIR /usr/bin/passwd $user < /dev/tty
 
-    echo Creating /home/$user
+    echo Creating $DESTDIR/home/$user
     mkdir home/$user
-
-    if [ -e $HOME_TARBALL ]; then
-        echo "Extracting $HOME_TARBALL to $DESTDIR/home/$user/.jachymko"
-        pax -z -r -f $HOME_TARBALL "-s,jachymko[^/]*,$DESTDIR/home/$user/.jachymko,p"
-        rm pax_global_header 2>/dev/null
-    fi
 
     echo Changing ownership of $DESTDIR/home/$user
     chroot $DESTDIR /usr/sbin/chown -R $user:wheel /home/$user
 done
+
+# ============================================================================================
+# Extract home tarball to /root
+# ============================================================================================
+
+if [ -e $HOME_TARBALL ]; then
+    echo "Extracting $HOME_TARBALL to $DESTDIR/root/.jachymko"
+    pax -z -r -f $HOME_TARBALL "-s,jachymko[^/]*,$DESTDIR/root/.jachymko,p"
+    rm pax_global_header 2>/dev/null
+fi
 
 echo FreeBSD has been installed to $DESTDIR
 echo Type 'exit' to unmount the filesystems.
