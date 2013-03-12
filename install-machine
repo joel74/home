@@ -28,6 +28,7 @@ provision_dirs() {
     if trycd $1; then
         copydir etc
         copydir root
+        copydir usr
     fi
 }
 
