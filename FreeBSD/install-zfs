@@ -79,7 +79,7 @@ zpool import -o cachefile=/var/tmp/zpool.cache $ZROOT
 
 # Swap, maybe?
 if [ $SWAP ]; then
-    mkzfs -o checksum=off -o org.freebsd:swap=on -V $SWAP $ZROOT/swap
+    mkzfs $ZROOT/swap -o checksum=off -o org.freebsd:swap=on -V $SWAP
 fi
 
 mkzfs $ZROOT/tmp                 -o atime=off -o exec=on  -o setuid=off -o compression=$COMPRESS
