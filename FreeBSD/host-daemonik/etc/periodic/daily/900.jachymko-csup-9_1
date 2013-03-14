@@ -1,0 +1,2 @@
+#!/bin/sh
+csup /root/9_1-supfile
