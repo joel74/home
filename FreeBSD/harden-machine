@@ -6,7 +6,7 @@ if [ `id -u` != 0 ]; then
 fi
 
 # Kill root if sudo installed successfully
-if [ "$(sudo logname 2>/dev/null)" != 'root' ]; then
+if [ "$(logname 2>/dev/null)" != 'root' ]; then
     echo "Disable root login."
     chpass -p \* root
 fi
