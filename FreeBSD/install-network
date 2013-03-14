@@ -1,3 +1,5 @@
 #!/bin/sh
 
 service netif restart
+service routing restart
+service defaultroute restart
