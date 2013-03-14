@@ -1,0 +1,8 @@
+#!/bin/sh
+
+ZSH_PATH=$(which zsh)
+
+if [ -x "$ZSH_PATH" ]; then
+    echo Changing shell to $ZSH_PATH
+    chpass -s $ZSH_PATH
+fi
