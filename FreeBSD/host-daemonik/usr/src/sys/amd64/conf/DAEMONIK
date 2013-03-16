@@ -1,77 +1,83 @@
-cpu		HAMMER
-ident		DEMONIK
+cpu         HAMMER
+ident       DEMONIK
 
-makeoptions	DEBUG=-g		# Build kernel with gdb(1) debug symbols
-makeoptions	WITH_CTF=1		# Run ctfconvert(1) for DTrace support
+makeoptions DEBUG=-g        # Build kernel with gdb(1) debug symbols
+makeoptions WITH_CTF=1      # Run ctfconvert(1) for DTrace support
 
 # IPSec support
-options		IPSEC
-options		IPSEC_NAT_T
-device		crypto
+options     IPSEC
+options     IPSEC_NAT_T
+device      crypto
+
+# IPsec interface.
+device      enc
 
 # Make an SMP-capable kernel by default
-options 	SMP			# Symmetric MultiProcessor Kernel
+options     SMP
+options     SCHED_ULE       # ULE scheduler
+options     PREEMPTION      # Enable kernel thread preemption
+options     _KPOSIX_PRIORITY_SCHEDULING # POSIX P1003_1B real-time extensions
 
-options 	SCHED_ULE		# ULE scheduler
-options 	PREEMPTION		# Enable kernel thread preemption
-options 	INET			# InterNETworking
-options 	INET6			# IPv6 communications protocols
-options 	SCTP			# Stream Control Transmission Protocol
-options 	MD_ROOT			# MD is a potential root device
-options 	CD9660			# ISO 9660 Filesystem
-options 	GEOM_PART_GPT		# GUID Partition Tables.
-options 	GEOM_LABEL		# Provides labelization
-options 	SCSI_DELAY=5000		# Delay (in ms) before probing SCSI
-options 	KTRACE			# ktrace(1) support
-options 	STACK			# stack(9) support
-options 	_KPOSIX_PRIORITY_SCHEDULING # POSIX P1003_1B real-time extensions
-options 	PRINTF_BUFR_SIZE=128	# Prevent printf output being interspersed.
-options 	AUDIT			# Security event auditing
-options 	CAPABILITY_MODE		# Capsicum capability mode
-options 	CAPABILITIES		# Capsicum capabilities
-options 	MAC			# TrustedBSD MAC Framework
-options 	KDTRACE_FRAME		# Ensure frames are compiled in
-options 	KDTRACE_HOOKS		# Kernel DTrace hooks
-options 	DDB_CTF			# Kernel ELF linker loads CTF data
-options 	INCLUDE_CONFIG_FILE     # Include this file in kernel
+options     INET            # InterNETworking
+options     INET6           # IPv6 communications protocols
+options     SCTP            # Stream Control Transmission Protocol
+
+options     CD9660          # ISO 9660 Filesystem
+options     NULLFS          # NULL filesystem
+options     GEOM_PART_GPT   # GUID Partition Tables.
+options     GEOM_LABEL      # Provides labelization
+
+options     SCSI_DELAY=5000 # Delay (in ms) before probing SCSI
+options     KTRACE          # ktrace(1) support
+options     STACK           # stack(9) support
+options     PRINTF_BUFR_SIZE=128    # Prevent printf output being interspersed.
+options     AUDIT           # Security event auditing
+options     CAPABILITY_MODE     # Capsicum capability mode
+options     CAPABILITIES        # Capsicum capabilities
+options     MAC         # TrustedBSD MAC Framework
+options     KDTRACE_FRAME       # Ensure frames are compiled in
+options     KDTRACE_HOOKS       # Kernel DTrace hooks
+options     DDB_CTF         # Kernel ELF linker loads CTF data
+options     INCLUDE_CONFIG_FILE     # Include this file in kernel
 
 # Debugging support
-options 	KDB			# Enable kernel debugger support.
-options 	KDB_TRACE		# Print a stack trace for a panic.
+options     KDB         # Enable kernel debugger support.
+options     KDB_TRACE       # Print a stack trace for a panic.
 
 # Bus support.
-device		acpi
-device		pci
+device      acpi
+device      pci
 
 # ATA controllers
-device		ata		# Legacy ATA/SATA controllers
-device		da		# Direct Access (disks)
-options 	ATA_CAM		# Handle legacy controllers with CAM
-options 	ATA_STATIC_ID	# Static device numbering
+device      atacore
+device      atapci
+device      ataintel
+device      da              # Direct Access (disks)
+options     ATA_CAM         # Handle legacy controllers with CAM
+options     ATA_STATIC_ID   # Static device numbering
 
 # ATA/SCSI peripherals
-device		scbus		# SCSI bus (required for ATA/SCSI)
-device		cd		# CD
-device		pass		# Passthrough device (direct ATA/SCSI access)
+device      scbus       # SCSI bus (required for ATA/SCSI)
+device      cd          # CD
+device      pass        # Passthrough device (direct ATA/SCSI access)
 
 # Legacy stuff
-device		atkbdc		# AT keyboard controller
-device		atkbd		# AT keyboard
-device		psm		# PS/2 mouse
-device		vga		# VGA video card driver
-device          sc
+device      atkbdc      # AT keyboard controller
+device      atkbd       # AT keyboard
+device      vga         # VGA video card driver
+device      sc
 
 # Network
-device		miibus		# MII bus support
-device		re		# RealTek 8139C+/8169/8169S/8110S
+device      miibus      # MII bus support
+device      re      # RealTek 8139C+/8169/8169S/8110S
 
 # Pseudo devices.
-device		loop		# Network loopback
-device		random		# Entropy device
-device		ether		# Ethernet support
-device		vlan		# 802.1Q VLAN support
-device		tun		# Packet tunnel.
-device		md		# Memory "disks"
-device		gif		# IPv6 and IPv4 tunneling
-device		faith		# IPv6-to-IPv4 relaying (translation)
-device		firmware	# firmware assist module
+device      loop        # Network loopback
+device      random      # Entropy device
+device      ether       # Ethernet support
+device      vlan        # 802.1Q VLAN support
+device      tun         # Packet tunnel.
+device      md          # Memory "disks"
+device      gif         # IPv6 and IPv4 tunneling
+device      faith       # IPv6-to-IPv4 relaying (translation)
+device      firmware    # firmware assist module
