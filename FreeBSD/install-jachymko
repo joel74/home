@@ -1,6 +1,7 @@
 #!/bin/sh
 
-dot_link FreeBSD/login_conf .login_conf
+# .login_conf must not be a symlink
+dot_copy FreeBSD/login_conf .login_conf
 
 ZSH_PATH=$(which zsh)
 CURRENT_SHELL=$(pw usershow $(logname) | awk -F: '{print $10}')
