@@ -1,0 +1,36 @@
+#!/bin/sh
+
+if [ `id -u` != 0 ]; then
+    echo Must be root >&2
+    exit 1
+fi
+
+JAILS=/usr/jails
+JAILMASTER=$JAILS/master
+SRCDIR=/usr/src
+ZROOT=zroot
+
+SELFDIR=$(cd -- $(dirname $0) && pwd)
+BUILD_LOG=$SELFDIR/buildworld.log
+INSTALL_LOG=$SELFDIR/installworld.log
+
+if ! zfs list $JAILS >/dev/null 2>&1; then
+    zfs create -o atime=off $ZROOT$JAILS
+fi
+
+if ! [ -d $JAILMASTER ]; then
+    mkdir $JAILMASTER
+fi
+
+[ -e $BUILD_LOG   ] && rm $BUILD_LOG
+[ -e $INSTALL_LOG ] && rm $INSTALL_LOG
+
+make -C $SRCDIR buildworld                 \
+        SRCCONF=$SELFDIR/buildworld.conf   \
+        DESTDIR=$JAILSMASTER               \
+        2>&1 | tee $SELFDIR/buildworld.log \
+&&                                         \
+make -C $SRCDIR installworld               \
+        SRCCONF=$SELFDIR/installworld.conf \
+        DESTDIR=$JAILS/master              \
+        2>&1 | tee $SELFDIR/installworld.log
