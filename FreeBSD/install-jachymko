@@ -1,8 +1,16 @@
 #!/bin/sh
 
+dot_link FreeBSD/login_conf .login_conf
+
 ZSH_PATH=$(which zsh)
+CURRENT_SHELL=$(pw usershow $(logname) | awk -F: '{print $10}')
 
 if [ -x "$ZSH_PATH" ]; then
-    echo Changing shell to $ZSH_PATH
-    chpass -s $ZSH_PATH
+    if [ "$CURRENT_SHELL" = "$ZSH_PATH" ]; then
+        echo Current shell is already $ZSH_PATH
+    else
+        echo Changing shell to $ZSH_PATH
+        chpass -s $ZSH_PATH
+    fi
+
 fi

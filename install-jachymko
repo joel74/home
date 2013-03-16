@@ -1,47 +1,47 @@
-#!/usr/bin/env zsh
+#!/bin/sh
 
-function link() {
-    if [[ -e $2 || -L $2 ]] then
-        unlink $2
+SELFDIR=$(cd -- $(dirname $0) && pwd)
+UNAME=$(uname)
+
+dot_link() {
+    if [ -e ~/$2 ]; then
+        rm ~/$2
     fi
 
-    if [[ -e $1 ]] then
-        echo link $2 -\> $1
-        ln -s $1 $2
-    fi
-}
-
-function copy() {
-    if [[ -e $2 || -L $2 ]] then
-        unlink $2
-    fi
-
-    if [[ -e $1 ]] then
-        echo copy $1 -\> $2
-        cp -f $1 $2
+    if [ -e $SELFDIR/$1 ]; then
+        echo link ~/$2 -\> $SELFDIR/$1
+        ln -s $SELFDIR/$1 ~/$2
     fi
 }
 
-[[ -z "$JACHYMKO" ]] && JACHYMKO=$(echo `dirname $0`(:A))
-[[ -z "$prefix"   ]] && prefix=~
+dot_copy() {
+    if [ -e ~/$2 ]; then
+        rm ~/$2
+    fi
 
-if [[ ! -e $prefix/.jachymko ]]; then
-    link $JACHYMKO $prefix/.jachymko
+    if [ -e $SELFDIR/$1 ]; then
+        echo copy $SELFDIR/$1 -\> ~/$2
+        cp -f $SELFDIR/$1 ~/$2
+    fi
+}
+
+if [ ! -e ~/.jachymko ]; then
+    dot_link . .jachymko
 fi
 
 # gitconfig is copied because uname/install-jachymko scripts modify it
-copy $JACHYMKO/gitconfig      $prefix/.gitconfig
-link $JACHYMKO/gitignore      $prefix/.gitignore
-link $JACHYMKO/ircrc          $prefix/.ircrc
-link $JACHYMKO/offlineimaprc  $prefix/.offlineimaprc
-link $JACHYMKO/tmux/tmux.conf $prefix/.tmux.conf
-link $JACHYMKO/vim            $prefix/.vim
-link $JACHYMKO/vim/vimrc      $prefix/.vimrc
-link $JACHYMKO/vim/gvimrc     $prefix/.gvimrc
-link $JACHYMKO/zlogin         $prefix/.zlogin
-link $JACHYMKO/zshenv         $prefix/.zshenv
-link $JACHYMKO/zshrc          $prefix/.zshrc
+dot_copy gitconfig      .gitconfig
+dot_link gitignore      .gitignore
+dot_link ircrc          .ircrc
+dot_link offlineimaprc  .offlineimaprc
+dot_link tmux/tmux.conf .tmux.conf
+dot_link vim            .vim
+dot_link vim/vimrc      .vimrc
+dot_link vim/gvimrc     .gvimrc
+dot_link zlogin         .zlogin
+dot_link zshenv         .zshenv
+dot_link zshrc          .zshrc
 
-if [[ -x "$JACHYMKO/`uname`/install-jachymko" ]]; then
-    "$JACHYMKO/`uname`/install-jachymko"
+if [ -r "$SELFDIR/$UNAME/install-jachymko" ]; then
+    . $SELFDIR/$UNAME/install-jachymko
 fi
