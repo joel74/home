@@ -1,3 +1,2 @@
 #!/bin/sh
-cd /usr/src
-make buildkernel KERNCONF=DAEMONIK && make installkernel KERNCONF=DAEMONIK
+make -C /usr/src KERNCONF=DAEMONIK buildkernel installkernel
