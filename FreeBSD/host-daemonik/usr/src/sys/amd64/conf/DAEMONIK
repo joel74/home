@@ -4,6 +4,10 @@ ident       DEMONIK
 makeoptions DEBUG=-g        # Build kernel with gdb(1) debug symbols
 makeoptions WITH_CTF=1      # Run ctfconvert(1) for DTrace support
 
+# The pf packet filter
+device      pf
+device      pflog
+
 # IPSec support
 options     IPSEC
 options     IPSEC_NAT_T
@@ -11,6 +15,14 @@ device      crypto
 
 # IPsec interface.
 device      enc
+
+# VirtIO support
+device      virtio      # Generic VirtIO bus (required)
+device      virtio_pci  # VirtIO PCI Interface
+device      vtnet       # VirtIO Ethernet device
+device      virtio_blk  # VirtIO Block device
+device      virtio_scsi # VirtIO SCSI device
+device      virtio_balloon  # VirtIO Memory Balloon device
 
 # Make an SMP-capable kernel by default
 options     SMP
