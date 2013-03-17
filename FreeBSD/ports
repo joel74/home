@@ -66,15 +66,12 @@ if [ -f "$1" ]; then
 
     if [ -x "$(which pkg-static)" ]; then
         if pkg-static info $pkgname >/dev/null 2>&1; then
-            # if installed, do not fetch-recursive and install
-            # portmaster will handle this port
-            TARGETS=$(echo $TARGETS | sed -e 's/fetch-recursive//g' -e 's/install//g')
+            # if installed, portmaster will handle this port
+            exit 0
         fi
     fi
 
-    if [ -n "$(echo $TARGETS | awk '{$1=$1; print $0}')" ]; then
-        make -C $PORTSDIR/$portname -DBATCH $portconfig $TARGETS || exit $BREAK_XARGS_LOOP
-    fi
+    make -C $PORTSDIR/$portname -DBATCH $portconfig $TARGETS || exit $BREAK_XARGS_LOOP
 
 # ============================================================================================
 # $1 = host name
