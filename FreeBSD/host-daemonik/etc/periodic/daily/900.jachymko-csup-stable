@@ -1,0 +1,2 @@
+#!/bin/sh
+csup /root/stable-supfile
