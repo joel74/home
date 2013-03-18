@@ -11,3 +11,12 @@ if [ "$(logname 2>/dev/null)" != 'root' ]; then
     chpass -p \* root
     chpass -p \* toor
 fi
+
+root_rw() {
+    if [ -f $1 ]; then
+        chmod -vv 0600 $1
+    fi
+}
+
+root_rw /usr/local/etc/racoon/racoon.conf
+root_rw /usr/local/etc/racoon/racoon.psk
