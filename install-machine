@@ -1,18 +1,28 @@
 #!/bin/sh
 
-if [ -z "$1" ]; then
-    echo usage: $0 hostname >&2
-    exit 1
-fi
-
 if [ `id -u` != 0 ]; then
     echo Must be root >&2
     exit 1
 fi
 
+while getopts ':f' opt; do
+    case $opt in
+        f)  FILES_ONLY=true;;
+        \?) echo Unknown option: -$OPTARG >&2; exit 1;;
+    esac
+done
+shift $((OPTIND-1))
+
 UNAME=$(uname)
-HOSTNAME=$1
+HOSTNAME=${1-$(hostname -s)}
 JACHYMKO=$(cd -- $(dirname $0) && pwd -P)
+
+if [ -z "$HOSTNAME" ]; then
+    echo usage: $0 [-f] [hostname] >&2
+    echo        -f          only copies config files >&2
+    echo        hostname    can be ommited if this machine already has one >&2
+    exit 1
+fi
 
 trycd() {
     cd $1 >/dev/null 2>&1
@@ -26,6 +36,7 @@ copydir() {
 }
 
 provision_dirs() {
+    echo $1
     if trycd $1; then
         copydir etc
         copydir root
@@ -40,11 +51,15 @@ provision_script() {
 }
 
 # Copy all platform- and host-specific files
-provision_dirs $JACHYMKO/$UNAME
-provision_dirs $JACHYMKO/$UNAME/host-$HOSTNAME
+provision_dirs "$JACHYMKO/$UNAME"
+provision_dirs "$JACHYMKO/$UNAME/host-$HOSTNAME"
 
-provision_script $JACHYMKO/$UNAME                install-network
-provision_script $JACHYMKO/$UNAME/host-$HOSTNAME install-network
+if [ -n "$FILES_ONLY" ]; then
+    exit 0
+fi
 
-provision_script $JACHYMKO/$UNAME                install-machine
-provision_script $JACHYMKO/$UNAME/host-$HOSTNAME install-machine
+provision_script "$JACHYMKO/$UNAME"                install-network
+provision_script "$JACHYMKO/$UNAME/host-$HOSTNAME" install-network
+
+provision_script "$JACHYMKO/$UNAME"                install-machine
+provision_script "$JACHYMKO/$UNAME/host-$HOSTNAME" install-machine
