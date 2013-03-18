@@ -1,5 +1,5 @@
 hostname=daemonik.jachymko.net
-ifconfig_re0="inet 37.157.194.41/24"
+ifconfig_vtnet0="inet 37.157.194.41/24"
 defaultrouter="37.157.194.1"
 
 nginx_enable="YES"

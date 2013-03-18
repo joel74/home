@@ -21,8 +21,6 @@ device      virtio      # Generic VirtIO bus (required)
 device      virtio_pci  # VirtIO PCI Interface
 device      vtnet       # VirtIO Ethernet device
 device      virtio_blk  # VirtIO Block device
-device      virtio_scsi # VirtIO SCSI device
-device      virtio_balloon  # VirtIO Memory Balloon device
 
 # Make an SMP-capable kernel by default
 options     SMP
@@ -34,12 +32,10 @@ options     INET            # InterNETworking
 options     INET6           # IPv6 communications protocols
 options     SCTP            # Stream Control Transmission Protocol
 
-options     CD9660          # ISO 9660 Filesystem
 options     NULLFS          # NULL filesystem
 options     GEOM_PART_GPT   # GUID Partition Tables.
 options     GEOM_LABEL      # Provides labelization
 
-options     SCSI_DELAY=5000 # Delay (in ms) before probing SCSI
 options     KTRACE          # ktrace(1) support
 options     STACK           # stack(9) support
 options     PRINTF_BUFR_SIZE=128    # Prevent printf output being interspersed.
@@ -60,28 +56,11 @@ options     KDB_TRACE       # Print a stack trace for a panic.
 device      acpi
 device      pci
 
-# ATA controllers
-device      atacore
-device      atapci
-device      ataintel
-device      da              # Direct Access (disks)
-options     ATA_CAM         # Handle legacy controllers with CAM
-options     ATA_STATIC_ID   # Static device numbering
-
-# ATA/SCSI peripherals
-device      scbus       # SCSI bus (required for ATA/SCSI)
-device      cd          # CD
-device      pass        # Passthrough device (direct ATA/SCSI access)
-
 # Legacy stuff
 device      atkbdc      # AT keyboard controller
 device      atkbd       # AT keyboard
 device      vga         # VGA video card driver
 device      sc
-
-# Network
-device      miibus      # MII bus support
-device      re      # RealTek 8139C+/8169/8169S/8110S
 
 # Pseudo devices.
 device      loop        # Network loopback
