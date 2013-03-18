@@ -9,4 +9,5 @@ fi
 if [ "$(logname 2>/dev/null)" != 'root' ]; then
     echo "Disable root login."
     chpass -p \* root
+    chpass -p \* toor
 fi
