@@ -32,6 +32,11 @@ options     INET            # InterNETworking
 options     INET6           # IPv6 communications protocols
 options     SCTP            # Stream Control Transmission Protocol
 
+options     NETGRAPH
+options     NETGRAPH_L2TP
+options     NETGRAPH_MPPC_ENCRYPTION
+options     NETGRAPH_SOCKET
+
 options     NULLFS          # NULL filesystem
 options     GEOM_PART_GPT   # GUID Partition Tables.
 options     GEOM_LABEL      # Provides labelization
