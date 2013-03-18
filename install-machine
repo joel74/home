@@ -20,6 +20,7 @@ trycd() {
 
 copydir() {
     if [ -d $1 ]; then
+        find $1      -type d -print0 | xargs -I{} -0 mkdir -pv /{}
         find $1 -not -type d -print0 | xargs -I{} -0 cp -v {} /{}
     fi
 }
