@@ -30,13 +30,14 @@ trycd() {
 
 copydir() {
     if [ -d $1 ]; then
-        find $1      -type d -print0 | xargs -I{} -0 mkdir -pv /{}
-        find $1 -not -type d -print0 | xargs -I{} -0 cp -v {} /{}
+        find $1 -not -name '.*' -print0 \
+        | xargs -I{} -0 sh -c           \
+          '[ -d {} ] && mkdir -pv /{} || cp -v {} /{}'
     fi
 }
 
 provision_dirs() {
-    echo $1
+    echo === $1
     if trycd $1; then
         copydir etc
         copydir root
