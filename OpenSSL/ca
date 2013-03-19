@@ -1,0 +1,83 @@
+#!/bin/sh
+
+usage() {
+    echo usage: $0 ca/path init \| cert filename \| revoke ID >&2
+    exit 1
+}
+
+ensure_ca_exists() {
+    if [ ! -d $CA ]; then
+        echo directory $CA doesnt exist >&2
+        exit 2
+    fi
+}
+
+init() {
+
+    if [ -e $CA ]; then
+        echo file or directory $CA already exists >&2
+        exit 2
+    fi
+
+    mkdir $CA
+    mkdir $CA/certs
+    mkdir $CA/newcerts
+    mkdir $CA/crl
+    mkdir $CA/private
+
+    touch $CA/index.txt
+    echo 1000 > $CA/crlnumber
+    echo 1000 > $CA/serial
+
+    openssl req -new -x509 -newkey $RSA \
+                -nodes -keyout $CA/private/cakey.pem -out $CA/cacert.pem
+    exit $?
+}
+
+cert() {
+
+    ensure_ca_exists
+
+    if [ -z "$1" ]; then
+        echo certificate filename missing >&2
+        exit 1
+    fi
+
+    for ext in key pem req; do
+        p="$CA/certs/$1.$ext"
+        if [ -e "$p" ]; then
+            echo file $p already exists >&2
+            exit 1
+        fi
+    done
+
+    openssl req -newkey $RSA \
+                -nodes -keyout $CA/certs/$1.key -out $CA/certs/$1.req || exit $?
+
+    (cd $CA && openssl ca -in $CA/certs/$1.req -out $CA/certs/$1.pem; exit $?)
+
+    exit $?
+}
+
+crl() {
+    (
+        cd $CA                              && \
+        openssl ca -gencrl -out $CA/crl.pem && \
+        ln -sf crl.pem $(openssl x509 -hash -noout -in $CA/cacert.pem).r0
+    )
+}
+
+if [ -z "$1" ]; then
+    usage
+fi
+
+RSA=rsa:2048
+CA=$1; shift
+CMD=$1; shift
+
+case $CMD in
+    init) init;;
+    cert) cert $*;;
+     crl) crl $*;;
+       *) usage;;
+esac
