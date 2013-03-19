@@ -113,6 +113,9 @@ if has('extra_search')
     " <Leader>, <Space> hide highlights
     nnoremap <Leader><Space> :noh<CR>
 endif
+"
+" Allow saving of files as sudo when I forgot to start vim using sudo.
+cmap w!! %!sudo tee > /dev/null %
 
 " disable crazy vim regex
 nnoremap / /\v
@@ -121,16 +124,6 @@ vnoremap / /\v
 " tab to matching brackets
 nnoremap <tab> %
 vnoremap <tab> %
-
-" disable arrow keys
-nnoremap <Left> :echoe "Use h"<CR>
-nnoremap <Right> :echoe "Use l"<CR>
-nnoremap <Up> :echoe "Use k"<CR>
-nnoremap <Down> :echoe "Use j"<CR>"
-inoremap <up> <nop>
-inoremap <down> <nop>
-inoremap <left> <nop>
-inoremap <right> <nop>
 
 " move on every wrapped line in wrap mode
 nnoremap j gj
