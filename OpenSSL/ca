@@ -51,10 +51,20 @@ cert() {
         fi
     done
 
-    openssl req -newkey $RSA \
-                -nodes -keyout $CA/certs/$1.key -out $CA/certs/$1.req || exit $?
+    (
+        cd $CA || exit $?
+        openssl req -newkey $RSA \
+                    -nodes -keyout certs/$1.key -out certs/$1.req || exit $?
 
-    (cd $CA && openssl ca -in certs/$1.req -out certs/$1.pem; exit $?)
+        openssl ca -in certs/$1.req -out certs/$1.pem || exit $?
+
+        openssl pkcs12 -export                               \
+                       -in certs/$1.pem  -inkey certs/$1.key \
+                       -out certs/$1.pfx                     \
+                       -name $1
+
+        exit $?
+    )
 
     exit $?
 }
