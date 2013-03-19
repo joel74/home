@@ -54,7 +54,7 @@ cert() {
     openssl req -newkey $RSA \
                 -nodes -keyout $CA/certs/$1.key -out $CA/certs/$1.req || exit $?
 
-    (cd $CA && openssl ca -in $CA/certs/$1.req -out $CA/certs/$1.pem; exit $?)
+    (cd $CA && openssl ca -in certs/$1.req -out certs/$1.pem; exit $?)
 
     exit $?
 }
