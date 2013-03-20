@@ -43,7 +43,7 @@ cert() {
         exit 1
     fi
 
-    for ext in key pem req; do
+    for ext in key pem pfx req; do
         p="$CA/certs/$1.$ext"
         if [ -e "$p" ]; then
             echo file $p already exists >&2
@@ -52,18 +52,21 @@ cert() {
     done
 
     (
-        cd $CA || exit $?
-        openssl req -newkey $RSA \
-                    -nodes -keyout certs/$1.key -out certs/$1.req || exit $?
-
-        openssl ca -in certs/$1.req -out certs/$1.pem || exit $?
-
-        openssl pkcs12 -export                               \
-                       -in certs/$1.pem  -inkey certs/$1.key \
-                       -out certs/$1.pfx                     \
-                       -name $1
-
-        exit $?
+        cd $CA \
+        && openssl req    -newkey $RSA           \
+                          -nodes                 \
+                          -keyout private/$1.key \
+                          -out    certs/$1.req   \
+                                                 \
+        && openssl ca     -in  certs/$1.req      \
+                          -out certs/$1.pem      \
+                                                 \
+        && openssl pkcs12 -export                \
+                          -in    certs/$1.pem    \
+                          -inkey private/$1.key  \
+                          -out   private/$1.pfx  \
+                          -name  $1              \
+        && exit $?
     )
 
     exit $?
