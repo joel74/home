@@ -11,12 +11,21 @@ ensure_group() {
     fi
 }
 
-ensure_member() {
-    pw group mod $1 -m $2
+ensure_svc_user() {
+    if ! pw group show $1 >/dev/null 2>&1; then
+        pw group add -n $1
+    fi
+
+    if ! pw user show $1 >/dev/null 2>&1; then
+        pw user add -n $1                     \
+                    -d /nonexistent           \
+                    -g $1                     \
+                    -s /usr/sbin/nologin
+    fi
 }
 
-ensure_group  vpnusers
-ensure_member vpnusers jachymko
+ensure_svc_user racoon
 
-ensure_group  sshusers
-ensure_member sshusers jachymko
+ensure_group vpnusers
+pw group mod -n vpnusers -m jachymko
+
