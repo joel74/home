@@ -9,12 +9,10 @@ device      pf
 device      pflog
 
 # IPSec support
+device      crypto
+device      enc
 options     IPSEC
 options     IPSEC_NAT_T
-device      crypto
-
-# IPsec interface.
-device      enc
 
 # VirtIO support
 device      virtio      # Generic VirtIO bus (required)
@@ -31,11 +29,6 @@ options     _KPOSIX_PRIORITY_SCHEDULING # POSIX P1003_1B real-time extensions
 options     INET            # InterNETworking
 options     INET6           # IPv6 communications protocols
 options     SCTP            # Stream Control Transmission Protocol
-
-options     NETGRAPH
-options     NETGRAPH_L2TP
-options     NETGRAPH_MPPC_ENCRYPTION
-options     NETGRAPH_SOCKET
 
 options     NULLFS          # NULL filesystem
 options     GEOM_PART_GPT   # GUID Partition Tables.
