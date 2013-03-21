@@ -1,4 +1,0 @@
-#!/bin/sh
-echo PHASE ONE DOWN!
-env
-
