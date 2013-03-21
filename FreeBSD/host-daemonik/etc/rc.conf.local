@@ -1,11 +1,12 @@
-# IP
 hostname="daemonik.jachymko.net"
 ifconfig_vtnet0="inet 37.157.194.41/24"
 defaultrouter="37.157.194.1"
 
-# IPSec
 ipsec_enable="YES"
 ipsec_program="/usr/local/sbin/setkey"
 ipsec_file="/usr/local/etc/racoon/setkey.conf"
+
+pf_enable="YES"
+
 racoon_enable="YES"
 racoon_flags="-l /var/log/racoon.log"
