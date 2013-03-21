@@ -1,0 +1,22 @@
+#!/bin/sh
+
+if [ `id -u` -ne 0 ]; then
+    echo must be root >&2
+    exit 1
+fi
+
+ensure_group() {
+    if ! pw group show $1 >/dev/null 2>&1; then
+        pw group add $1
+    fi
+}
+
+ensure_member() {
+    pw group mod $1 -m $2
+}
+
+ensure_group  vpnusers
+ensure_member vpnusers jachymko
+
+ensure_group  sshusers
+ensure_member sshusers jachymko
