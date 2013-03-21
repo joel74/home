@@ -1,2 +1,3 @@
-mpd5/mpd.secret
-racoon/racoon.psk
+*.key
+*.psk
+*.secret
