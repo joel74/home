@@ -1,12 +1,12 @@
 hostname="daemonik.jachymko.net"
 ifconfig_vtnet0="inet 37.157.194.41/24"
 defaultrouter="37.157.194.1"
-devfs_set_rulesets="/usr/local/etc/racoon/root/dev=devfsrules_basic"
+gateway_enable="YES"
 
+# OpenVPN
+openvpn_interfaces="tun"
+openvpn_enable="YES"
+
+# Packet filter
 pf_enable="YES"
 
-ipsec_enable="YES"
-ipsec_program="/usr/local/sbin/setkey"
-
-racoon_enable="YES"
-racoon_flags="-l /var/log/racoon.log"
