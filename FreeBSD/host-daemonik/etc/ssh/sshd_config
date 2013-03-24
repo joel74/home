@@ -1,6 +1,6 @@
 AllowGroups wheel
 Banner none
-ListenAddress 37.157.194.41:443
+ListenAddress 37.157.194.41
 PasswordAuthentication no
 X11Forwarding no
 
