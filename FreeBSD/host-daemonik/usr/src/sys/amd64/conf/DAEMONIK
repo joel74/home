@@ -1,24 +1,5 @@
 cpu         HAMMER
-ident       DEMONIK
-
-makeoptions DEBUG=-g        # Build kernel with gdb(1) debug symbols
-makeoptions WITH_CTF=1      # Run ctfconvert(1) for DTrace support
-
-# The pf packet filter
-device      pf
-device      pflog
-
-# IPSec support
-device      crypto
-device      enc
-options     IPSEC
-options     IPSEC_NAT_T
-
-# VirtIO support
-device      virtio      # Generic VirtIO bus (required)
-device      virtio_pci  # VirtIO PCI Interface
-device      vtnet       # VirtIO Ethernet device
-device      virtio_blk  # VirtIO Block device
+ident       DAEMONIK
 
 # Make an SMP-capable kernel by default
 options     SMP
@@ -34,25 +15,18 @@ options     NULLFS          # NULL filesystem
 options     GEOM_PART_GPT   # GUID Partition Tables.
 options     GEOM_LABEL      # Provides labelization
 
-options     KTRACE          # ktrace(1) support
-options     STACK           # stack(9) support
 options     PRINTF_BUFR_SIZE=128    # Prevent printf output being interspersed.
-options     AUDIT           # Security event auditing
-options     CAPABILITY_MODE     # Capsicum capability mode
-options     CAPABILITIES        # Capsicum capabilities
-options     MAC         # TrustedBSD MAC Framework
-options     KDTRACE_FRAME       # Ensure frames are compiled in
-options     KDTRACE_HOOKS       # Kernel DTrace hooks
-options     DDB_CTF         # Kernel ELF linker loads CTF data
 options     INCLUDE_CONFIG_FILE     # Include this file in kernel
 
-# Debugging support
-options     KDB         # Enable kernel debugger support.
-options     KDB_TRACE       # Print a stack trace for a panic.
-
-# Bus support.
+# Bus support
 device      acpi
 device      pci
+
+# VirtIO support
+device      virtio      # Generic VirtIO bus (required)
+device      virtio_pci  # VirtIO PCI Interface
+device      virtio_blk  # VirtIO Block device
+device      vtnet       # VirtIO Ethernet device
 
 # Legacy stuff
 device      atkbdc      # AT keyboard controller
@@ -61,12 +35,10 @@ device      vga         # VGA video card driver
 device      sc
 
 # Pseudo devices.
-device      loop        # Network loopback
-device      random      # Entropy device
+device      bpf         # Berkeley Packet Filter (required by pflog)
 device      ether       # Ethernet support
-device      vlan        # 802.1Q VLAN support
+device      loop        # Network loopback
+device      pf          # Packet filter
+device      pflog       # PF logging
+device      random      # Entropy device
 device      tun         # Packet tunnel.
-device      md          # Memory "disks"
-device      gif         # IPv6 and IPv4 tunneling
-device      faith       # IPv6-to-IPv4 relaying (translation)
-device      firmware    # firmware assist module
