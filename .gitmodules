@@ -34,3 +34,6 @@
 [submodule "lib/easy-rsa"]
 	path = lib/easy-rsa
 	url = https://github.com/OpenVPN/easy-rsa.git
+[submodule "lib/vimpager"]
+	path = lib/vimpager
+	url = https://github.com/rkitover/vimpager.git
