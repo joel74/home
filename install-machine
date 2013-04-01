@@ -30,7 +30,7 @@ trycd() {
 
 copydir() {
     if [ -d $1 ]; then
-        find $1 -not -name '.*' -print0 | cpio -p -0 -R root:wheel /
+        find $1 -not -name '.*' -print0 | cpio -0puv -R 0:0 --quiet /
     fi
 }
 
