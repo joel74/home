@@ -56,7 +56,7 @@ zfs_get_pool() {
     while [ ! "${result}"     -a \
               "${dir}" != "." -a \
               "${dir}" != "/" ]; do
-        result=`zfs list -H -o name ${dir} | awk -F/ '{print $1}'`
+        result=`zfs list -H -o name ${dir} 2>/dev/null | awk -F/ '{print $1}'`
         dir=`dirname ${dir}`
     done
 
