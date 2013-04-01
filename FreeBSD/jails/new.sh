@@ -23,13 +23,14 @@ fi
 echo === Cloning ${template} to ${private}
 zfs_create_clone ${template} ${1} ${private}
 
-echo === Creating ${jail}
+echo === Creating ${jail} mountpoints
 mkdir ${jail}
 mkdir ${jail}/dev
+mkdri ${jail}/private
 
 echo === Creating ${fstab}
-echo "${base}\t\t${jail}         nullfs ro 0 0"  > ${fstab}
-echo "${private}\t\t${jail}/private nullfs rw 0 0" >> ${fstab}
+echo "${base}        ${jail}         nullfs ro 0 0"  > ${fstab}
+echo "${private}     ${jail}/private nullfs rw 0 0" >> ${fstab}
 
 echo === Updating ${RCCONF}
 echo "jail_list=\"\${jail_list} ${1}\"" >> ${RCCONF}

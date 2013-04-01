@@ -109,7 +109,8 @@ install_world() {
     chflags schg ${template}/var/empty
 
     # make required directories
-    [ -e ${base}/dev ] || mkdir ${base}/dev
+    [ -e ${base}/dev ]     || mkdir ${base}/dev
+    [ -e ${base}/private ] || mkdir ${base}/private
 }
 
 base=${JAILS}/${JAILBASE}.jailbase
