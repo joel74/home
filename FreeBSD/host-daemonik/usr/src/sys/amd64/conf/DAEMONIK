@@ -1,22 +1,18 @@
 cpu         HAMMER
 ident       DAEMONIK
 
-# Make an SMP-capable kernel by default
-options     SMP
+options     PRINTF_BUFR_SIZE=128    # Prevent printf output being interspersed.
+options     INCLUDE_CONFIG_FILE     # Include this file in kernel
+
+options     SMP             # Make an SMP-capable kernel by default
 options     SCHED_ULE       # ULE scheduler
 options     PREEMPTION      # Enable kernel thread preemption
 options     _KPOSIX_PRIORITY_SCHEDULING # POSIX P1003_1B real-time extensions
 
-options     INET            # InterNETworking
-options     INET6           # IPv6 communications protocols
-options     SCTP            # Stream Control Transmission Protocol
-
+# Filesystem
 options     NULLFS          # NULL filesystem
 options     GEOM_PART_GPT   # GUID Partition Tables.
 options     GEOM_LABEL      # Provides labelization
-
-options     PRINTF_BUFR_SIZE=128    # Prevent printf output being interspersed.
-options     INCLUDE_CONFIG_FILE     # Include this file in kernel
 
 # Bus support
 device      acpi
@@ -32,13 +28,19 @@ device      vtnet       # VirtIO Ethernet device
 device      atkbdc      # AT keyboard controller
 device      atkbd       # AT keyboard
 device      vga         # VGA video card driver
-device      sc
+device      sc          # System console
 
-# Pseudo devices.
+# Networking
+options     INET        # IPv4
+options     INET6       # IPv6
+options     SCTP        # Stream Control Transmission Protocol
+
 device      bpf         # Berkeley Packet Filter (required by pflog)
 device      ether       # Ethernet support
 device      loop        # Network loopback
 device      pf          # Packet filter
 device      pflog       # PF logging
+device      tun         # Packet tunnel (for OpenVPN)
+
+# Pseudo devices
 device      random      # Entropy device
-device      tun         # Packet tunnel.
