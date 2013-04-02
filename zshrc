@@ -8,6 +8,7 @@ setopt prompt_subst
 
 alias la='ls -aFl'
 alias ll='ls -Fl'
+alias gs='git status'
 
 bindkey "^[[A" history-search-backward
 bindkey "^[[B" history-search-forward
