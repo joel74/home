@@ -30,7 +30,7 @@ trycd() {
 
 copydir() {
     if [ -d $1 ]; then
-        find $1 -not -name '.*' -print0 | cpio -0puv -R 0:0 --quiet /
+        find $1 -not -name '.*' -print0 | cpio -0Lpuv -R 0:0 --quiet /
     fi
 }
 
@@ -40,6 +40,7 @@ provision_dirs() {
         copydir etc
         copydir root
         copydir usr
+        copydir var
     fi
 }
 
