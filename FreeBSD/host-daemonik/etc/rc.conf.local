@@ -1,7 +1,7 @@
 hostname="daemonik.jachymko.net"
 
 # IP addresses
-cloned_interfaces="lo1"
+cloned_interfaces="lo1 tun0 tun1"
 defaultrouter="37.157.194.1"
 ifconfig_lo1="inet 10.186.211.1/24"
 ifconfig_vtnet0="inet 37.157.194.41/24"
@@ -14,11 +14,20 @@ pf_enable="YES"
 jail_enable="YES"
 jail_mount_enable="YES"
 jail_devfs_enable="YES"
-jail_devfs_ruleset="100"
+jail_devfs_ruleset="devfsrules_jail"
 jail_list="vpn"
 
 # VPN jail
 jail_vpn_hostname="vpn.jachymko.net"
-jail_vpn_ip="lo1|10.186.211.2"
 jail_vpn_rootdir="/var/jail/vpn"
-jail_vpn_devfs_ruleset="101"
+jail_vpn_devfs_ruleset="devfsrules_vpn_jail"
+
+jail_vpn_ip="lo1|10.186.211.2"
+jail_vpn_ip_multi0="tun0|10.186.212.1 10.186.212.2 mtu 1500 netmask 255.255.255.255"
+jail_vpn_ip_multi1="tun1|10.186.213.1 10.186.213.2 mtu 1500 netmask 255.255.255.255"
+
+jail_vpn_exec_poststart0="route add 10.186.212.0/24 10.186.212.2"
+jail_vpn_exec_poststart1="route add 10.186.213.0/24 10.186.213.2"
+
+jail_vpn_exec_poststop0="route delete 10.186.212.0/24"
+jail_vpn_exec_poststop1="route delete 10.186.213.0/24"
