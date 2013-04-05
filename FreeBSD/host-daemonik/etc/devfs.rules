@@ -6,3 +6,4 @@ add include $devfsrules_unhide_basic
 add include $devfsrules_hide_all
 add include $devfsrules_unhide_basic
 add path tun0 unhide
+add path tun1 unhide
