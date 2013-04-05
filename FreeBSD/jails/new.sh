@@ -10,15 +10,14 @@ RCCONF=${SYSCONFDIR}/rc.conf.local
 
 base=${JAILS}/${JAILBASE}.jailbase
 template=${JAILS}/${JAILBASE}.private
-snapshot=${template}@${1}
 
-jail=${JAILS}/${1}
-private=${JAILS}/${1}.private
+jail=$(ocjail_root ${1})
+private=$(ocjail_private ${1})
 fstab=${SYSCONFDIR}/fstab.${1}
 
-if [ -e ${jail} -o -e ${private} ]; then
-    errex "jail ${jail} already exists"
-fi
+[ -e "${jail}"    ] && errex "directory ${jail} already exists"
+[ -e "${private}" ] && errex "directory ${private} already exists"
+[ -e "${fstab}"   ] && errex "file ${fstab} already exists"
 
 echo === Cloning ${template} to ${private}
 zfs_create_clone ${template} ${1} ${private}
@@ -26,7 +25,7 @@ zfs_create_clone ${template} ${1} ${private}
 echo === Creating ${jail} mountpoints
 mkdir ${jail}
 mkdir ${jail}/dev
-mkdri ${jail}/private
+mkdir ${jail}/private
 
 echo === Creating ${fstab}
 echo "${base}        ${jail}         nullfs ro 0 0"  > ${fstab}

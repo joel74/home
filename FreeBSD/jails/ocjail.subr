@@ -14,6 +14,8 @@ where 'command' is one of the following:
 
     new [ -r <root> ] [ -t <template> ] <jail>
     template [ -r <root> ] [ -t <base> ]
+    mount packages <jail>
+    umount packages <jail>
 
 default root is \"/var/jail\"
 default jail base is \"default\"
@@ -61,4 +63,16 @@ zfs_get_pool() {
     done
 
     echo $result
+}
+
+ocjail_root() {
+    echo "${JAILS}/${1}"
+}
+
+ocjail_private() {
+    echo "${JAILS}/${1}.private"
+}
+
+ocjail_ensure_dir() {
+    [ -d ${1} ] || errex "directory ${1} doesn't exist"
 }

@@ -25,7 +25,7 @@ CMD=$1
 shift
 
 case ${CMD} in
-    new|template)
+    new|template|mount)
         exec env JAILS=${JAILS}        \
                  JAILBASE=${JAILBASE}  \
                  SELFDIR=${SELFDIR}    \
