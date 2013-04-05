@@ -15,7 +15,12 @@ jail_enable="YES"
 jail_mount_enable="YES"
 jail_devfs_enable="YES"
 jail_devfs_ruleset="devfsrules_jail"
-jail_list="vpn"
+jail_list="bt vpn"
+
+# BT jail
+jail_bt_hostname="bt.jachymko.net"
+jail_bt_rootdir="/var/jail/bt"
+jail_bt_ip="lo1|10.186.211.3"
 
 # VPN jail
 jail_vpn_hostname="vpn.jachymko.net"
