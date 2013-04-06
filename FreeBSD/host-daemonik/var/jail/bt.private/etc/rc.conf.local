@@ -1,0 +1,3 @@
+transmission_enable="YES"
+transmission_conf_dir="/private/usr.home/transmission"
+transmission_download_dir="/private/usr.home/transmission"
