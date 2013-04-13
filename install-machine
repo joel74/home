@@ -5,7 +5,7 @@ if [ `id -u` != 0 ]; then
     exit 1
 fi
 
-while getopts ':f' opt; do
+while getopts 'f' opt; do
     case $opt in
         f)  FILES_ONLY=true;;
         \?) echo Unknown option: -$OPTARG >&2; exit 1;;
@@ -29,8 +29,20 @@ trycd() {
 }
 
 copydir() {
+    local logname uid gid
+    logname=$(logname)
+    uid=$(id -u ${logname})
+    gid=$(id -g ${logname})
+
     if [ -d $1 ]; then
-        find $1 -not -name '.*' -print0 | cpio -0puv -R 0:0 --quiet /
+        # copy all files, make them root:wheel owned
+        find $1 -type f -or -type l \
+        | grep -v '.gitignore'      \
+        | cpio -p -dmuv -R 0:0 --quiet /
+
+        # restore ownership for files owned by other users or groups
+        find $1 -not -user ${uid} -or -not -group ${gid} \
+        | xargs -I{} sh -c 'chown -vv $(stat -f "%u:%g" {}) /{}'
     fi
 }
 
