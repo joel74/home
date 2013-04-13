@@ -63,7 +63,7 @@ case "${CMD}" in
 
         if [ ! -e "${private}${pkgconf}" ]; then
             echo ${private}${pkgconf}
-            echo "PACKAGESITE : file:///var/ports/packages" > ${private}${pkgconf} || errex
+            echo "PACKAGESITE : file:///usr/ports/packages" > ${private}${pkgconf} || errex
         fi
 
         echo ${private}${resolvconf}
