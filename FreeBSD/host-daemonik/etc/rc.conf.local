@@ -15,12 +15,17 @@ jail_enable="YES"
 jail_mount_enable="YES"
 jail_devfs_enable="YES"
 jail_devfs_ruleset="devfsrules_jail"
-jail_list="vpn"
+jail_list="unbound vpn"
 
-# BT jail
+# BT jail (not auto-started)
 jail_bt_hostname="bt.jachymko.net"
 jail_bt_rootdir="/var/jail/bt"
 jail_bt_ip="lo1|10.186.211.3"
+
+# unbound jail
+jail_unbound_hostname="unbound.jachymko.net"
+jail_unbound_rootdir="/var/jail/unbound"
+jail_unbound_ip="lo1|10.186.211.4"
 
 # VPN jail
 jail_vpn_hostname="vpn.jachymko.net"
