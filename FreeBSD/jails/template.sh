@@ -1,12 +1,13 @@
 #!/bin/sh
 . "${SELFDIR}/ocjail.subr"
 
+[ $# -eq 0 ] || usage
+
 INSTALL_LOG=/tmp/installworld.log
 WRITABLE_DIRS='etc root tmp usr/local usr/home var'
 
-SRCCONF=${SELFDIR}/default.src.conf
- SRCDIR=/usr/src
-  ZROOT=$(zfs_get_pool ${JAILS})
+SRCDIR=/usr/src
+ ZROOT=$(zfs_get_pool ${JAILS})
 
 # converts usr/local/bin to usr.local.bin
 make_flat_name() {
@@ -87,7 +88,7 @@ install_world() {
     make -C ${SRCDIR}              \
          installworld              \
          DESTDIR=${base}           \
-         SRCCONF=${SRCCONF}        \
+         SRCCONF=${srcconf}        \
          > ${INSTALL_LOG} 2>&1     \
     || errex "installing world failed. see ${INSTALL_LOG}"
 
@@ -116,6 +117,9 @@ install_world() {
 base=${JAILS}/${JAILBASE}.jailbase
 template=${JAILS}/${JAILBASE}.private
 snapshot="before-installworld-$(date '+%Y.%m.%d-%H:%M:%S')"
+srcconf=${SELFDIR}/${JAILBASE}.src.conf
+
+[ -e "${srcconf}" ] || srcconf=${SELFDIR}/default.src.conf
 
 echo === Creating filesystems
 zfs_ensure_dataset ${JAILS}    -o atime=off -o setuid=off

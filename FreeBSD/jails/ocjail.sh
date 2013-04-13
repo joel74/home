@@ -1,7 +1,5 @@
 #!/bin/sh
-
 SELFDIR=$(cd -- $(dirname $0) && pwd)
-
 . "${SELFDIR}/ocjail.subr"
 
 SHX=""
@@ -25,13 +23,15 @@ CMD=$1
 shift
 
 case ${CMD} in
-    new|template|mount)
-        exec env JAILS=${JAILS}        \
-                 JAILBASE=${JAILBASE}  \
-                 SELFDIR=${SELFDIR}    \
-                 /bin/sh ${SHX}        \
-                 ${SELFDIR}/${CMD}.sh $@
-        ;;
-    *)  usage
-        ;;
+    create|destroy)  SCRIPT=create;;
+    template)        SCRIPT=template;;
+    mount|umount)    SCRIPT=mount;;
+    *)               usage;;
 esac
+
+exec env CMD=${CMD}            \
+         JAILS=${JAILS}        \
+         JAILBASE=${JAILBASE}  \
+         SELFDIR=${SELFDIR}    \
+         /bin/sh ${SHX}        \
+         ${SELFDIR}/${SCRIPT}.sh $@

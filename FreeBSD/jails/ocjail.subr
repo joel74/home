@@ -41,12 +41,27 @@ zfs_create_snapshot() {
 }
 
 zfs_create_clone() {
-    local dataset mountpoint
+    local dataset mountpoint snapshot
     dataset="${ZROOT}${1}"
+    snapshot="${dataset}@${2}"
     mountpoint="${ZROOT}${3}"
 
     zfs_create_snapshot ${1} ${2}
-    zfs clone "${dataset}@${2}" ${mountpoint} || errex "failed to clone ${dataset}@${2}."
+    zfs clone ${snapshot} ${mountpoint} || errex "failed to clone ${snapshot}."
+}
+
+zfs_destroy_clone() {
+    local clone snapshot
+    snapshot="${ZROOT}${1}@${2}"
+    clone="${ZROOT}${3}"
+
+    if zfs list ${clone} >/dev/null 2>&1; then
+        zfs destroy -r ${clone} || errex "failed to destroy ${clone}"
+    fi
+
+    if zfs list ${snapshot} >/dev/null 2>&1; then
+        zfs destroy ${snapshot} || errex "failed to destroy ${snapshot}"
+    fi
 }
 
 zfs_get_pool() {
@@ -63,6 +78,10 @@ zfs_get_pool() {
     done
 
     echo $result
+}
+
+is_jail_running() {
+    [ -e "/var/run/jail_${1}.id" ]
 }
 
 ocjail_root() {

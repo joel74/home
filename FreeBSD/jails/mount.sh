@@ -10,6 +10,8 @@ ocjail_ensure_dir ${private}
 
 case "${1}" in
     packages)
+        is_jail_running "${2}" || errex "jail ${2} is not running"
+
         packages=$(echo -e "all:\n\t@echo \$(PACKAGES)\n" | make -f -)
         mountpoint="var/ports/packages"
 
