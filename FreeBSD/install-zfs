@@ -85,9 +85,7 @@ fi
 mkzfs $ZROOT/tmp                 -o atime=off -o exec=on  -o setuid=off -o compression=$COMPRESS
 mkzfs $ZROOT/usr                 -o atime=off -o exec=on  -o setuid=on  -o compression=off
 mkzfs $ZROOT/usr/home            -o atime=off -o exec=on  -o setuid=on  -o compression=off
-mkzfs $ZROOT/usr/ports           -o atime=off -o exec=on  -o setuid=off -o compression=$COMPRESS
-mkzfs $ZROOT/usr/ports/distfiles -o atime=off -o exec=off -o setuid=off -o compression=off
-mkzfs $ZROOT/usr/ports/packages  -o atime=off -o exec=off -o setuid=off -o compression=off
+mkzfs $ZROOT/usr/ports           -o atime=off -o exec=off -o setuid=off -o compression=$COMPRESS
 mkzfs $ZROOT/usr/src             -o atime=off -o exec=off -o setuid=off -o compression=$COMPRESS
 mkzfs $ZROOT/var                 -o atime=off -o exec=off -o setuid=off -o compression=off
 mkzfs $ZROOT/var/crash           -o atime=off -o exec=off -o setuid=off -o compression=$COMPRESS
@@ -96,6 +94,9 @@ mkzfs $ZROOT/var/db/pkg          -o atime=off -o exec=on  -o setuid=off -o compr
 mkzfs $ZROOT/var/empty           -o atime=off -o exec=off -o setuid=off -o compression=off
 mkzfs $ZROOT/var/log             -o atime=off -o exec=off -o setuid=off -o compression=$COMPRESS
 mkzfs $ZROOT/var/mail            -o atime=off -o exec=off -o setuid=off -o compression=$COMPRESS
+mkzfs $ZROOT/var/ports           -o atime=off -o exec=on  -o setuid=off -o compression=$COMPRESS
+mkzfs $ZROOT/var/ports/distfiles -o atime=off -o exec=off -o setuid=off -o compression=off
+mkzfs $ZROOT/var/ports/packages  -o atime=off -o exec=off -o setuid=off -o compression=off
 mkzfs $ZROOT/var/run             -o atime=off -o exec=off -o setuid=off -o compression=off
 mkzfs $ZROOT/var/tmp             -o atime=off -o exec=on  -o setuid=off -o compression=$COMPRESS
 
