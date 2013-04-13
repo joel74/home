@@ -17,6 +17,3 @@ root_rw() {
         chmod -vv 0600 $1
     fi
 }
-
-root_rw /usr/local/etc/racoon/racoon.conf
-root_rw /usr/local/etc/racoon/racoon.psk
