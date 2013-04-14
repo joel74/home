@@ -38,7 +38,7 @@ copydir() {
         # copy all files, make them root:wheel owned
         find $1 -type f -or -type l \
         | grep -v '.gitignore'      \
-        | cpio -p -dmuv -R 0:0 --quiet /
+        | cpio -p -dmv -R 0:0 --quiet /
 
         # restore ownership for files owned by other users or groups
         find $1 -not -user ${uid} -or -not -group ${gid} \
