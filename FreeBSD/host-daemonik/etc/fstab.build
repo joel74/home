@@ -1,0 +1,2 @@
+/var/jail/build.jailbase        /var/jail/build         nullfs ro 0 0
+/var/jail/build.private     /var/jail/build/private nullfs rw 0 0
