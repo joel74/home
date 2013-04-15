@@ -66,10 +66,9 @@ case "${CMD}" in
             echo "PACKAGESITE : file:///usr/ports/packages" > ${private}${pkgconf} || errex
         fi
 
-        echo ${private}${resolvconf}
         if [ -e "${resolvconf}" -a ! -e "${private}${resolvconf}" ]; then
             echo ${private}${resolvconf}
-            cp -v ${resolvconf} ${private}${resolvconf} || errex
+            cp ${resolvconf} ${private}${resolvconf} || errex
         fi
     ;;
     *) usage;;
