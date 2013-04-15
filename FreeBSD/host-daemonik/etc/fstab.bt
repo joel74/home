@@ -1,2 +1,3 @@
-/var/jail/default.jailbase        /var/jail/bt         nullfs ro 0 0
-/var/jail/bt.private     /var/jail/bt/private nullfs rw 0 0
+/var/jail/default.jailbase        /var/jail/bt                   nullfs ro 0 0
+/var/jail/bt.private              /var/jail/bt/private           nullfs rw 0 0
+/downloads                        /var/jail/bt/private/downloads nullfs rw 0 0

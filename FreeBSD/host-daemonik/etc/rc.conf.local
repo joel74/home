@@ -16,7 +16,7 @@ jail_enable="YES"
 jail_mount_enable="YES"
 jail_devfs_enable="YES"
 jail_devfs_ruleset="devfsrules_jail"
-jail_list="unbound vpn"
+jail_list="unbound vpn bt"
 
 # VPN jail
 jail_vpn_hostname="vpn.jachymko.net"
@@ -33,7 +33,7 @@ jail_vpn_exec_poststart1="route add 10.186.213.0/24 10.186.213.2"
 jail_vpn_exec_poststop0="route delete 10.186.212.0/24"
 jail_vpn_exec_poststop1="route delete 10.186.213.0/24"
 
-# BT jail (not auto-started)
+# BT jail
 jail_bt_hostname="bt.jachymko.net"
 jail_bt_rootdir="/var/jail/bt"
 jail_bt_ip="lo1|10.186.211.3"
