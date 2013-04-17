@@ -94,6 +94,7 @@ bind l select-pane -R
 
 # make it easy to grab a pane and put it into the current window
 bind @ command-prompt -p "create pane from:"  "join-pane -s ':%%'"
+bind + break-pane
 
 # easily toggle synchronization (mnemonic: e is for echo)
 bind e setw synchronize-panes on
