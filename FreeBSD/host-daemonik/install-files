@@ -1,0 +1,9 @@
+#!/bin/sh
+SELFDIR=$(cd -- $(dirname $0) && pwd)
+. ${SELFDIR}/../../install-machine.subr
+
+if trycd "${SELFDIR}/var/jail"; then
+    for jail in *.private; do
+        provision_dirs "${SELFDIR}/alljails" "/var/jail/${jail}"
+    done
+fi

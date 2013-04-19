@@ -23,9 +23,3 @@ ensure_svc_user() {
                     -s /usr/sbin/nologin
     fi
 }
-
-ensure_svc_user racoon
-
-ensure_group vpnusers
-pw group mod -n vpnusers -m jachymko
-
