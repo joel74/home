@@ -100,6 +100,20 @@ install_world() {
         -i --run-updates=always    \
     || errex "mergemaster failed"
 
+    make -C ${SRCDIR}              \
+         -DBATCH_DELETE_OLD_FILES  \
+         DESTDIR=${base}           \
+         SRCCONF=${srcconf}        \
+         delete-old                \
+    || errex "delete-old failed."
+
+    make -C ${SRCDIR}              \
+         -DBATCH_DELETE_OLD_FILES  \
+         DESTDIR=${base}           \
+         SRCCONF=${srcconf}        \
+         delete-old-libs           \
+    || errex "delete-old-libs failed."
+
     # must remove schg flag to move the dir
     [ -e ${base}/var/empty ] && chflags noschg ${base}/var/empty
 
