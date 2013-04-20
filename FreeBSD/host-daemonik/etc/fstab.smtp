@@ -1,0 +1,2 @@
+/var/jail/default.jailbase        /var/jail/smtp         nullfs ro 0 0
+/var/jail/smtp.private     /var/jail/smtp/private nullfs rw 0 0
