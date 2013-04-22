@@ -9,6 +9,8 @@ ifconfig_vtnet0="inet 37.157.194.41/24"
 # Host services
 gateway_enable="YES"
 nginx_enable="YES"
+openvpn_enable="YES"
+openvpn_tcp_enable="YES"
 pf_enable="YES"
 
 # Jails
@@ -16,22 +18,7 @@ jail_enable="YES"
 jail_mount_enable="YES"
 jail_devfs_enable="YES"
 jail_devfs_ruleset="devfsrules_jail"
-jail_list="unbound vpn smtp bt"
-
-# VPN jail
-jail_vpn_hostname="vpn.jachymko.net"
-jail_vpn_rootdir="/var/jail/vpn"
-jail_vpn_devfs_ruleset="devfsrules_vpn_jail"
-
-jail_vpn_ip="lo1|10.186.211.2"
-jail_vpn_ip_multi0="tun0|10.186.212.1 10.186.212.2 mtu 1500 netmask 255.255.255.255"
-jail_vpn_ip_multi1="tun1|10.186.213.1 10.186.213.2 mtu 1500 netmask 255.255.255.255"
-
-jail_vpn_exec_poststart0="route add 10.186.212.0/24 10.186.212.2"
-jail_vpn_exec_poststart1="route add 10.186.213.0/24 10.186.213.2"
-
-jail_vpn_exec_poststop0="route delete 10.186.212.0/24"
-jail_vpn_exec_poststop1="route delete 10.186.213.0/24"
+jail_list="unbound smtp bt"
 
 # BT jail
 jail_bt_hostname="bt.jachymko.net"
