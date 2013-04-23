@@ -12,6 +12,7 @@ nginx_enable="YES"
 openvpn_enable="YES"
 openvpn_tcp_enable="YES"
 pf_enable="YES"
+unbound_enable="YES"
 
 # Jails
 jail_enable="YES"
