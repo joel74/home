@@ -1,2 +1,0 @@
-/var/jail/default.jailbase        /var/jail/unbound         nullfs ro 0 0
-/var/jail/unbound.private     /var/jail/unbound/private nullfs rw 0 0
