@@ -13,31 +13,3 @@ openvpn_enable="YES"
 openvpn_tcp_enable="YES"
 pf_enable="YES"
 unbound_enable="YES"
-
-# Jails
-jail_enable="YES"
-jail_mount_enable="YES"
-jail_devfs_enable="YES"
-jail_devfs_ruleset="devfsrules_jail"
-jail_list="unbound smtp bt"
-
-# BT jail
-jail_bt_hostname="bt.jachymko.net"
-jail_bt_rootdir="/var/jail/bt"
-jail_bt_ip="lo1|10.186.211.3"
-
-# unbound jail
-jail_unbound_hostname="unbound.jachymko.net"
-jail_unbound_rootdir="/var/jail/unbound"
-jail_unbound_ip="lo1|10.186.211.4"
-
-# smtp jail
-jail_smtp_hostname="smtp.jachymko.net"
-jail_smtp_rootdir="/var/jail/smtp"
-jail_smtp_ip="lo1|10.186.211.5"
-
-# build jail (not auto-started)
-jail_build_hostname="build.jachymko.net"
-jail_build_rootdir="/var/jail/build"
-jail_build_ip="lo1|10.186.211.6"
-
