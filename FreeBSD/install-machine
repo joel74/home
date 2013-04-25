@@ -13,4 +13,3 @@ fi
 cd $(dirname $0)
 
 ./ports $1
-./harden-machine $1
