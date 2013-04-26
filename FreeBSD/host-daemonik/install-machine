@@ -23,3 +23,6 @@ ensure_svc_user() {
                     -s /usr/sbin/nologin
     fi
 }
+
+newaliases
+service smtpd restart
