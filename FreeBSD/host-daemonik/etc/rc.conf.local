@@ -10,6 +10,7 @@ ifconfig_vtnet0="inet 37.157.194.41/24"
 gateway_enable="YES"
 nginx_enable="YES"
 pf_enable="YES"
+smtpd_enable="YES"
 unbound_enable="YES"
 
 # OpenVPN
