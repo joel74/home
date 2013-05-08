@@ -24,8 +24,4 @@ ensure_svc_user() {
     fi
 }
 
-ensure_svc_user racoon
-
-ensure_group vpnusers
-pw group mod -n vpnusers -m jachymko
-
+newaliases

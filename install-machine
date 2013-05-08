@@ -1,11 +1,9 @@
 #!/bin/sh
 
-if [ `id -u` != 0 ]; then
-    echo Must be root >&2
-    exit 1
-fi
+JACHYMKO=$(cd -- $(dirname $0) && pwd -P)
+. ${JACHYMKO}/install-machine.subr
 
-while getopts ':f' opt; do
+while getopts 'f' opt; do
     case $opt in
         f)  FILES_ONLY=true;;
         \?) echo Unknown option: -$OPTARG >&2; exit 1;;
@@ -15,7 +13,6 @@ shift $((OPTIND-1))
 
 UNAME=$(uname)
 HOSTNAME=${1-$(hostname -s)}
-JACHYMKO=$(cd -- $(dirname $0) && pwd -P)
 
 if [ -z "$HOSTNAME" ]; then
     echo usage: $0 [-f] [hostname] >&2
@@ -24,35 +21,12 @@ if [ -z "$HOSTNAME" ]; then
     exit 1
 fi
 
-trycd() {
-    cd $1 >/dev/null 2>&1
-}
-
-copydir() {
-    if [ -d $1 ]; then
-        find $1 -not -name '.*' -print0 | cpio -0puv -R 0:0 --quiet /
-    fi
-}
-
-provision_dirs() {
-    echo === $1
-    if trycd $1; then
-        copydir etc
-        copydir root
-        copydir usr
-        copydir var
-    fi
-}
-
-provision_script() {
-    if [ -x "$1/$2" ]; then
-        $1/$2 $HOSTNAME
-    fi
-}
-
 # Copy all platform- and host-specific files
 provision_dirs "$JACHYMKO/$UNAME"
 provision_dirs "$JACHYMKO/$UNAME/host-$HOSTNAME"
+
+provision_script "$JACHYMKO/$UNAME"                install-files
+provision_script "$JACHYMKO/$UNAME/host-$HOSTNAME" install-files
 
 if [ -n "$FILES_ONLY" ]; then
     exit 0

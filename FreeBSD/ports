@@ -103,6 +103,10 @@ elif [ -d "$SELFDIR/host-$1" ]; then
         portsnap extract update || exit $EPORTSNAP
     fi
 
+    if [ ! -x "$(which pkg-static)" ]; then
+        make -C ${PORTSDIR}/ports-mgmt/pkg -DBATCH install clean || exit $EMAKE
+    fi
+
     for tgt in $TARGETS; do
         do_target $tgt
     done

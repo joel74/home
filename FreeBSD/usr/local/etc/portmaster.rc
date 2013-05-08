@@ -1,0 +1,11 @@
+# Always delete stale distfiles without prompting (-d)
+ALWAYS_SCRUB_DISTFILES=dopt
+
+# Be verbose (-v)
+PM_VERBOSE=vopt
+
+# Install packages for build-only dependencies (--packages-build)
+PM_PACKAGES_BUILD=pmp_build
+
+# Delete build-only dependencies when finished (--delete-build-only)
+PM_DEL_BUILD_ONLY=pm_dbo
