@@ -1,0 +1,5 @@
+bwn_v4_ucode_load="YES"
+if_bwn_load="YES"
+zfs_load="YES"
+
+vfs.root.mountfrom="zfs:zroot"

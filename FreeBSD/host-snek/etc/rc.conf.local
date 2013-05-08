@@ -1,0 +1,5 @@
+hostname="snek"
+
+allscreens_flags="MODE_354"
+wlans_bwn0="wlan0"
+ifconfig_wlan0="WPA DHCP mode 11g country CZ"
