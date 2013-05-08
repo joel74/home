@@ -25,4 +25,3 @@ ensure_svc_user() {
 }
 
 newaliases
-service smtpd restart

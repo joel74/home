@@ -13,3 +13,5 @@ fi
 cd $(dirname $0)
 
 ./ports $1
+
+make -C /etc/mail
