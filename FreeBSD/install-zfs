@@ -51,11 +51,13 @@ fi
 # ============================================================================================
 
 mkzfs() {
-    mountpoint=$1
-    shift
+    local mountpoint quota
 
-    echo "zfs create $mountpoint"
-    zfs create $* $mountpoint
+    mountpoint=$1; shift
+    quota=$1; shift
+
+    echo "zfs create $mountpoint $quota"
+    zfs create -o atime=off -o quota=$quota $* $mountpoint
 }
 
 # Try to enable lz4 compression
@@ -82,22 +84,22 @@ if [ $SWAP ]; then
     mkzfs $ZROOT/swap -o checksum=off -o org.freebsd:swap=on -V $SWAP
 fi
 
-mkzfs $ZROOT/tmp                 -o atime=off -o exec=on  -o setuid=off -o compression=$COMPRESS
-mkzfs $ZROOT/usr                 -o atime=off -o exec=on  -o setuid=on  -o compression=off
-mkzfs $ZROOT/usr/home            -o atime=off -o exec=on  -o setuid=on  -o compression=off
-mkzfs $ZROOT/usr/ports           -o atime=off -o exec=on  -o setuid=off -o compression=$COMPRESS
-mkzfs $ZROOT/usr/ports/distfiles -o atime=off -o exec=off -o setuid=off -o compression=off
-mkzfs $ZROOT/usr/ports/packages  -o atime=off -o exec=off -o setuid=off -o compression=off
-mkzfs $ZROOT/usr/src             -o atime=off -o exec=off -o setuid=off -o compression=$COMPRESS
-mkzfs $ZROOT/var                 -o atime=off -o exec=off -o setuid=off -o compression=off
-mkzfs $ZROOT/var/crash           -o atime=off -o exec=off -o setuid=off -o compression=$COMPRESS
-mkzfs $ZROOT/var/db              -o atime=off -o exec=off -o setuid=off -o compression=$COMPRESS
-mkzfs $ZROOT/var/db/pkg          -o atime=off -o exec=on  -o setuid=off -o compression=$COMPRESS
-mkzfs $ZROOT/var/empty           -o atime=off -o exec=off -o setuid=off -o compression=off
-mkzfs $ZROOT/var/log             -o atime=off -o exec=off -o setuid=off -o compression=$COMPRESS
-mkzfs $ZROOT/var/mail            -o atime=off -o exec=off -o setuid=off -o compression=$COMPRESS
-mkzfs $ZROOT/var/run             -o atime=off -o exec=off -o setuid=off -o compression=off
-mkzfs $ZROOT/var/tmp             -o atime=off -o exec=on  -o setuid=off -o compression=$COMPRESS
+mkzfs $ZROOT/tmp                  256M -o exec=on  -o setuid=off -o compression=$COMPRESS
+mkzfs $ZROOT/usr                 8192M -o exec=on  -o setuid=on  -o compression=off
+mkzfs $ZROOT/usr/home             256M -o exec=on  -o setuid=off -o compression=off
+mkzfs $ZROOT/usr/ports           1024M -o exec=on  -o setuid=off -o compression=$COMPRESS
+mkzfs $ZROOT/usr/ports/distfiles  256M -o exec=off -o setuid=off -o compression=off
+mkzfs $ZROOT/usr/ports/packages   256M -o exec=off -o setuid=off -o compression=off
+mkzfs $ZROOT/usr/src              512M -o exec=off -o setuid=off -o compression=$COMPRESS
+mkzfs $ZROOT/var                 8192M -o exec=off -o setuid=off -o compression=off
+mkzfs $ZROOT/var/crash           8192M -o exec=off -o setuid=off -o compression=$COMPRESS
+mkzfs $ZROOT/var/db               256M -o exec=off -o setuid=off -o compression=$COMPRESS
+mkzfs $ZROOT/var/db/pkg             4M -o exec=on  -o setuid=off -o compression=$COMPRESS
+mkzfs $ZROOT/var/empty             32K -o exec=off -o setuid=off -o compression=off
+mkzfs $ZROOT/var/log              256M -o exec=off -o setuid=off -o compression=$COMPRESS
+mkzfs $ZROOT/var/mail              16M -o exec=off -o setuid=off -o compression=$COMPRESS
+mkzfs $ZROOT/var/run               16M -o exec=off -o setuid=off -o compression=off
+mkzfs $ZROOT/var/tmp              256M -o exec=on  -o setuid=off -o compression=$COMPRESS
 
 # ============================================================================================
 # FreeBSD Installation
@@ -106,7 +108,7 @@ mkzfs $ZROOT/var/tmp             -o atime=off -o exec=on  -o setuid=off -o compr
 cd $DESTDIR
 
 # Install FreeBSD
-for file in base.txz kernel.txz doc.txz; do
+for file in base.txz kernel.txz; do
     echo "Extracting $file to $DESTDIR"
     tar -xpf $DISTDIR/$file
 done
