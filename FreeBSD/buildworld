@@ -1,0 +1,10 @@
+#!/bin/sh
+
+SRC=/usr/src
+LOG=/var/log/buildworld.log
+
+if [ -e $LOG ]; then
+    rm $LOG
+fi
+
+make -C ${SRC} buildworld 2>&1 | tee $LOG

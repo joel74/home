@@ -1,0 +1,3 @@
+#!/bin/sh
+tar -cJf /data/temp/usr.obj.txz /usr/obj
+tar -cJf /data/temp/usr.src.txz /usr/src

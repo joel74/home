@@ -1,0 +1,18 @@
+#!/bin/sh
+
+if [ -n "${1}" ]; then
+    KERNCONF=${1}
+else
+    KERNCONF=$(hostname -s | tr '[:lower:]' '[:upper:]')
+fi
+
+SRC=/usr/src
+MACHINE=$(uname -m)
+KERNCONF_PATH=${SRC}/sys/${MACHINE}/conf/${KERNCONF}
+LOG=/var/log/buildkernel-${KERNCONF}.log
+
+if [ -e $LOG ]; then
+    rm $LOG
+fi
+
+make -C ${SRC} KERNCONF=${KERNCONF} buildkernel 2>&1 | tee $LOG
