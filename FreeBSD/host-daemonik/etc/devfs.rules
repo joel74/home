@@ -1,9 +1,0 @@
-[devfsrules_jail=100]
-add include $devfsrules_hide_all
-add include $devfsrules_unhide_basic
-
-[devfsrules_vpn_jail=101]
-add include $devfsrules_hide_all
-add include $devfsrules_unhide_basic
-add path tun0 unhide
-add path tun1 unhide
