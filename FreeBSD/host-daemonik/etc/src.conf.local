@@ -1,2 +1,1 @@
-WITHOUT_LEGACY_CONSOLE=
-WITHOUT_SYSCONS=
+.include </etc/src.conf.virtual>
