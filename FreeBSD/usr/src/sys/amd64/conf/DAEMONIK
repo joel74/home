@@ -33,7 +33,6 @@ device      sc          # System console
 # Networking
 options     INET        # IPv4
 options     INET6       # IPv6
-options     SCTP        # Stream Control Transmission Protocol
 
 device      bpf         # Berkeley Packet Filter (required by pflog)
 device      ether       # Ethernet support
