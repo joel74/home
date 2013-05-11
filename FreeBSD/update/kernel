@@ -8,6 +8,7 @@ fi
 
 SRC=/usr/src
 MACHINE=$(uname -m)
+CPUS=$(sysctl -n kern.smp.cpus)
 KERNCONF_PATH=${SRC}/sys/${MACHINE}/conf/${KERNCONF}
 LOG=/var/log/buildkernel-${KERNCONF}.log
 
@@ -15,4 +16,4 @@ if [ -e $LOG ]; then
     rm $LOG
 fi
 
-make -C ${SRC} KERNCONF=${KERNCONF} buildkernel 2>&1 | tee $LOG
+make -C ${SRC} -j $((CPUS*2)) KERNCONF=${KERNCONF} buildkernel 2>&1 | tee $LOG

@@ -2,9 +2,10 @@
 
 SRC=/usr/src
 LOG=/var/log/buildworld.log
+CPUS=$(sysctl -n kern.smp.cpus)
 
 if [ -e $LOG ]; then
     rm $LOG
 fi
 
-make -C ${SRC} buildworld 2>&1 | tee $LOG
+make -C ${SRC} -j $((CPUS*2)) buildworld 2>&1 | tee $LOG
