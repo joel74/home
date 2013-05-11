@@ -1,0 +1,17 @@
+#!/bin/sh
+
+SRC=/usr/src
+SRCCONFLOCAL=/etc/src.conf.local
+LOG=/var/log/installworld.log
+
+if [ -e ${SRCCONFLOCAL} ]; then
+    SRCCONF="SRCCONF=${SRCCONFLOCAL}"
+fi
+
+if [ -e $LOG ]; then
+    rm $LOG
+fi
+
+make -C ${SRC} ${SRCCONF} installworld 2>&1 | tee $LOG &&
+make -C ${SRC} ${SRCCONF} delete-old   2>&1 | tee $LOG
+
