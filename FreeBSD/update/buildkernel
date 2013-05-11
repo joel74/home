@@ -1,0 +1,9 @@
+#!/bin/sh
+SRC=/usr/src
+LOG=/var/log/buildkernel.log
+
+if [ -e $LOG ]; then
+    rm $LOG
+fi
+
+make -C ${SRC} buildkernel 2>&1 | tee $LOG
