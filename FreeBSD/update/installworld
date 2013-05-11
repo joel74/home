@@ -1,11 +1,11 @@
 #!/bin/sh
 
 SRC=/usr/src
-SRCCONFLOCAL=/etc/src.conf.local
+CONF=/etc/src.conf.installworld
 LOG=/var/log/installworld.log
 
-if [ -e ${SRCCONFLOCAL} ]; then
-    SRCCONF="SRCCONF=${SRCCONFLOCAL}"
+if [ -e ${CONF} ]; then
+    SRCCONF="SRCCONF=${CONF}"
 fi
 
 if [ -e $LOG ]; then
