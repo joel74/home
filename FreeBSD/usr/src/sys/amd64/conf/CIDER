@@ -1,0 +1,46 @@
+cpu         HAMMER
+ident       CIDER
+
+options     PRINTF_BUFR_SIZE=128    # Prevent printf output being interspersed.
+options     INCLUDE_CONFIG_FILE     # Include this file in kernel
+
+options     SMP             # Make an SMP-capable kernel by default
+options     SCHED_ULE       # ULE scheduler
+options     PREEMPTION      # Enable kernel thread preemption
+options     _KPOSIX_PRIORITY_SCHEDULING # POSIX P1003_1B real-time extensions
+
+# Filesystem
+options     NULLFS          # NULL filesystem
+options     GEOM_PART_GPT   # GUID Partition Tables.
+options     GEOM_LABEL      # Provides labelization
+
+# Bus support
+device      acpi
+device      pci
+
+# Hardware
+device      ahci
+device      ata
+options     ATA_CAM         # Handle legacy controllers with CAM
+options     ATA_STATIC_ID   # Static device numbering
+device      cpufreq
+device      em
+
+# Legacy stuff
+device      atkbdc      # AT keyboard controller
+device      atkbd       # AT keyboard
+device      vga         # VGA video card driver
+device      sc          # System console
+
+# Networking
+options     INET        # IPv4
+options     INET6       # IPv6
+
+device      bpf         # Berkeley Packet Filter (required by pflog)
+device      ether       # Ethernet support
+device      loop        # Network loopback
+device      pf          # Packet filter
+device      pflog       # PF logging
+
+# Pseudo devices
+device      random      # Entropy device
