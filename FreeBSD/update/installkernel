@@ -1,0 +1,13 @@
+#!/bin/sh
+SRC=/usr/src
+LOG=/var/log/installkernel.log
+
+if [ -e $LOG ]; then
+    rm $LOG
+fi
+
+if [ -n "${1}" ]; then
+    KERNCONF="KERNCONF=${1}"
+fi
+
+make -C ${SRC} ${KERNCONF} installkernel 2>&1 | tee $LOG
