@@ -2,9 +2,8 @@ include     JACHYMKO
 ident       CIDER
 
 # Hardware
-device      ahci
-device      ata
-options     ATA_CAM         # Handle legacy controllers with CAM
-options     ATA_STATIC_ID   # Static device numbering
-device      cpufreq
-device      em
+device      ahci            # AHCI-compatible SATA controllers
+device      cpufreq         # CPU frequency control
+device      da              # Direct Access (disks)
+device      em              # Intel PRO/1000 Gigabit Ethernet Family
+device      scbus           # SCSI bus (required for ATA/SCSI)
