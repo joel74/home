@@ -13,6 +13,9 @@ options     NULLFS          # NULL filesystem
 options     GEOM_PART_GPT   # GUID Partition Tables.
 options     GEOM_LABEL      # Provides labelization
 
+options     NFSCL           # New Network Filesystem Client
+options     NFSD            # New Network Filesystem Server
+
 # Bus support
 device      acpi
 device      pci
