@@ -1,9 +1,8 @@
 #!/bin/sh
 
-CSUP=/usr/bin/csup
 SUPFILE=/root/stable-supfile
 THISDIR=$(cd -- $(dirname $0) && pwd)
 
-${CSUP} ${SUPFILE}    && \
-${THISDIR}/buildworld && \
-${THISDIR}/buildkernel
+csup ${SUPFILE}        || exit
+${THISDIR}/buildworld  || exit
+${THISDIR}/buildkernel || exit
