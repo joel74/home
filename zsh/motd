@@ -4,7 +4,7 @@
 uname -v && echo
 
 # and who's been here lately
-[[ -x `which lastlogin` ]] && lastlogin && echo
+[ -x "`which lastlogin`" ] && lastlogin && echo
 
 # say somenthing nice. or offensive.
-[[ -x `which fortune` ]] && fortune -a && echo
+[ -x "`which fortune`" ] && fortune -a && echo
