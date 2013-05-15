@@ -5,7 +5,6 @@ bind r source-file ~/.jachymko/tmux/tmux.conf.master
 
 # change bind key to M-C-a
 set -g prefix M-C-a
-
 bind-key a send-prefix
 
 # keybindings to make resizing easier
@@ -25,9 +24,14 @@ bind-key -n M-C-l next
 bind-key -n M-C-n select-pane -t :.-
 bind-key -n M-C-p select-pane -t :.+
 
+set -g status-position top
+
+set -g status-left ''
+set -g status-left-length 0
+
 # show iTunes info and date time
 set -g status-right '#(~/.jachymko/tmux/statusright.master) %Y-%m-%d %H:%M'
-set -g default-command 'reattach-to-user-namespace -l zsh'
+set -g default-command '/usr/local/bin/reattach-to-user-namespace -l /usr/local/bin/zsh'
 
 # Toggle mouse on with M-C-a m
 bind m \
@@ -45,8 +49,3 @@ bind M \
   set -g mouse-select-window off \;\
   display 'Mouse: OFF'
 
-set -g base-index 1
-new-session -s jachymko -n shell
-split-window -t jachymko:shell -h
-new-window -t jachymko -n daemonik 'ssh -p 3715 37.157.194.41'
-select-window -t jachymko:shell
