@@ -2,7 +2,7 @@
 
 typeset -grx JACHYMKO=`echo ~/.jachymko(:A)`
 
-typeset -gxU PATH=$JACHYMKO/bin:$HOME/.rvm/bin:$PATH
+typeset -gxU PATH=/usr/local/bin:/usr/bin:/bin:/usr/local/sbin:/usr/sbin:/sbin
 typeset -gx  PAGER=less
 typeset -gx  VISUAL=vim
 typeset -gx  EDITOR=$VISUAL
