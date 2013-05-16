@@ -1,0 +1,56 @@
+#!/usr/bin/env zsh
+
+TMUX_DIR="${HOME}/.jachymko/tmux"
+MASTER_CONF="${TMUX_DIR}/tmux.conf.master"
+
+create_default_session() {
+    ${=1} new-session -As default \;\
+          split-window -dh
+}
+
+create_master_session() {
+    ${=1} new-session -dn ${HOST} -s master \;\
+          new-window  -dn daemonik 'ssh jachymko.net'
+}
+
+ensure_session() {
+    if ! ${=1} has-session -t ${2}; then
+        eval "create_${2}_session"
+    fi
+    exec ${=1} attach-session -t ${2}
+}
+
+
+tmux=`which tmux`
+master_tmux="${tmux} -L master -f ${MASTER_CONF}"
+reattach=`which reattach-to-user-namespace`
+
+if [ -x "${reattach}" ]; then
+    reattach="${reattach} -l "
+fi
+
+if [ -x "${tmux}" ]; then # tmux installed, yay!
+
+    if [ -n "${SSH_CLIENT}" ]; then
+
+        # ssh: attach to an existing tmux session
+        # or start a new one
+        ensure_session ${tmux} default
+
+    elif [ -z "${TMUX}" ]; then
+
+        ensure_session ${tmux_master} master
+
+    elif [ -z "${MASTER_TMUX}" ]; then
+
+        # unset ${TMUX} to enable a nested session
+        MASTER_TMUX=${TMUX}; unset TMUX
+
+        # start server and set environment
+        ${tmux} start-server                                        \;\
+                set-environment -g MASTER_TMUX ${MASTER_TMUX}       \;\
+                set-option -g default-command "${reattach}${SHELL}"
+
+        ensure_session ${tmux} default
+    fi
+fi
