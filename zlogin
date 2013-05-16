@@ -18,10 +18,11 @@ multiplexer() {
 
             # ssh: attach to an existing tmux session
             # or start a new one
-            exec ${tmux} new-session -As default
-        fi
+            ${tmux} new-session -As default
 
-        if [ -z "${TMUX}" ]; then
+            # keep the session in case tmux dies or something
+
+        elif [ -z "${TMUX}" ]; then
 
             # local terminal and not inside tmux
             # start a session and create default windows
@@ -33,9 +34,8 @@ multiplexer() {
 
             # start a client
             exec ${=master_tmux} attach-session -t master
-        fi
 
-        if [ -z "${MASTER_TMUX}" ]; then
+        elif [ -z "${MASTER_TMUX}" ]; then
             # unset ${TMUX} to enable a nested session
             MASTER_TMUX=${TMUX}; unset TMUX
             # start/attach the local session
