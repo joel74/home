@@ -1,37 +1,49 @@
 multiplexer() {
-    local MASTER_CONF tmux reattach
+    local TMUX_DIR MASTER_CONF tmux master_tmux reattach
 
-    MASTER_CONF="${HOME}/.jachymko/tmux/tmux.conf.master"
-    reattach=`which reattach-to-user-namespace`
+    TMUX_DIR="${HOME}/.jachymko/tmux"
+    MASTER_CONF="${TMUX_DIR}/tmux.conf.master"
+
     tmux=`which tmux`
+    master_tmux="${tmux} -L master -f ${MASTER_CONF}"
+    reattach=`which reattach-to-user-namespace`
 
     if [ -x "${reattach}" ]; then
         reattach="${reattach} -l "
     fi
 
-    if [ -x "${tmux}" ]; then
+    if [ -x "${tmux}" ]; then # tmux installed, yay!
+
         if [ -n "${SSH_CLIENT}" ]; then
 
             # ssh: attach to an existing tmux session
             # or start a new one
             exec ${tmux} new-session -As default
+        fi
 
-        elif [ -z "${TMUX}" ]; then
+        if [ -z "${TMUX}" ]; then
 
-            # local terminal and not inside tmux, start/attach the master
-            exec ${tmux} -L master -f ${MASTER_CONF} new-session -As master
+            # local terminal and not inside tmux
+            # start a session and create default windows
+            if ! ${=master_tmux} has-session -t master; then
 
-        elif [ -z "${MASTER_TMUX}" ]; then
-            # running in the master tmux,
-            # mark it so and start/attach the local session
+                ${=master_tmux} new-session -dn ${HOST} -s master \;\
+                                new-window  -dn daemonik 'ssh jachymko.net'
+            fi
 
+            # start a client
+            exec ${=master_tmux} attach-session -t master
+        fi
+
+        if [ -z "${MASTER_TMUX}" ]; then
+            # unset ${TMUX} to enable a nested session
             MASTER_TMUX=${TMUX}; unset TMUX
-
-            exec ${tmux} start-server \;\
-                         set-environment -g MASTER_TMUX ${MASTER_TMUX} \;\
-                         new-session -As default \;\
-                         set-option -g default-command "${reattach}${SHELL}"
-
+            # start/attach the local session
+            exec ${tmux} start-server                                        \;\
+                         set-environment -g MASTER_TMUX ${MASTER_TMUX}       \;\
+                         set-option -g default-command "${reattach}${SHELL}" \;\
+                         new-session -As default                             \;\
+                         split-window -dh
         fi
     fi
 }
