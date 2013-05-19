@@ -1,56 +1,60 @@
 #!/usr/bin/env zsh
 
-TMUX_DIR="${HOME}/.jachymko/tmux"
-MASTER_CONF="${TMUX_DIR}/tmux.conf.master"
+    TMUX_DIR="${HOME}/.jachymko/tmux"
+DEFAULT_CONF="${TMUX_DIR}/tmux.conf"
+ MASTER_CONF="${TMUX_DIR}/tmux.conf.master"
+ REATTACH_SH="${TMUX_DIR}/reattached-shell"
 
-create_default_session() {
-    ${=1} new-session -As default \;\
-          split-window -dh
-}
-
-create_master_session() {
-    ${=1} new-session -dn ${HOST} -s master \;\
-          new-window  -dn daemonik 'ssh jachymko.net'
-}
-
-ensure_session() {
-    if ! ${=1} has-session -t ${2}; then
-        eval "create_${2}_session"
-    fi
-    exec ${=1} attach-session -t ${2}
-}
-
-
-tmux=`which tmux`
-master_tmux="${tmux} -L master -f ${MASTER_CONF}"
-reattach=`which reattach-to-user-namespace`
-
-if [ -x "${reattach}" ]; then
-    reattach="${reattach} -l "
-fi
+ session='default'
+  config="${DEFAULT_CONF}"
+reattach="${REATTACH_SH}"
+    tmux=`which tmux`
 
 if [ -x "${tmux}" ]; then # tmux installed, yay!
 
-    if [ -n "${SSH_CLIENT}" ]; then
-
-        # ssh: attach to an existing tmux session
-        # or start a new one
-        ensure_session ${tmux} default
-
-    elif [ -z "${TMUX}" ]; then
-
-        ensure_session ${tmux_master} master
-
-    elif [ -z "${MASTER_TMUX}" ]; then
-
-        # unset ${TMUX} to enable a nested session
-        MASTER_TMUX=${TMUX}; unset TMUX
-
-        # start server and set environment
-        ${tmux} start-server                                        \;\
-                set-environment -g MASTER_TMUX ${MASTER_TMUX}       \;\
-                set-option -g default-command "${reattach}${SHELL}"
-
-        ensure_session ${tmux} default
+    if [ -n "${PARENT_TMUX}" ]; then
+        return 0
     fi
+
+    if [ -z "${TMUX}" -a -z "${SSH_CLIENT}" ]; then
+        session='master'
+        config=${MASTER_CONF}
+
+        # use independent server
+        tmux="${tmux} -L master"
+
+        # outer tmux doesnt need to wrap shells
+        # with reattach-to-user-namespace
+        reattach=''
+    fi
+
+    if [ -n "${TMUX}" ]; then
+        PARENT_TMUX=${TMUX}
+        unset TMUX
+        export PARENT_TMUX TMUX
+    fi
+
+    # build the command and then execute it as an atomic unit.
+    # otherwise, the session would get created without the modified
+    # environment
+    cmds=''
+
+    if ! ${=tmux} has-session -t ${session} 2> /dev/null; then
+        cmds+="start-server; "
+
+        # let the inner shells know not to spawn another master tmux
+        if [ -n "${PARENT_TMUX}" ]; then
+            cmds+="set-environment -g PARENT_TMUX '${PARENT_TMUX}'; "
+        fi
+
+        # fix pasteboard access for shells running in the inner tmux
+        if [ -x "${reattach}" ]; then
+            cmds+="set-option -g default-command '${reattach}'; "
+        fi
+    fi
+
+    cmds+="new-session -As ${session}"
+    echo "${=tmux} -f ${config} ${(z)cmds}"
+    trace
+    ${=tmux} -f ${config} ${(z)cmds}
 fi

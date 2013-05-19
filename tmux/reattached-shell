@@ -1,0 +1,14 @@
+#!/bin/sh
+
+reattach="$(which reattach-to-user-namespace)"
+shell="${SHELL}"
+
+if [ ! -x "${shell}" ]; then
+    shell='/bin/sh'
+fi
+
+if [ -x "${reattach}" ]; then
+    exec ${reattach} -l ${shell}
+fi
+
+exec ${shell} -l
