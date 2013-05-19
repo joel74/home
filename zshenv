@@ -1,6 +1,6 @@
 #!/usr/bin/env zsh
 
-typeset -grx JACHYMKO=`echo ~/.jachymko(:A)`
+typeset -grx JACHYMKO=`echo ~/.jachymko(:a)`
 
 typeset -gxU PATH=/usr/local/bin:/usr/bin:/bin:/usr/local/sbin:/usr/sbin:/sbin
 typeset -gx  PAGER=less
