@@ -5,27 +5,36 @@ DEFAULT_CONF="${TMUX_DIR}/tmux.conf"
  MASTER_CONF="${TMUX_DIR}/tmux.conf.master"
  REATTACH_SH="${TMUX_DIR}/reattached-shell"
 
- session='default'
-  config="${DEFAULT_CONF}"
-reattach="${REATTACH_SH}"
-    tmux=`which tmux`
+session='default'
+ config="${DEFAULT_CONF}"
+  shell="${REATTACH_SH}"
+   tmux=`which tmux`
+
+if [ -n "${PARENT_TMUX}" ]; then
+    return 0
+fi
+
+if [ -n "${SSH_CONNECTION}" -a -n "${TMUX}" ]; then
+    return 0
+fi
 
 if [ -x "${tmux}" ]; then # tmux installed, yay!
 
-    if [ -n "${PARENT_TMUX}" ]; then
-        return 0
+    if [ -n "${SSH_CONNECTION}" ]; then
+        # don't reattach to user namespace
+        shell=''
     fi
 
-    if [ -z "${TMUX}" -a -z "${SSH_CLIENT}" ]; then
+    if [ -z "${TMUX}" -a -z "${SSH_CONNECTION}" ]; then
+        # use tmux.conf.master
+        config="${MASTER_CONF}"
         session='master'
-        config=${MASTER_CONF}
 
         # use independent server
         tmux="${tmux} -L master"
 
-        # outer tmux doesnt need to wrap shells
-        # with reattach-to-user-namespace
-        reattach=''
+        # don't reattach to user namespace
+        shell=''
     fi
 
     if [ -n "${TMUX}" ]; then
@@ -48,13 +57,11 @@ if [ -x "${tmux}" ]; then # tmux installed, yay!
         fi
 
         # fix pasteboard access for shells running in the inner tmux
-        if [ -x "${reattach}" ]; then
-            cmds+="set-option -g default-command '${reattach}'; "
+        if [ -x "${shell}" ]; then
+            cmds+="set-option -g default-shell '${shell}'; "
         fi
     fi
 
     cmds+="new-session -As ${session}"
-    echo "${=tmux} -f ${config} ${(z)cmds}"
-    trace
     ${=tmux} -f ${config} ${(z)cmds}
 fi
