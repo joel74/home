@@ -9,6 +9,6 @@ fi
 
 if [ -x "${reattach}" ]; then
     exec ${reattach} -l ${shell}
+else
+    exec ${shell} -l
 fi
-
-exec ${shell} -l

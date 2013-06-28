@@ -3,12 +3,14 @@
     TMUX_DIR="${HOME}/.jachymko/tmux"
 DEFAULT_CONF="${TMUX_DIR}/tmux.conf"
  MASTER_CONF="${TMUX_DIR}/tmux.conf.master"
- REATTACH_SH="${TMUX_DIR}/reattached-shell"
 
 session='default'
  config="${DEFAULT_CONF}"
-  shell="${REATTACH_SH}"
    tmux=`which tmux`
+
+if [ ! -x "${tmux}" ]; then
+    return 0
+fi
 
 if [ -n "${PARENT_TMUX}" ]; then
     return 0
@@ -18,50 +20,30 @@ if [ -n "${SSH_CONNECTION}" -a -n "${TMUX}" ]; then
     return 0
 fi
 
-if [ -x "${tmux}" ]; then # tmux installed, yay!
+if [ -z "${TMUX}" -a -z "${SSH_CONNECTION}" ]; then
+    # use tmux.conf.master
+    config="${MASTER_CONF}"
+    session='master'
 
-    if [ -n "${SSH_CONNECTION}" ]; then
-        # don't reattach to user namespace
-        shell=''
-    fi
-
-    if [ -z "${TMUX}" -a -z "${SSH_CONNECTION}" ]; then
-        # use tmux.conf.master
-        config="${MASTER_CONF}"
-        session='master'
-
-        # use independent server
-        tmux="${tmux} -L master"
-
-        # don't reattach to user namespace
-        shell=''
-    fi
-
-    if [ -n "${TMUX}" ]; then
-        PARENT_TMUX=${TMUX}
-        unset TMUX
-        export PARENT_TMUX TMUX
-    fi
-
-    # build the command and then execute it as an atomic unit.
-    # otherwise, the session would get created without the modified
-    # environment
-    cmds=''
-
-    if ! ${=tmux} has-session -t ${session} 2> /dev/null; then
-        cmds+="start-server; "
-
-        # let the inner shells know not to spawn another master tmux
-        if [ -n "${PARENT_TMUX}" ]; then
-            cmds+="set-environment -g PARENT_TMUX '${PARENT_TMUX}'; "
-        fi
-
-        # fix pasteboard access for shells running in the inner tmux
-        if [ -x "${shell}" ]; then
-            cmds+="set-option -g default-shell '${shell}'; "
-        fi
-    fi
-
-    cmds+="new-session -As ${session}"
-    ${=tmux} -f ${config} ${(z)cmds}
+    # use independent server
+    tmux="${tmux} -L master"
 fi
+
+if [ -n "${TMUX}" ]; then
+    PARENT_TMUX=${TMUX}
+    unset TMUX
+    export PARENT_TMUX
+fi
+
+cmds=''
+
+if ! ${=tmux} has-session -t ${session} 2> /dev/null; then
+    # let the inner shells know not to spawn another master tmux
+    if [ -n "${PARENT_TMUX}" ]; then
+        cmds+="set-environment -g PARENT_TMUX '${PARENT_TMUX}'; "
+    fi
+fi
+
+cmds+="new-session -As ${session}; "
+
+${=tmux} -f ${config} ${(z)cmds}
