@@ -60,3 +60,5 @@ function source-if-exists {
 
 source-if-exists $HOME/.rvm/scripts/rvm
 source-if-exists $HOME/.jachymko/`uname`/zshrc
+
+PATH=$PATH:$HOME/.rvm/bin # Add RVM to PATH for scripting
