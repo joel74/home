@@ -1,4 +1,4 @@
-#!/usr/bin/env zsh
+#!/bin/sh
 
     TMUX_DIR="${HOME}/.jachymko/tmux"
 DEFAULT_CONF="${TMUX_DIR}/tmux.conf"
@@ -9,15 +9,15 @@ session='default'
    tmux=`which tmux`
 
 if [ ! -x "${tmux}" ]; then
-    return 0
+    exit 0
 fi
 
 if [ -n "${PARENT_TMUX}" ]; then
-    return 0
+    exit 0
 fi
 
 if [ -n "${SSH_CONNECTION}" -a -n "${TMUX}" ]; then
-    return 0
+    exit 0
 fi
 
 if [ -z "${TMUX}" -a -z "${SSH_CONNECTION}" ]; then
@@ -35,15 +35,21 @@ if [ -n "${TMUX}" ]; then
     export PARENT_TMUX
 fi
 
-cmds=''
+if ! ${tmux} has-session -t ${session} 2> /dev/null; then
+    cmds=''
 
-if ! ${=tmux} has-session -t ${session} 2> /dev/null; then
-    # let the inner shells know not to spawn another master tmux
     if [ -n "${PARENT_TMUX}" ]; then
         cmds+="set-environment -g PARENT_TMUX '${PARENT_TMUX}'; "
+        cmds+="new-session -s ${session}; "
+        cmds+="split-window -h; "
+    else
+        cmds+="new-session -s ${session} -n $(hostname -s); "
     fi
+
+else
+    cmds="attach-session -t ${session}; "
 fi
 
-cmds+="new-session -As ${session}; "
-
-${=tmux} -f ${config} ${(z)cmds}
+echo ${tmux} -f ${config} ${cmds}
+sleep 5;
+exec ${tmux} -f ${config} ${cmds}
