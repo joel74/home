@@ -58,7 +58,4 @@ function source-if-exists {
     [[ -s $1 ]] && source $1
 }
 
-source-if-exists $HOME/.rvm/scripts/rvm
 source-if-exists $HOME/.jachymko/`uname`/zshrc
-
-PATH=$PATH:$HOME/.rvm/bin # Add RVM to PATH for scripting
