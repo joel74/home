@@ -1,4 +1,9 @@
-#!/usr/bin/env sh
+#!/bin/sh
+
+if [ ! -x `which make` ]; then
+    echo "Install Xcode!"
+    exit 1
+fi
 
 get_homebrew=https://raw.github.com/mxcl/homebrew/go
 get_rvm=https://get.rvm.io
@@ -11,6 +16,3 @@ curl -fsSL $get_rvm | bash -s stable --ruby
 
 hash -r # use the git from homebrew
 git config --global credential.helper osxkeychain
-
-ln -sfv /usr/local/opt/offline-imap/homebrew.mxcl.offline-imap.plist ~/Library/LaunchAgents
-launchctl load ~/Library/LaunchAgents/homebrew.mxcl.offline-imap.plist
