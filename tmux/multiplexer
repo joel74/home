@@ -7,6 +7,7 @@ DEFAULT_CONF="${TMUX_DIR}/tmux.conf"
 session='default'
  config="${DEFAULT_CONF}"
    tmux=`which tmux`
+   cmds=''
 
 if [ ! -x "${tmux}" ]; then
     exit 0
@@ -35,21 +36,19 @@ if [ -n "${TMUX}" ]; then
     export PARENT_TMUX
 fi
 
-if ! ${tmux} has-session -t ${session} 2> /dev/null; then
-    cmds=''
-
+if ${tmux} has-session -t ${session} 2> /dev/null; then
+    cmds="attach-session -t ${session}; "
+else
     if [ -n "${PARENT_TMUX}" ]; then
-        cmds+="set-environment -g PARENT_TMUX '${PARENT_TMUX}'; "
-        cmds+="new-session -s ${session}; "
-        cmds+="split-window -h; "
-    else
-        cmds+="new-session -s ${session} -n $(hostname -s); "
+        cmds="set-environment -g PARENT_TMUX '${PARENT_TMUX}'; "
     fi
 
-else
-    cmds="attach-session -t ${session}; "
+    if [ -n "${PARENT_TMUX}" -o -n "${SSH_CONNECTION}" ]; then
+        cmds="${cmds} new-session -s ${session}; "
+        cmds="${cmds} split-window -h; "
+    else
+        cmds="new-session -s ${session} -n $(hostname -s); "
+    fi
 fi
 
-echo ${tmux} -f ${config} ${cmds}
-sleep 5;
 exec ${tmux} -f ${config} ${cmds}
