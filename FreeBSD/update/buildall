@@ -1,8 +1,9 @@
 #!/bin/sh
+cd $(dirname $0)
 
-SUPFILE=/root/stable-supfile
-THISDIR=$(cd -- $(dirname $0) && pwd)
+csup /root/stable-supfile || exit
+./buildworld || exit
 
-csup ${SUPFILE}        || exit
-${THISDIR}/buildworld  || exit
-${THISDIR}/buildkernel || exit
+for KERNCONF in DAEMONIK; do
+    ./buildkernel ${KERNCONF} || exit
+done
