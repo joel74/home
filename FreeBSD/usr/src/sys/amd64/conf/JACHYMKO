@@ -24,14 +24,17 @@ device      vga         # VGA video card driver
 device      sc          # System console
 
 # Networking
-options     INET        # IPv4
-options     INET6       # IPv6
+options     INET
+options     INET6
+options     IPSEC
 
 device      bpf         # Berkeley Packet Filter (required by pflog)
 device      ether       # Ethernet support
 device      loop        # Network loopback
-device      pf          # Packet filter
+device      pf          # PF firewall
 device      pflog       # PF logging
+device      tun         # Packet tunnel (for OpenVPN)
 
 # Pseudo devices
+device      crypto      # required by IPsec
 device      random      # Entropy device
