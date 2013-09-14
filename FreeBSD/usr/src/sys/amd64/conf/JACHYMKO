@@ -27,6 +27,7 @@ device      sc          # System console
 options     INET
 options     INET6
 options     IPSEC
+options     IPSEC_NAT_T
 
 device      bpf         # Berkeley Packet Filter (required by pflog)
 device      ether       # Ethernet support

@@ -1,6 +1,5 @@
 hostname="daemonik.jachymko.net"
 
-
 # IP addresses
 cloned_interfaces="lo1 tun0 tun1"
 defaultrouter="37.157.194.1"
@@ -13,7 +12,9 @@ mixer_enabled="NO"
 gateway_enable="YES"
 nginx_enable="YES"
 pf_enable="YES"
+saslauthd_enable="YES"
 unbound_enable="YES"
+znc_enable="YES"
 
 # Sendmail (listen only on loopback)
 sendmail_enable="NO"
