@@ -8,6 +8,12 @@ setopt prompt_subst
 
 alias la='ls -aFl'
 alias ll='ls -Fl'
+alias ii='open'
+
+alias ga='git add'
+alias gc='git commit'
+alias gd='git diff'
+alias gdc='git diff --cached'
 alias gs='git status'
 
 bindkey "^[[A" history-search-backward
