@@ -1,9 +1,8 @@
 
 types {
     application/vnd.ms-fontobject         eot;
-    application/x-font-ttf                ttf;
-    font/opentype                         ott;
-    font/x-woff                           woff;
+    application/font-ttf                  ttf;
+    application/font-woff                 woff;
 
     text/html                             html htm shtml;
     text/css                              css;
