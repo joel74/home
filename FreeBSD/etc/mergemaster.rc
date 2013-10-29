@@ -1,0 +1,12 @@
+# Automatically install files that do not exist on the system already (-i)
+AUTO_INSTALL=
+
+# Delete stale files in /etc/rc.d without prompting
+DELETE_STALE_RC_FILES=
+
+# Files to always avoid comparing
+IGNORE_FILES='/etc/motd /etc/ssh/sshd_config'
+
+# Preserve files that you replace (-P)
+PRESERVE_FILES=
+PRESERVE_FILES_DIR=/var/tmp/mergemaster/preserved-files-`date +%y%m%d-%H%M%S`
