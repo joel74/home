@@ -11,10 +11,13 @@ alias ll='ls -Fl'
 alias ii='open'
 
 alias ga='git add'
-alias gc='git commit'
 alias gd='git diff'
 alias gdc='git diff --cached'
 alias gs='git status'
+
+function gco {
+  git commit -m "$*"
+}
 
 bindkey "^[[A" history-search-backward
 bindkey "^[[B" history-search-forward
