@@ -8,6 +8,12 @@ if (-not (Test-Path $gitshell)) {
 
 . $gitshell -SkipSSHSetup
 
+function ga { git add @args }
+function gco { git commit -m "$args" }
+function gd { git diff @args }
+function gdc { git diff --cached @args }
+function gs { git status @args }
+
 function Get-GitLinkItem
 {
     git ls-files -s |? {
