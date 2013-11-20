@@ -19,11 +19,30 @@ function gco {
   git commit -m "$*"
 }
 
+typeset -gx JACHYMKO=`echo ~/.jachymko(:a)`
+
+typeset -gxU PATH=/usr/local/bin:/usr/bin:/bin:/usr/local/sbin:/usr/sbin:/sbin
+typeset -gx  PAGER=less
+typeset -gx  VISUAL=vim
+typeset -gx  EDITOR=$VISUAL
+
+if [[ -d /usr/local/share/npm/bin ]]; then
+    typeset -gxU PATH=/usr/local/share/npm/bin:$PATH
+fi
+
+if [[ -d $HOME/.rvm/bin ]]; then
+    typeset -gxU PATH=$HOME/.rvm/bin:$PATH
+fi
+
 bindkey "^[[A" history-search-backward
 bindkey "^[[B" history-search-forward
 
 autoload -U colors && colors
 autoload -U compinit && compinit -U
+
+# autoload all functions in .jachymko/zsh
+fpath=($JACHYMKO/zsh $fpath)
+autoload $JACHYMKO/zsh/*(:t)
 
 function precmd {
   tab_label=${PWD/${HOME}/\~} # use 'relative' path
