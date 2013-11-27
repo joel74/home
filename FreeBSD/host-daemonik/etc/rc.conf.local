@@ -17,6 +17,10 @@ saslauthd_enable="YES"
 unbound_enable="YES"
 znc_enable="YES"
 
+# fcgiwrap
+fcgiwrap_enable="YES"
+fcgiwrap_user="www"
+
 # Sendmail (listen only on loopback)
 sendmail_enable="NO"
 sendmail_submit_enable="YES"
