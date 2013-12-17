@@ -13,6 +13,7 @@ alias ii='open'
 alias ga='git add'
 alias gd='git diff'
 alias gdc='git diff --cached'
+alias glg='git lg'
 alias gs='git status'
 
 function gco {
