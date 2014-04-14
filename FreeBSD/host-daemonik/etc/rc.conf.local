@@ -30,5 +30,5 @@ openvpn_enable="YES"
 openvpn_tcp_enable="YES"
 
 # Transmission
-transmission_enable="YES"
+# transmission_enable=""
 transmission_download_dir="/data/downloads"
