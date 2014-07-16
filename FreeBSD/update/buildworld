@@ -9,3 +9,8 @@ if [ -e $LOG ]; then
 fi
 
 make -C ${SRC} -j $((CPUS*2)) buildworld 2>&1 | tee $LOG
+sendmail root << EOF
+Subject: Build Completed
+
+Your build of FreeBSD world is done.
+EOF

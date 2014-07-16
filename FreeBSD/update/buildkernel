@@ -11,3 +11,9 @@ if [ -n "${1}" ]; then
 fi
 
 make -C ${SRC} ${KERNCONF} buildkernel 2>&1 | tee $LOG
+
+sendmail root << EOF
+Subject: Build Completed
+
+Your build of FreeBSD kernel ${KERNCONF} is done.
+EOF
