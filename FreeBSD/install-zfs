@@ -32,7 +32,7 @@ DESTDIR=${DESTDIR-/mnt}              # mount point for the new filesystem
 DISTDIR=${DISTDIR-/usr/freebsd-dist} # where the FreeBSD distribution files are
 
    TIMEZONE=${TIMEZONE-Europe/Prague} # local timezone
-WHEEL_USERS=${WHEEL_USERS-jachymko}   # name of the users to be created and added to the wheel group
+WHEEL_USERS=${WHEEL_USERS-julie}   # name of the users to be created and added to the wheel group
 
 HOME_TARBALL=/tmp/jachymko.tgz
  HOME_SOURCE=http://github.com/jachymko/home/tarball/master
