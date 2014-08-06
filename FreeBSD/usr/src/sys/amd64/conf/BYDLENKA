@@ -1,0 +1,7 @@
+include     GENERIC
+ident       BYDLENKA
+
+options VESA
+options SC_PIXEL_MODE
+
+
