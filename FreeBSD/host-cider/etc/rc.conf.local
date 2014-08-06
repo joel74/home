@@ -1,3 +1,0 @@
-hostname="cider.local"
-ifconfig_em0="DHCP"
-allscreens_flags="MODE_316" # Parallels 1440x900

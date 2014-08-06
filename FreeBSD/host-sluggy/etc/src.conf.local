@@ -1,4 +1,0 @@
-.undef WITHOUT_ACPI
-.undef WITHOUT_APM
-.undef WITHOUT_USB
-.undef WITHOUT_WIRELESS

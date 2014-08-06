@@ -1,3 +1,0 @@
-WITHOUT_HAL=yes
-
-.undef WITHOUT_X11
