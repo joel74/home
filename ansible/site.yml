@@ -2,3 +2,7 @@
 - hosts: Darwin
   roles:
     - darwin-common
+
+- hosts: FreeBSD
+  roles:
+    - freebsd-common

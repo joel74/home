@@ -1,0 +1,3 @@
+---
+- name: portsnap
+  command: /usr/sbin/portsnap fetch update
