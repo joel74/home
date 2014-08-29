@@ -1,2 +1,4 @@
 ---
-- include: Darwin.yml
+- hosts: Darwin
+  roles:
+    - darwin-common

@@ -1,0 +1,19 @@
+---
+- name: homebrew update
+  homebrew: update_homebrew=yes
+
+- name: homebrew packages
+  homebrew: name={{ item.name }}
+            state=latest
+            install_options={{ item.options | default('') }}
+  with_items:
+    - name: ansible
+    - name: fortune
+    - name: git
+    - name: macvim
+      options: '--override-system-vim'
+    - name: tmux
+    - name: reattach-to-user-namespace
+    - name: wget
+    - name: zsh
+      options: '--disable-etcdir'
