@@ -7,6 +7,7 @@
     - name: homebrew packages
       homebrew: name={{ item }} state=latest 
       with_items:
+        - ansible
         - git
         - macvim
         - tmux
