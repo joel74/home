@@ -1,0 +1,297 @@
+#!/usr/local/bin/python
+
+import glob
+import os.path
+import re
+import syslog
+
+class CommandException(Exception):
+    def __init__(self, rc, out, err):
+        self.rc = rc
+        self.stdout = out
+        self.stderr = err
+
+    def __str__(self):
+        return 'rc={0}\n{1}\n{2}'.format(
+            self.rc,
+            self.stdout,
+            self.stderr
+        )
+
+def run_cmd(module, *args):
+    rc, out, err = module.run_command(list(args))
+
+    out = out.strip()
+    err = err.strip()
+
+    if rc != 0:
+        raise CommandException(rc, out, err)
+
+    return out
+
+class PkgAdapter(object):
+    pass
+
+class PkgNgAdapter(PkgAdapter):
+
+    def __init__(self, module):
+        self.module  = module
+        self.pkg_bin = module.get_bin_path('pkg', required=True)
+
+    def get_state(self, package):
+        pkg_re     = (r"""(?mx)
+                          ^
+                          (?P<pkg>{0}-\S+)
+                          \s+
+                          (?P<state>.)
+                      """.format(re.escape(package)))
+
+        installed  = self._run_pkg('version')
+        match      = re.search(pkg_re, installed)
+
+        if match is not None:
+            pkg = match.group('pkg')
+            state = match.group('state')
+
+            if state in ('=', '>'):
+                return pkg, 'latest'
+
+            if state == '<':
+                return pkg, 'present'
+
+        return None, 'absent'
+
+    def _run_pkg(self, args):
+        return run_cmd(self.module, self.pkg_bin, args)
+
+class PortException(Exception):
+    pass
+
+class Port(object):
+    PORTS_ROOT = '/usr/ports'
+
+    def __init__(self, module, path_or_name):
+        self._module    = module
+        self._make_bin  = module.get_bin_path('make', required=True)
+
+        if '/' in path_or_name:
+            self._port_path = os.path.join(Port.PORTS_ROOT, path_or_name)
+        else:
+            self._port_path = self._find_port(path_or_name)
+
+        if self._port_path is None or not os.path.isdir(self._port_path):
+            raise PortException("Port '{0}' not found.".format(path_or_name))
+
+        self._packager = PkgNgAdapter(module)
+
+        self._pkg_name = self._run_make('package-name').strip()
+        self._pkg_name_versionless = Port._strip_version(self._pkg_name)
+
+    def install(self):
+        self._run_make('fetch-recursive', 'all', 'install', 'clean')
+        self._ensure_state()
+
+    @property
+    def state(self):
+        self._ensure_state()
+        return self._state
+
+    @property
+    def package_name_installed(self):
+        self._ensure_state()
+        return self._pkg_name_installed
+
+    @property
+    def package_name_port(self):
+        return self._pkg_name
+
+    def _run_make(self, *args):
+        return run_cmd(
+            self._module,
+            self._make_bin,
+            '-DBATCH',
+            '-C',
+            self._port_path,
+            *args
+        )
+
+    def _ensure_state(self):
+        self._pkg_name_installed, self._state = \
+            self._packager.get_state(self._pkg_name_versionless)
+
+    def _find_port(self, name):
+        root    = os.path.normpath(Port.PORTS_ROOT)
+        exclude = re.compile('^{0}/(distfiles|packages)'.format(root))
+
+        dirs = glob.glob(os.path.join(root, '*', name))
+        dirs = [ d for d in dirs if not exclude.match(d) ]
+
+        if len(dirs) != 1:
+            return None
+
+        return dirs[0]
+
+    @staticmethod
+    def _strip_version(pkg_name):
+        return re.sub(r'-.*$', '', pkg_name)
+
+
+class PortManagerResult(object):
+
+    def __init__(self, port):
+        self.port    = port
+        self.changed = False
+        self.exc     = None
+        self.message = None
+
+    def __str__(self):
+        return '{0}: {1}'.format(
+            self.port.package_name_port,
+            self.message
+        )
+
+    @classmethod
+    def error(cls, port, exc):
+        result = PortManagerResult(port)
+        result.exc = exc
+        result.message = "Port action has failed."
+        return result
+
+    @classmethod
+    def changed(cls, port, message):
+        result = PortManagerResult(port)
+        result.changed = True
+        result.message = message
+        return result
+
+    @classmethod
+    def unchanged(cls, port, message):
+        result = PortManagerResult(port)
+        result.changed = False
+        result.message = message
+        return result
+
+class PortManager(object):
+    def __init__(self, module):
+        self.module  = module
+        self.results = []
+
+    def run(self, names):
+        self.results = map(self.process, names)
+        self.exit()
+
+    def process(self, name):
+        port = Port(self.module, name)
+        try:
+            result = self._check(port)
+            if result.changed and not self.module.check_mode:
+                result = self._process(port)
+        except Exception as exc:
+            result = PortManagerResult.error(port, exc)
+
+        return result
+
+    def exit(self):
+        has_errors = any(r.exc for r in self.results)
+        has_changes = any(r.changed for r in self.results)
+
+        msg = self._format_msg()
+        results = self._format_results()
+
+        if has_errors:
+            self.module.fail_json(msg=msg, results=results)
+        else:
+            self.module.exit_json(changed=has_changes, msg=msg, results=results)
+
+    def _format_msg(self):
+        if len(self.results) == 1:
+            return self.results[0].message
+
+        return '\n'.join([
+            str(r) for r in self.results
+        ])
+
+    def _format_results(self):
+        return [
+            dict(
+                port    = r.port.package_name_port,
+                changed = r.changed,
+                message = r.message,
+                error   = r.exc.__dict__ if r.exc else None
+            )
+            for r in self.results
+        ]
+
+class PortInstaller(PortManager):
+    def __init__(self, module):
+        PortManager.__init__(self, module)
+
+    def _process(self, port):
+        port.install()
+        return PortManagerResult.changed(
+            port, "The port was successfully installed."
+        )
+
+    def _check(self, port):
+        if port.state == 'latest':
+            return PortManagerResult.unchanged(
+                port, "The latest version is already installed."
+            )
+
+        if port.state == 'present':
+            return PortManagerResult.unchanged(
+                port,
+                "An older version '{0}' is installed.".format(
+                    port.package_name_installed
+                )
+            )
+
+        return PortManagerResult.changed(
+            port, "The port would be installed."
+        )
+
+def main():
+    module = AnsibleModule(
+        argument_spec=dict(
+            name=dict(aliases=["pkg"], required=False),
+            state=dict(
+                default="present",
+                choices=[
+                    "present", "installed",
+                    "latest", "upgraded",
+                    "absent", "removed", "uninstalled",
+                ],
+            ),
+            upgrade_all=dict(
+                default="no",
+                aliases=["upgrade"],
+                type='bool',
+            ),
+            install_options=dict(
+                default=None,
+                aliases=['options'],
+                type='list',
+            )
+        ),
+        supports_check_mode=True,
+    )
+
+    params = module.params
+
+    names = params['name'].split(',')
+    state = params['state']
+
+    if state in ('present', 'installed'):
+        manager = PortInstaller(module)
+    elif state in ('latest', 'upgraded'):
+        manager = PortUpgrader(module)
+    elif state in ('absent', 'removed', 'uninstalled'):
+        manager = PortUninstaller(module)
+    else:
+        raise Exception("Unknown port state: '{0}'".format(state))
+
+    manager.run(names)
+
+# this is magic, see lib/ansible/module_common.py
+#<<INCLUDE_ANSIBLE_MODULE_COMMON>>
+main()
