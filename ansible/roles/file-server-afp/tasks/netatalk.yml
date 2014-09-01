@@ -1,0 +1,16 @@
+---
+- name:     netatalk3 installed
+  port:     name=netatalk3
+            options='WITH=MDNSRESPONDER,WITHOUT=AVAHI'
+
+- name:     afp.conf
+  template: src=afp.conf
+            dest={{ afp_conf_path }}
+  notify:   restart netatalk
+
+- name:     netatalk enabled and started
+  service:  name=netatalk
+            enabled=yes
+            state=started
+
+

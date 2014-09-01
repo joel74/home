@@ -1,8 +1,5 @@
 ---
 afp:
-  Global:
-    'mimic model': 'RackMac'
-
   Backup:
     'path':         '{{ backup.path }}'
     'time machine': 'yes'

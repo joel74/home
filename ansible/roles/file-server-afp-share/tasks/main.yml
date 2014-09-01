@@ -1,0 +1,8 @@
+---
+- name:       afp.conf section
+  ini_file:   dest='{{ afp_conf_path }}'
+              section='{{ afp_share_name }}'
+              option='{{ item.key }}'
+              value='{{ item.value }}'
+  notify:     restart netatalk
+  with_items: afp_share

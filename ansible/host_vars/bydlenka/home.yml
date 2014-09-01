@@ -1,7 +1,6 @@
 ---
-home:
-  root: /data/home
-  users:
-    - name: julie
-      quota: 1TB
+home_root: /data/home
+home_users:
+  - name: julie
+    quota: 1TB
 

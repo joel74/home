@@ -1,0 +1,21 @@
+---
+- name:       home filesystem
+  zfs:        name={{ zpool|mandatory }}{{ home_root|mandatory }}
+              state=present
+
+- name:       user home filesystems
+  zfs:        name={{ zpool|mandatory }}{{ home_root|mandatory }}/{{ item.name|mandatory }}
+              quota={{ item.quota | default(none) }}
+              state=present
+  with_items: home_users
+
+- name:       user home filesystems permissions
+  file:       name={{ home_root|mandatory }}/{{ item.name|mandatory }}
+              owner={{ item.name|mandatory }}
+  with_items: home_users
+
+- name:       assign user homes
+  user:       name={{ item.name|mandatory }}
+              home={{ home_root|mandatory }}/{{ item.name|mandatory }}
+  with_items: home_users
+

@@ -1,8 +1,11 @@
 ---
+afp_mimic_model: RackMac
+afp_conf_path: /usr/local/afp.conf
+
 mDNSResponder:
   - type: _afpovertcp._tcp
     port: 548
 
   - type: _device-info._tcp
     port: 1
-    text: model=RackMac
+    text: model={{ afp_mimic_model }}

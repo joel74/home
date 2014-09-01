@@ -1,0 +1,6 @@
+---
+dependencies:
+  - role: file-server-afp-share
+    afp_share_name: Homes
+    afp_share:
+        - { key: 'basedir regex', value: '{{ home_root|mandatory }}' }
