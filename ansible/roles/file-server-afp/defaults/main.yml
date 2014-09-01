@@ -1,6 +1,8 @@
 ---
-afp_mimic_model: RackMac
 afp_conf_path: /usr/local/afp.conf
+afp_mimic_model: RackMac
+afp_global:
+  - { key: 'mimic model', value: '{{ afp_mimic_model }}' }
 
 mDNSResponder:
   - type: _afpovertcp._tcp

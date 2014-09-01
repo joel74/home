@@ -1,0 +1,8 @@
+---
+dependencies:
+  - role: file-server-afp-share
+    afp_share_name: Backup
+    afp_share:
+        - { key: 'path',         value: '{{ backup_root|mandatory }}' }
+        - { key: 'time machine', value: 'yes' }
+        - { key: 'valid users',  value: '@{{ backup_group|mandatory }}' }
