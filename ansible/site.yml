@@ -1,10 +1,6 @@
 ---
-- hosts: Darwin
-  roles:
-    - darwin-common
-
 - hosts: bydlenka
-  sudo: yes
+  sudo:  yes
   vars:
     backup_root:  /data/backup
     backup_group: backup
@@ -14,7 +10,6 @@
     home_users:
       - name: julie
         quota: 1TB
-
 
   roles:
     - freebsd-common
