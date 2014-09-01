@@ -1,4 +1,0 @@
----
-dependencies:
-  - role: file-server-backup
-  - role: file-server-home
