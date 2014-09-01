@@ -1,0 +1,4 @@
+---
+- name: clone juliekoubova/home
+  git:  repo={{ julie_home_repo }}
+        dest={{ julie_home_path }}

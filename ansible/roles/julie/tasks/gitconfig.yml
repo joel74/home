@@ -1,0 +1,17 @@
+---
+- name:  gitconfig
+  shell: cp {{ julie_home_path }}/gitconfig ~/.gitconfig
+  args:
+    creates: ~/.gitconfig
+
+- name: gitignore
+  file: src={{ julie_home_path }}/gitignore
+        dest=~/.gitignore
+        state=link
+
+- name:     gitconfig osxkeychain credential helper
+  ini_file: dest=~/.gitconfig
+            section=credential
+            option=helper
+            value=osxkeychain
+  when:     ansible_os_family == 'Darwin'
