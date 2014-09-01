@@ -4,5 +4,7 @@
     - darwin-common
 
 - hosts: FreeBSD
+  sudo: yes
   roles:
     - freebsd-common
+    - afp-server
