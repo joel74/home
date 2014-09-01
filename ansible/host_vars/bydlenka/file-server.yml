@@ -8,6 +8,9 @@ afp:
     'time machine': 'yes'
     'valid users':  '@{{ backup.group }}'
 
+  Homes:
+    'basedir regex': '{{ home.root }}'
+
 mDNSResponder:
   - type: _afpovertcp._tcp
     port: 548

@@ -1,0 +1,7 @@
+---
+home:
+  root: /data/home
+  users:
+    - name: julie
+      quota: 1TB
+

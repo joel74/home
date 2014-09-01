@@ -1,4 +1,5 @@
 ---
 - include: group-backup.yml
+- include: home.yml
 - include: mDNSResponder.yml
 - include: netatalk.yml
