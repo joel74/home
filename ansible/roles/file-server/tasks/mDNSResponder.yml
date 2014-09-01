@@ -6,7 +6,7 @@
   service: name=mdnsresponder enabled=yes
 
 - name:     mDNSResponder.conf
-  notify:   restart mDNSResponder
+  notify:   restart mdnsresponder
   template: src=mDNSResponder.conf
             dest=/usr/local/etc/
 

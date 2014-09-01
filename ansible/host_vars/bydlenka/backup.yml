@@ -1,7 +1,8 @@
 ---
-backup_dir:   /data/backup
-backup_group: backup
-backup_users:
-  - julie
+backup:
+  path:  /data/backup
+  group: backup
+  users:
+    - julie
 
 

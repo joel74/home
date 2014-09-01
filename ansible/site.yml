@@ -7,4 +7,4 @@
   sudo: yes
   roles:
     - freebsd-common
-    - afp-server
+    - file-server

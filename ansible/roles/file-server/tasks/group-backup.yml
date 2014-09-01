@@ -1,0 +1,13 @@
+---
+- name: backup group
+  group: name={{ backup.group }} state=present
+
+- name: backup group members
+  user: name={{ item }} groups={{ backup.group }} append=yes
+  with_items: backup.users
+
+- name: backup dir permissions
+  file: name={{ backup.path }}
+        state=directory
+        mode=770
+        group={{ backup.group }}
