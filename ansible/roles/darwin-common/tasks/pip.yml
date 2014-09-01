@@ -1,0 +1,10 @@
+---
+- name: pip
+  sudo: yes
+  easy_install: name=pip
+
+- name: pip packages
+  sudo: yes
+  pip:  name={{ item }}
+  with_items:
+  - passlib

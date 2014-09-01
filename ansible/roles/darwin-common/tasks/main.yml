@@ -1,2 +1,3 @@
 ---
 - include: kegs.yml
+- include: pip.yml
