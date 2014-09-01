@@ -1,0 +1,12 @@
+---
+- name: netatalk3 installed
+  port: name=netatalk3 state=present options='WITH=MDNSRESPONDER,WITHOUT=AVAHI'
+
+- name: afp.conf
+  template: src=afp.conf dest=/usr/local/etc/
+  notify: restart netatalk
+
+- name: netatalk enabled and started
+  service: name=netatalk enabled=yes state=started
+
+

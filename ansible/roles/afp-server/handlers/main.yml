@@ -1,0 +1,6 @@
+---
+- name: restart netatalk
+  service: name=netatalk state=restarted
+
+- name: restart mdnsresponder
+  service: name=mdnsresponder state=restarted

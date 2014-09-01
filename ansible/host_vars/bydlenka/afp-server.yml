@@ -1,0 +1,20 @@
+---
+afp:
+  Global:
+    'mimic model': 'RackMac'
+
+  Backup:
+    'path':         '{{ backup_dir }}'
+    'time machine': 'yes'
+    'valid users':  '@{{ backup_group }}'
+
+mDNSResponder:
+  - type: _afpovertcp._tcp
+    port: 548
+
+  - type: _ssh._tcp
+    port: 22
+
+  - type: _device-info._tcp
+    port: 1
+    text: model=RackMac
