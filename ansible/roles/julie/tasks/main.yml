@@ -1,3 +1,9 @@
 ---
 - include: home-repo.yml
 - include: gitconfig.yml
+
+- name: link
+  file: src={{ julie_home_path }}/{{ item.src }}
+        dest=~/{{ item.dest }}
+        state=link
+  with_items: julie_home_sublinks

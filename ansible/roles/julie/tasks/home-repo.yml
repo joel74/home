@@ -1,4 +1,9 @@
 ---
-- name: clone juliekoubova/home
+- name: clone home
   git:  repo={{ julie_home_repo }}
         dest={{ julie_home_path }}
+
+- name: link home to .julie.home
+  file: src={{ julie_home_path }}
+        dest={{ julie_home_link }}
+        state=link

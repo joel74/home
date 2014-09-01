@@ -1,3 +1,12 @@
 ---
 julie_home_repo: https://github.com/juliekoubova/home.git
 julie_home_path: ~/src/home
+julie_home_link: ~/.julie
+julie_home_sublinks:
+  - { src: gitignore,      dest: .gitignore }
+  - { src: tmux/tmux.conf, dest: .tmux.conf }
+  - { src: vim,            dest: .vim       }
+  - { src: vim/vimrc,      dest: .vimrc     }
+  - { src: vim/gvimrc,     dest: .gvimrc    }
+  - { src: zlogin,         dest: .zlogin    }
+  - { src: zshrc,          dest: .zshrc     }

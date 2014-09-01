@@ -4,11 +4,6 @@
   args:
     creates: ~/.gitconfig
 
-- name: gitignore
-  file: src={{ julie_home_path }}/gitignore
-        dest=~/.gitignore
-        state=link
-
 - name:     gitconfig osxkeychain credential helper
   ini_file: dest=~/.gitconfig
             section=credential
