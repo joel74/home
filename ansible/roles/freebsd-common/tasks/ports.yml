@@ -1,15 +1,4 @@
 ---
-- name: portsnap fetch
-  command: /usr/sbin/portsnap fetch
-  register: portsnap_fetch_result
-  changed_when: "'No updates needed.' not in portsnap_fetch_result.stdout"
-
-- name: portsnap update
-  command: /usr/sbin/portsnap update
-  when: portsnap_fetch_result|success
-  register: portsnap_update_result
-  changed_when: "'Ports tree is already up to date.' not in portsnap_update_result.stdout"
-
 - name: ports
   port: name={{ item }}
         state=present
