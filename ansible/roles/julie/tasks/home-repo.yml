@@ -2,6 +2,8 @@
 - name: clone home
   git:  repo={{ julie_home_repo }}
         dest={{ julie_home_path }}
+        force=no
+        update=no
 
 - name: link home to .julie.home
   file: src={{ julie_home_path }}
