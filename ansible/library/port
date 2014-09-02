@@ -87,7 +87,7 @@ class Port(object):
         self._pkg_name = self._run_make('package-name').strip()
         self._pkg_name_versionless = Port._strip_version(self._pkg_name)
 
-    def install(self, options):
+    def install(self, options = []):
         args = list(options) + [ 'fetch-recursive', 'all', 'install', 'clean' ]
         self._run_make(*args)
         self._ensure_state()
@@ -279,7 +279,7 @@ def main():
 
     if state in ('present', 'installed'):
         manager = PortInstaller(module)
-        manager.options = params['install_options']
+        manager.options = params['install_options'] or []
     elif state in ('absent', 'removed', 'uninstalled'):
         manager = PortUninstaller(module)
     else:
