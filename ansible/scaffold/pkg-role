@@ -28,7 +28,7 @@ def write_yaml_file(path, contents=None):
 
 
 def write_dependencies(role, deps):
-    path = join(role, 'meta/main.yaml')
+    path = join(role, 'meta/main.yml')
     write_yaml_file(path, {
         'dependencies': deps
     })
@@ -56,5 +56,5 @@ for pkg in sys.argv[1:]:
         mkpath(plat_meta)
         mkpath(plat_tasks)
 
-        write_yaml_file(join(plat_tasks, 'main.yaml'))
+        write_yaml_file(join(plat_tasks, 'main.yml'))
         write_dependencies(plat_role, plat['dependencies'])
