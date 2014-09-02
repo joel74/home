@@ -8,6 +8,4 @@
     - name: fortune
     - name: macvim
       options: 'override-system-vim'
-    - name: tmux
-    - name: reattach-to-user-namespace
     - name: wget

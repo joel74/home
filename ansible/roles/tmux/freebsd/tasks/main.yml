@@ -1,0 +1,3 @@
+---
+- name: install tmux
+  port: name=tmux state=present
