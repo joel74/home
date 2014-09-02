@@ -1,11 +1,12 @@
 ---
-- name: pip
+- name: install pip
   sudo: yes
   easy_install: name=pip
 
-- name: pip packages
+- name: install pip packages
   sudo: yes
   pip:  name={{ item }}
   with_items:
   - passlib
   - pyyaml
+
