@@ -1,3 +1,4 @@
 ---
 - name: install git
+  sudo: yes
   port: name=git state=present

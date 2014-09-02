@@ -1,3 +1,4 @@
 ---
 - name: install zsh
+  sudo: yes
   port: name=zsh state=present
