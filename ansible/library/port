@@ -260,14 +260,8 @@ def main():
                 default="present",
                 choices=[
                     "present", "installed",
-                    "latest", "upgraded",
                     "absent", "removed", "uninstalled",
                 ],
-            ),
-            upgrade_all=dict(
-                default="no",
-                aliases=["upgrade"],
-                type='bool',
             ),
             install_options=dict(
                 default=None,
@@ -285,9 +279,6 @@ def main():
 
     if state in ('present', 'installed'):
         manager = PortInstaller(module)
-        manager.options = params['install_options']
-    elif state in ('latest', 'upgraded'):
-        manager = PortUpgrader(module)
         manager.options = params['install_options']
     elif state in ('absent', 'removed', 'uninstalled'):
         manager = PortUninstaller(module)
