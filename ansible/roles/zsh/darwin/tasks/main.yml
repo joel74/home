@@ -1,0 +1,12 @@
+- name: install zsh
+  homebrew: >
+    name=zsh
+    state=latest
+    options=disable-etcdir
+
+- name: ensure zsh in /etc/shells
+  sudo: yes
+  lineinfile: >
+    dest=/etc/shells
+    line=/usr/local/bin/zsh
+

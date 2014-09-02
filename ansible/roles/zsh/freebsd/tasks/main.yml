@@ -1,0 +1,3 @@
+---
+- name: install zsh
+  port: name=zsh state=latest
