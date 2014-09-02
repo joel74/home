@@ -1,0 +1,17 @@
+---
+- name: user gitconfig
+  file: src={{ julie_home_link }}/gitconfig
+        dest=~/.gitconfig
+        state=link
+        force=yes
+
+- name: user gitignore
+  file: src={{ julie_home_link }}/gitignore
+        dest=~/.gitignore
+        state=link
+        force=yes
+
+- name: osxkeychain
+  copy: content="[credential]\n\thelper = osxkeychain"
+        dest=/usr/local/etc/gitconfig
+  when: ansible_os_family == 'Darwin'

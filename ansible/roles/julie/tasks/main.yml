@@ -1,6 +1,5 @@
 ---
 - include: home-repo.yml
-- include: gitconfig.yml
 
 - name: link
   file: src={{ julie_home_path }}/{{ item.src }}
