@@ -2,4 +2,5 @@
 dependencies:
 - git
 - tmux
+- vim
 - zsh

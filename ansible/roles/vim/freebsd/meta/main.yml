@@ -1,0 +1,4 @@
+---
+dependencies:
+- freebsd/portsnap
+- freebsd/make-conf-local

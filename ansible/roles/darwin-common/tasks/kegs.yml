@@ -6,6 +6,4 @@
   with_items:
     - name: ansible
     - name: fortune
-    - name: macvim
-      options: 'override-system-vim'
     - name: wget

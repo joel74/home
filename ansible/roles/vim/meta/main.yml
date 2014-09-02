@@ -1,0 +1,4 @@
+---
+dependencies:
+- {role: vim/darwin, when: ansible_os_family == "Darwin"}
+- {role: vim/freebsd, when: ansible_os_family == "FreeBSD"}
