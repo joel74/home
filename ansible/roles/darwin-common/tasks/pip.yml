@@ -8,3 +8,4 @@
   pip:  name={{ item }}
   with_items:
   - passlib
+  - pyyaml
