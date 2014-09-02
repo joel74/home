@@ -1,0 +1,60 @@
+#!/usr/bin/env python
+
+from distutils.dir_util import mkpath
+from os.path import join
+import os
+import sys
+import yaml
+
+platforms = [
+        dict( name      = 'darwin',
+              os_family = 'Darwin',
+              dependencies = [ 'darwin/homebrew' ]),
+
+        dict( name      = 'freebsd',
+              os_family = 'FreeBSD',
+              dependencies = [ 'freebsd/portsnap' ])
+        ]
+
+def write_yaml_file(path, contents=None):
+    if os.path.isfile(path):
+        raise Exception("'{0}' already exists.".format(path))
+
+    with open(path, 'w') as f:
+        if contents is not None:
+            yaml.dump(contents, f, explicit_start=True)
+        else:
+            f.write('---\n')
+
+
+def write_dependencies(role, deps):
+    path = join(role, 'meta/main.yaml')
+    write_yaml_file(path, {
+        'dependencies': deps
+    })
+
+for pkg in sys.argv[1:]:
+
+    role = join('roles', pkg)
+
+    meta = join(role, 'meta')
+    mkpath(meta)
+
+    write_dependencies(role, [
+        {
+            'role': '{0}/{1}'.format(pkg, p['name']),
+            'when': 'ansible_os_family == "{0}"'.format(p['os_family'])
+        } for p in platforms
+    ])
+
+    for plat in platforms:
+        plat_role  = join(role, plat['name'])
+
+        plat_meta  = join(plat_role, 'meta')
+        plat_tasks = join(plat_role, 'tasks')
+
+        mkpath(plat_meta)
+        mkpath(plat_tasks)
+
+        write_yaml_file(join(plat_tasks, 'main.yaml'))
+        write_dependencies(plat_role, plat['dependencies'])
