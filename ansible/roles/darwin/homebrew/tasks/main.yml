@@ -1,0 +1,3 @@
+---
+- name: homebrew update
+  homebrew: update_homebrew=yes

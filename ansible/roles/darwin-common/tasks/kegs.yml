@@ -1,7 +1,4 @@
 ---
-- name: homebrew update
-  homebrew: update_homebrew=yes
-
 - name: homebrew packages
   homebrew: name={{ item.name }}
             state=latest
