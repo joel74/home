@@ -1,0 +1,3 @@
+---
+- name: install git
+  port: name=git state=latest
