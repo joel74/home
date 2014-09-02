@@ -9,11 +9,8 @@
   with_items:
     - name: ansible
     - name: fortune
-    - name: git
     - name: macvim
       options: 'override-system-vim'
     - name: tmux
     - name: reattach-to-user-namespace
     - name: wget
-    - name: zsh
-      options: 'disable-etcdir'

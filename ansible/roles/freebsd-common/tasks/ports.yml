@@ -14,10 +14,8 @@
   port: name={{ item }}
         state=present
   with_items:
-    - git
     - portmaster
     - vim
     - sudo
     - svnup
     - tmux
-    - zsh
