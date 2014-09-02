@@ -1,5 +1,5 @@
 ---
 dependencies:
-  - git
-  - tmux
-  - zsh
+- git
+- tmux
+- zsh
