@@ -1,10 +1,64 @@
 #!/usr/bin/env python
 
-from distutils.dir_util import mkpath
-from os.path import join
+from __future__ import print_function
+
+import distutils.dir_util
 import os
+import os.path
 import sys
 import yaml
+
+def mkdir(*args):
+    path = os.path.join(*args)
+    print(path)
+    distutils.dir_util.mkpath(path)
+
+class Role(object):
+    def __init__(self, name):
+        self.name = name
+        self.path = os.path.join('roles', name)
+        self.tasks = []
+        self.meta = {}
+
+    def scaffold(self):
+        mkdir(self.path)
+        self._mkyml(self.meta,  'meta')
+        self._mkyml(self.tasks, 'tasks')
+
+    def add_dependency(self, dependency, when=None):
+        if 'dependencies' not in self.meta:
+            self.meta['dependencies'] = []
+
+        if when is not None:
+            dependency = {
+                'role': dependency,
+                'when': when
+            }
+        self.meta['dependencies'].append(dependency)
+
+    def _mkyml(self, contents, dirname, filename='main.yml', empty=False):
+        if not empty and Role._is_empty(contents):
+            return
+
+        mkdir(self.path, dirname)
+        path = os.path.join(self.path, dirname, filename)
+
+        if os.path.isfile(path):
+            print("already exists: {0}".format(path), file=sys.stderr)
+            return
+
+        print(path)
+
+        with open(path, 'w') as f:
+            if contents is None:
+                f.write('---\n')
+            else:
+                yaml.dump(contents, f, explicit_start=True)
+
+    @staticmethod
+    def _is_empty(obj):
+        return obj is None or len(obj) == 0
+
 
 def homebrew_task(pkg):
     return [ {
@@ -31,45 +85,27 @@ platforms = [
               dependencies = [ 'freebsd/portsnap' ])
         ]
 
-def write_yaml_file(path, contents=None):
-    if os.path.isfile(path):
-        raise Exception("'{0}' already exists.".format(path))
-
-    with open(path, 'w') as f:
-        if contents is not None:
-            yaml.dump(contents, f, explicit_start=True)
-        else:
-            f.write('---\n')
-
-
-def write_dependencies(role, deps):
-    path = join(role, 'meta/main.yml')
-    write_yaml_file(path, {
-        'dependencies': deps
-    })
 
 for pkg in sys.argv[1:]:
 
-    role = join('roles', pkg)
+    platform_roles = [
+        Role('{0}/{1}'.format(pkg, plat['name'])) for plat in platforms
+    ]
 
-    meta = join(role, 'meta')
-    mkpath(meta)
-
-    write_dependencies(role, [
-        {
-            'role': '{0}/{1}'.format(pkg, p['name']),
-            'when': 'ansible_os_family == "{0}"'.format(p['os_family'])
-        } for p in platforms
-    ])
+    role = Role(pkg)
 
     for plat in platforms:
-        plat_role  = join(role, plat['name'])
+        plat_role = Role('{0}/{1}'.format(pkg, plat['name']))
+        plat_role.tasks
 
-        plat_meta  = join(plat_role, 'meta')
-        plat_tasks = join(plat_role, 'tasks')
+        role.add_dependency(
+            plat_role.name,
+            when='ansible_os_family == "{0}"'.format(plat['os_family'])
+        )
 
-        mkpath(plat_meta)
-        mkpath(plat_tasks)
+        for d in plat['dependencies']:
+            plat_role.add_dependency(d)
 
-        write_yaml_file(join(plat_tasks, 'main.yml'), plat['task_builder'](pkg))
-        write_dependencies(plat_role, plat['dependencies'])
+        plat_role.scaffold()
+
+    role.scaffold()
