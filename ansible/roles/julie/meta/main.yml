@@ -1,6 +1,9 @@
 ---
 dependencies:
-- julie/gitconfig
+- git
 - tmux
 - vim
+- wget
 - zsh
+
+- julie/gitconfig

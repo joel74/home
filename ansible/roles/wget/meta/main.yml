@@ -1,0 +1,4 @@
+---
+dependencies:
+- {role: wget/darwin, when: ansible_os_family == "Darwin"}
+- {role: wget/freebsd, when: ansible_os_family == "FreeBSD"}

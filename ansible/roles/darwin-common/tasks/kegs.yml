@@ -4,6 +4,4 @@
             state=latest
             install_options={{ item.options | default('') }}
   with_items:
-    - name: ansible
     - name: fortune
-    - name: wget
