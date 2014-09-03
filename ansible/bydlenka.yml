@@ -13,5 +13,6 @@
 
   roles:
     - freebsd-common
+    - freebsd/svnup
     - file-server-home
     - file-server-backup

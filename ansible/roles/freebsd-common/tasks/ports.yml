@@ -4,6 +4,4 @@
         state=present
   with_items:
     - portmaster
-    - vim
     - sudo
-    - svnup
