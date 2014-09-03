@@ -1,20 +1,24 @@
 ---
 - name:       home filesystem
+  sudo:       yes
   zfs:        name={{ zpool|mandatory }}{{ home_root|mandatory }}
               state=present
 
 - name:       user home filesystems
+  sudo:       yes
   zfs:        name={{ zpool|mandatory }}{{ home_root|mandatory }}/{{ item.name|mandatory }}
               quota={{ item.quota | default(none) }}
               state=present
   with_items: home_users
 
 - name:       user home filesystems permissions
+  sudo:       yes
   file:       name={{ home_root|mandatory }}/{{ item.name|mandatory }}
               owner={{ item.name|mandatory }}
   with_items: home_users
 
 - name:       assign user homes
+  sudo:       yes
   user:       name={{ item.name|mandatory }}
               home={{ home_root|mandatory }}/{{ item.name|mandatory }}
   with_items: home_users

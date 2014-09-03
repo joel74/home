@@ -1,6 +1,5 @@
 ---
 - hosts: bydlenka
-  sudo:  yes
   vars:
     backup_root:  /data/backup
     backup_group: backup
