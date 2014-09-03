@@ -1,0 +1,2 @@
+---
+- {name: install, port: name=portmaster state=present, sudo: 'yes'}

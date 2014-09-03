@@ -13,6 +13,8 @@
 
   roles:
     - freebsd-common
+    - freebsd/sudo
     - freebsd/svnup
+    - freebsd/portmaster
     - file-server-home
     - file-server-backup
