@@ -8,7 +8,7 @@
     home_root: /data/home
     home_users:
       - name: julie
-        quota: 1TB
+        quota: 1T
 
   roles:
     - freebsd-common
