@@ -2,39 +2,38 @@
 
 from __future__ import print_function
 
+import argparse
 import distutils.dir_util
-import os
 import os.path
 import sys
 import yaml
 
 def mkdir(*args):
     path = os.path.join(*args)
-    print(path)
     distutils.dir_util.mkpath(path)
 
 class Role(object):
     def __init__(self, name):
         self.name = name
         self.path = os.path.join('roles', name)
+        self.dependencies = []
         self.tasks = []
         self.meta = {}
 
-    def scaffold(self):
-        mkdir(self.path)
-        self._mkyml(self.meta,  'meta')
-        self._mkyml(self.tasks, 'tasks')
-
     def add_dependency(self, dependency, when=None):
-        if 'dependencies' not in self.meta:
-            self.meta['dependencies'] = []
-
         if when is not None:
             dependency = {
                 'role': dependency,
                 'when': when
             }
-        self.meta['dependencies'].append(dependency)
+        self.dependencies.append(dependency)
+
+    def scaffold(self):
+        if self.dependencies:
+            self.meta['dependencies'] = self.dependencies
+
+        self._mkyml(self.meta,  'meta')
+        self._mkyml(self.tasks, 'tasks', empty=True)
 
     def _mkyml(self, contents, dirname, filename='main.yml', empty=False):
         if not empty and Role._is_empty(contents):
@@ -60,52 +59,51 @@ class Role(object):
         return obj is None or len(obj) == 0
 
 
-def homebrew_task(pkg):
-    return [ {
-        'name':     'install',
-        'homebrew': 'name={0} state=latest'.format(pkg)
-    } ]
+class Platform(object):
+    def __init__(self, os_family, name=None, dependencies=None, install_task=None):
+        self.os_family     = os_family
+        self.name          = name         or os_family.lower()
+        self.dependencies  = dependencies or []
+        self.install_task  = install_task or (lambda pkg: None)
 
-def port_task(pkg):
-    return [ {
-        'name': 'install',
-        'sudo': 'yes',
-        'port': 'name={0} state=present'.format(pkg)
-    } ]
 
 platforms = [
-        dict( name      = 'darwin',
-              os_family = 'Darwin',
-              task_builder = homebrew_task,
-              dependencies = [ 'darwin/homebrew' ]),
+    Platform(
+        os_family    = 'Darwin',
+        dependencies = [ 'darwin/homebrew' ],
+        install_task = lambda pkg: {
+            'name':     'install',
+            'homebrew': 'name={0} state=latest'.format(pkg)
+        }
+    ),
 
-        dict( name      = 'freebsd',
-              os_family = 'FreeBSD',
-              task_builder = port_task,
-              dependencies = [ 'freebsd/portsnap' ])
-        ]
+    Platform(
+        os_family    = 'FreeBSD',
+        dependencies = [ 'freebsd/portsnap' ],
+        install_task = lambda pkg: {
+            'name': 'install',
+            'sudo': 'yes',
+            'port': 'name={0} state=present'.format(pkg)
+        }
+    )
+]
+
 
 
 for pkg in sys.argv[1:]:
 
-    platform_roles = [
-        Role('{0}/{1}'.format(pkg, plat['name'])) for plat in platforms
-    ]
-
     role = Role(pkg)
 
     for plat in platforms:
-        plat_role = Role('{0}/{1}'.format(pkg, plat['name']))
+        plat_role = Role('{0}/{1}'.format(pkg, plat.name))
         plat_role.tasks
 
         role.add_dependency(
             plat_role.name,
-            when='ansible_os_family == "{0}"'.format(plat['os_family'])
+            when='ansible_os_family == "{0}"'.format(plat.os_family)
         )
 
-        for d in plat['dependencies']:
-            plat_role.add_dependency(d)
-
+        plat_role.dependencies = plat.dependencies
         plat_role.scaffold()
 
     role.scaffold()
