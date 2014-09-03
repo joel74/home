@@ -1,0 +1,6 @@
+---
+- name: set content
+  sudo: yes
+  copy: >
+    dest=/etc/motd
+    content="{{ content|default() }}\n"

@@ -1,0 +1,7 @@
+---
+- name: disable beeping
+  sudo: yes
+  lineinfile: >
+    dest=/etc/sysctl.conf
+    line="hw.syscons.bell=0 # don't beep"
+    regexp="^hw\.syscons\.bell="

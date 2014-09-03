@@ -12,6 +12,8 @@
 
   roles:
     - freebsd-common
+    - freebsd/sysctl/hw.syscons.bell
+    - freebsd/motd
     - freebsd/sudo
     - freebsd/svnup
     - freebsd/portmaster
