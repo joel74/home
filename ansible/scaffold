@@ -66,7 +66,7 @@ class Platform(object):
         self.dependencies  = dependencies or []
         self.install_task  = install_task or (lambda pkg: None)
 
-platforms = [
+Platform.platforms = [
     Platform(
         os_family    = 'Darwin',
         dependencies = [ 'darwin/homebrew' ],
@@ -92,12 +92,12 @@ def scaffold_role(args):
     role.scaffold()
 
 def scaffold_pkg(args):
-    role = Role(args.name)
+    pkg_role = Role(args.name)
 
-    for plat in platforms:
+    for plat in Platform.platforms:
         plat_role = Role('{0}/{1}'.format(role.name, plat.name))
 
-        role.add_dependency(
+        pkg_role.add_dependency(
             plat_role.name,
             when='ansible_os_family == "{0}"'.format(plat.os_family)
         )
@@ -105,16 +105,16 @@ def scaffold_pkg(args):
         plat_role.dependencies = plat.dependencies
         plat_role.scaffold()
 
-    role.scaffold()
+    pkg_role.scaffold()
 
 parser     = argparse.ArgumentParser()
-subparsers = parser.add_subparsers()
+subparsers = parser.add_subparsers(title='subcommands')
 
-role_parser = subparsers.add_parser('role')
+role_parser = subparsers.add_parser('role', help='Scaffolds an empty role')
 role_parser.add_argument('name', metavar='name')
 role_parser.set_defaults(func=scaffold_role)
 
-pkg_parser = subparsers.add_parser('pkg')
+pkg_parser = subparsers.add_parser('pkg', help='Scaffolds a package-installing role with platform-specific subroles.')
 pkg_parser.add_argument('name', metavar='name')
 pkg_parser.set_defaults(func=scaffold_pkg)
 
