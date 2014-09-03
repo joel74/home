@@ -8,9 +8,32 @@ import os.path
 import sys
 import yaml
 
-def mkdir(*args):
-    path = os.path.join(*args)
-    distutils.dir_util.mkpath(path)
+class Platform(object):
+    def __init__(self, os_family, dependencies=None, install_task=None):
+        self.os_family     = os_family
+        self.dependencies  = dependencies or []
+        self.install_task  = install_task or (lambda pkg: None)
+
+Platform.platforms = {
+    'darwin': Platform(
+        os_family    = 'Darwin',
+        dependencies = [ 'darwin/homebrew' ],
+        install_task = lambda pkg: {
+            'name':     'install',
+            'homebrew': 'name={0} state=latest'.format(pkg)
+        }
+    ),
+
+    'freebsd': Platform(
+        os_family    = 'FreeBSD',
+        dependencies = [ 'freebsd/portsnap' ],
+        install_task = lambda pkg: {
+            'name': 'install',
+            'sudo': 'yes',
+            'port': 'name={0} state=present'.format(pkg)
+        }
+    )
+}
 
 class Role(object):
     def __init__(self, name):
@@ -39,7 +62,7 @@ class Role(object):
         if not empty and Role._is_empty(contents):
             return
 
-        mkdir(self.path, dirname)
+        self._mkdir(dirname)
         path = os.path.join(self.path, dirname, filename)
 
         if os.path.isfile(path):
@@ -54,37 +77,14 @@ class Role(object):
             else:
                 yaml.dump(contents, f, explicit_start=True)
 
+    def _mkdir(self, *args):
+        path = os.path.join(self.path, *args)
+        distutils.dir_util.mkpath(path)
+
     @staticmethod
     def _is_empty(obj):
         return obj is None or len(obj) == 0
 
-
-class Platform(object):
-    def __init__(self, os_family, dependencies=None, install_task=None):
-        self.os_family     = os_family
-        self.dependencies  = dependencies or []
-        self.install_task  = install_task or (lambda pkg: None)
-
-Platform.platforms = {
-    'darwin': Platform(
-        os_family    = 'Darwin',
-        dependencies = [ 'darwin/homebrew' ],
-        install_task = lambda pkg: {
-            'name':     'install',
-            'homebrew': 'name={0} state=latest'.format(pkg)
-        }
-    ),
-
-    'freebsd': Platform(
-        os_family    = 'FreeBSD',
-        dependencies = [ 'freebsd/portsnap' ],
-        install_task = lambda pkg: {
-            'name': 'install',
-            'sudo': 'yes',
-            'port': 'name={0} state=present'.format(pkg)
-        }
-    )
-}
 
 def scaffold_role(args):
     role = Role(args.name)
