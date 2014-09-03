@@ -86,9 +86,10 @@ class Role(object):
         return obj is None or len(obj) == 0
 
 class PlatformPkgRole(Role):
-    def __init__(self, name, platform):
-        Role.__init__(self, name)
+    def __init__(self, role_name, pkg_name, platform):
+        Role.__init__(self, role_name)
         self.dependencies = platform.dependencies
+        self.tasks = [ platform.install_task(pkg_name) ]
 
 class Scaffolder(object):
 
@@ -96,7 +97,7 @@ class Scaffolder(object):
         pass
 
     def scaffold(self, args):
-        raise NotImplementedError("Scaffolder.run not implemented!")
+        raise NotImplementedError("Scaffolder.scaffold not implemented!")
 
     @staticmethod
     def main():
@@ -134,7 +135,7 @@ class RoleScaffolder(Scaffolder):
 
 class PackageScaffolder(Scaffolder):
     COMMAND = 'pkg'
-    HELP    = 'Scaffolds a package-installing role with platform-specific subroles.' 
+    HELP    = 'Scaffolds a package role with platform-specific subroles.'
 
     def parser(self, sp):
         sp.add_argument('name', metavar='name')
@@ -143,7 +144,11 @@ class PackageScaffolder(Scaffolder):
         pkg_role = Role(args.name)
 
         for plat_name, plat in Platform.platforms.iteritems():
-            plat_role = PlatformPkgRole('{0}/{1}'.format(pkg_role.name, plat_name), plat)
+            plat_role = PlatformPkgRole(
+                    '{0}/{1}'.format(pkg_role.name, plat_name),
+                    pkg_role.name,
+                    plat
+                )
 
             pkg_role.add_dependency(
                 plat_role.name,
@@ -153,5 +158,24 @@ class PackageScaffolder(Scaffolder):
             yield plat_role
 
         yield pkg_role
+
+class PlatformPackageScaffolder(Scaffolder):
+    COMMAND = 'platform-pkg'
+    HELP    = 'Scaffolds a platform-specific package role.'
+
+    def parser(self, sp):
+        sp.add_argument('platform',
+                metavar='platform-name',
+                choices=Platform.platforms.keys()
+            )
+        sp.add_argument('name', metavar='package-name')
+
+    def scaffold(self, args):
+        role_name = os.path.join(
+                args.platform,
+                args.name
+            )
+        platform = Platform.platforms[args.platform]
+        yield PlatformPkgRole(role_name, args.name, platform)
 
 Scaffolder.main()
