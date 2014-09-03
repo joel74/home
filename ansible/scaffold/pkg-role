@@ -6,13 +6,28 @@ import os
 import sys
 import yaml
 
+def homebrew_task(pkg):
+    return [ {
+        'name':     'install',
+        'homebrew': 'name={0} state=latest'.format(pkg)
+    } ]
+
+def port_task(pkg):
+    return [ {
+        'name': 'install',
+        'sudo': 'yes',
+        'port': 'name={0} state=present'.format(pkg)
+    } ]
+
 platforms = [
         dict( name      = 'darwin',
               os_family = 'Darwin',
+              task_builder = homebrew_task,
               dependencies = [ 'darwin/homebrew' ]),
 
         dict( name      = 'freebsd',
               os_family = 'FreeBSD',
+              task_builder = port_task,
               dependencies = [ 'freebsd/portsnap' ])
         ]
 
@@ -56,5 +71,5 @@ for pkg in sys.argv[1:]:
         mkpath(plat_meta)
         mkpath(plat_tasks)
 
-        write_yaml_file(join(plat_tasks, 'main.yml'))
+        write_yaml_file(join(plat_tasks, 'main.yml'), plat['task_builder'](pkg))
         write_dependencies(plat_role, plat['dependencies'])
