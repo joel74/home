@@ -85,40 +85,73 @@ class Role(object):
     def _is_empty(obj):
         return obj is None or len(obj) == 0
 
+class PlatformPkgRole(Role):
+    def __init__(self, name, platform):
+        Role.__init__(self, name)
+        self.dependencies = platform.dependencies
 
-def scaffold_role(args):
-    role = Role(args.name)
-    role.scaffold()
+class Scaffolder(object):
 
-def scaffold_pkg(args):
-    pkg_role = Role(args.name)
+    def parser(self, sp):
+        pass
 
-    for plat_name, plat in Platform.platforms.iteritems():
-        plat_role = Role('{0}/{1}'.format(pkg_role.name, plat_name))
+    def scaffold(self, args):
+        raise NotImplementedError("Scaffolder.run not implemented!")
 
-        pkg_role.add_dependency(
-            plat_role.name,
-            when='ansible_os_family == "{0}"'.format(plat.os_family)
-        )
+    @staticmethod
+    def main():
+        parser = argparse.ArgumentParser()
+        subparsers = parser.add_subparsers(
+                title='subcommands'
+            )
 
-        plat_role.dependencies = plat.dependencies
-        plat_role.scaffold()
+        for subclass in Scaffolder.__subclasses__():
+            sp = subparsers.add_parser(
+                    subclass.COMMAND,
+                    help=subclass.HELP
+                )
 
-    pkg_role.scaffold()
+            inst = subclass()
+            inst.parser(sp)
+            sp.set_defaults(func=inst.scaffold)
 
-def scaffold_platform_pkg(args):
-    pass
+        args = parser.parse_args()
+        results = args.func(args)
 
-parser     = argparse.ArgumentParser()
-subparsers = parser.add_subparsers(title='subcommands')
+        for r in results:
+            r.scaffold()
 
-role_parser = subparsers.add_parser('role', help='Scaffolds an empty role')
-role_parser.add_argument('name', metavar='name')
-role_parser.set_defaults(func=scaffold_role)
+class RoleScaffolder(Scaffolder):
 
-pkg_parser = subparsers.add_parser('pkg', help='Scaffolds a package-installing role with platform-specific subroles.')
-pkg_parser.add_argument('name', metavar='name')
-pkg_parser.set_defaults(func=scaffold_pkg)
+    COMMAND = 'role'
+    HELP    = 'Scaffolds an empty role'
 
-args = parser.parse_args()
-args.func(args)
+    def parser(self, sp):
+        sp.add_argument('name', metavar='name')
+
+    def scaffold(self, args):
+        yield Role(args.name)
+
+class PackageScaffolder(Scaffolder):
+    COMMAND = 'pkg'
+    HELP    = 'Scaffolds a package-installing role with platform-specific subroles.' 
+
+    def parser(self, sp):
+        sp.add_argument('name', metavar='name')
+
+    def scaffold(args):
+        pkg_role = Role(args.name)
+
+        for plat_name, plat in Platform.platforms.iteritems():
+            plat_role = PlatformPkgRole('{0}/{1}'.format(pkg_role.name, plat_name), plat)
+
+            pkg_role.add_dependency(
+                plat_role.name,
+                when='ansible_os_family == "{0}"'.format(plat.os_family)
+            )
+
+            yield plat_role
+
+        yield pkg_role
+
+Scaffolder.main()
