@@ -60,14 +60,13 @@ class Role(object):
 
 
 class Platform(object):
-    def __init__(self, os_family, name=None, dependencies=None, install_task=None):
+    def __init__(self, os_family, dependencies=None, install_task=None):
         self.os_family     = os_family
-        self.name          = name         or os_family.lower()
         self.dependencies  = dependencies or []
         self.install_task  = install_task or (lambda pkg: None)
 
-Platform.platforms = [
-    Platform(
+Platform.platforms = {
+    'darwin': Platform(
         os_family    = 'Darwin',
         dependencies = [ 'darwin/homebrew' ],
         install_task = lambda pkg: {
@@ -76,7 +75,7 @@ Platform.platforms = [
         }
     ),
 
-    Platform(
+    'freebsd': Platform(
         os_family    = 'FreeBSD',
         dependencies = [ 'freebsd/portsnap' ],
         install_task = lambda pkg: {
@@ -85,7 +84,7 @@ Platform.platforms = [
             'port': 'name={0} state=present'.format(pkg)
         }
     )
-]
+}
 
 def scaffold_role(args):
     role = Role(args.name)
@@ -94,8 +93,8 @@ def scaffold_role(args):
 def scaffold_pkg(args):
     pkg_role = Role(args.name)
 
-    for plat in Platform.platforms:
-        plat_role = Role('{0}/{1}'.format(role.name, plat.name))
+    for plat_name, plat in Platform.platforms.iteritems():
+        plat_role = Role('{0}/{1}'.format(pkg_role.name, plat_name))
 
         pkg_role.add_dependency(
             plat_role.name,
@@ -106,6 +105,9 @@ def scaffold_pkg(args):
         plat_role.scaffold()
 
     pkg_role.scaffold()
+
+def scaffold_platform_pkg(args):
+    pass
 
 parser     = argparse.ArgumentParser()
 subparsers = parser.add_subparsers(title='subcommands')
