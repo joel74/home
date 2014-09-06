@@ -1,11 +1,13 @@
 ---
 - name: set vim knobs
   sudo: yes
-  lineinfile: dest=/etc/make.conf.local line={{ item }}
+  lineinfile: >
+    dest=/etc/make.conf
+    line={{ item }}
   with_items:
   - 'vim_SET=CONSOLE'
   - 'vim_UNSET="GTK2 LUA PERL PYTHON RUBY TCL"'
 
 - name: install vim
   sudo: yes
-  port: name=vim state=present
+  port: name=vim
