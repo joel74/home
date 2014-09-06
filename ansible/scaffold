@@ -4,6 +4,7 @@ from __future__ import print_function
 
 import argparse
 import distutils.dir_util
+import itertools
 import os.path
 import re
 import subprocess
@@ -236,18 +237,31 @@ class RoleEditor(ScaffolderCommand):
     HELP    = 'Open all role files in a text editor.'
 
     def parser(self, p):
-        p.add_argument('name')
+        p.add_argument('name', nargs='+')
 
     def run(self, args):
-        role   = Role(args.name)
+        command = [ os.getenv('EDITOR') or
+                    os.getenv('VISUAL') or
+                    'vi' ]
 
-        editor = [ os.getenv('EDITOR') or
-                   os.getenv('VISUAL') or
-                   'vi' ]
+        roles = map(Role, args.name)
 
-        editor.extend([
-            os.path.relpath(f, start=role.path) for f in role.files
-            ])
-        subprocess.call(editor, cwd=role.path)
+        paths    = list(itertools.chain.from_iterable(r.files for r in roles))
+        root     = RoleEditor._common_path(paths)
+        relpaths = [ os.path.relpath(p, start=root) for p in paths ]
+
+        command.extend(relpaths)
+        subprocess.call(command, cwd=root)
+
+    @staticmethod
+    def _common_path(paths):
+        def allequal(lst):
+            return all(i == lst[0] for i in lst[1:])
+
+        paths        = map(os.path.normpath, paths)
+        by_dir_level = zip(*[p.split(os.path.sep) for p in paths])
+        common       = list(itertools.takewhile(allequal, by_dir_level))
+
+        return os.path.sep.join(zip(*common)[0])
 
 ScaffolderCommand.main()
