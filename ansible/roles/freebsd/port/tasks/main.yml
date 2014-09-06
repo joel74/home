@@ -4,7 +4,7 @@
   lineinfile: >
     dest=/etc/make.conf
     create=yes
-    "line={{ item.var }}='{{ item.value }}'"
+    "line={{ item.var }}={{ item.value }}"
   with_items:
   - { var: "{{ name }}_SET",   value: "{{ set }}" }
   - { var: "{{ name }}_UNSET", value: "{{ unset }}" }
