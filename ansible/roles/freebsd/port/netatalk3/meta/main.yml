@@ -1,6 +1,6 @@
 ---
 dependencies:
-- freebsd/ports/mDNSResponder
+- freebsd/port/mDNSResponder
 - role:  freebsd/port
   name:  netatalk3
   set:   MDNSRESPONDER

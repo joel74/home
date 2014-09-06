@@ -1,4 +1,4 @@
 ---
 dependencies:
-- freebsd/ports/mDNSResponder
-- freebsd/ports/netatalk3
+- freebsd/port/mDNSResponder
+- freebsd/port/netatalk3

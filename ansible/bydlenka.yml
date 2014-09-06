@@ -14,8 +14,8 @@
     - freebsd/etc/mergemaster.rc
     - freebsd/etc/motd
     - freebsd/etc/sysctl/hw.syscons.bell
-    - freebsd/ports/sudo
-    - freebsd/ports/svnup
-    - freebsd/ports/portmaster
+    - freebsd/port/sudo
+    - freebsd/port/svnup
+    - freebsd/port/portmaster
     - file-server-home
     - file-server-backup
