@@ -15,11 +15,10 @@ def stderr(message):
     print(message, file=sys.stderr)
 
 class Platform(object):
-    def __init__(self, os_family, name=None, dependencies=None, install_task=None):
-        self.os_family     = os_family
-        self.name          = name         or os_family.lower()
-        self.dependencies  = dependencies or []
-        self.install_task  = install_task or (lambda pkg: None)
+    def __init__(self, os_family, role_name):
+        self.os_family = os_family
+        self.name      = os_family.lower()
+        self.role_name = role_name
 
     @classmethod
     def get(cls, name):
@@ -29,24 +28,8 @@ class Platform(object):
     def all(cls):
         return [ p for p in vars(cls).values() if isinstance(p, cls) ]
 
-Platform.DARWIN = Platform(
-        os_family    = 'Darwin',
-        dependencies = [ 'darwin/homebrew' ],
-        install_task = lambda pkg: {
-            'name':     'install',
-            'homebrew': 'name={0} state=latest'.format(pkg)
-        }
-    )
-
-Platform.FREEBSD = Platform(
-        os_family    = 'FreeBSD',
-        dependencies = [ 'freebsd/portsnap' ],
-        install_task = lambda pkg: {
-            'name': 'install',
-            'sudo': 'yes',
-            'port': 'name={0} state=present'.format(pkg)
-        }
-    )
+Platform.DARWIN  = Platform('Darwin',  'brew')
+Platform.FREEBSD = Platform('FreeBSD', 'port')
 
 class Role(object):
     PREFIX = 'roles'
@@ -59,20 +42,18 @@ class Role(object):
         self.meta = {}
         self.tasks = []
 
-    def add_dependency(self, dependency, when=None):
-        if when is not None:
-            dependency = {
-                'role': dependency,
-                'when': when
-            }
-        self.dependencies.append(dependency)
+        self.empty_tasks = False
+        self.empty_meta = False
+
+    def add_dependency(self, dependency=None, **kwargs):
+        self.dependencies.append(dependency or kwargs)
 
     def scaffold(self):
         if self.dependencies:
             self.meta['dependencies'] = self.dependencies
 
-        self._mkyml(self.meta,  'meta')
-        self._mkyml(self.tasks, 'tasks', empty=True)
+        self._mkyml(self.meta,  'meta',  empty=self.empty_meta)
+        self._mkyml(self.tasks, 'tasks', empty=self.empty_tasks)
 
     @property
     def files(self):
@@ -124,12 +105,6 @@ class Role(object):
         return obj is None or len(obj) == 0
 
 
-class PlatformPkgRole(Role):
-    def __init__(self, role_name, pkg_name, platform):
-        Role.__init__(self, role_name)
-        self.dependencies = platform.dependencies
-        self.tasks = [ platform.install_task(pkg_name) ]
-
 class ScaffolderCommand(object):
 
     def parser(self, sp):
@@ -142,6 +117,12 @@ class ScaffolderCommand(object):
         for r in self.scaffold(args):
             r.scaffold()
 
+    def add_name_argument(self, p):
+        p.add_argument(
+                'name',
+                metavar=' name'
+            )
+
     @classmethod
     def main(cls):
         parser = argparse.ArgumentParser()
@@ -152,7 +133,7 @@ class ScaffolderCommand(object):
         for subclass in cls.__subclasses__():
             sp = subparsers.add_parser(
                     subclass.COMMAND,
-                    help=subclass.HELP
+                    help=(subclass.__doc__)
                 )
 
             inst = subclass()
@@ -163,78 +144,91 @@ class ScaffolderCommand(object):
         args.func(args)
 
 class RoleScaffolder(ScaffolderCommand):
+    """
+    Scaffolds an empty role.
+    """
 
     COMMAND = 'role'
-    HELP    = 'Scaffolds an empty role'
 
     def parser(self, sp):
-        sp.add_argument('name', metavar='name')
+        self.add_name_argument(sp)
 
     def scaffold(self, args):
-        yield Role(args.name)
+        role = Role(args.name)
+        role.empty_tasks = True
+        yield role
 
 class PackageScaffolder(ScaffolderCommand):
+    """
+    Scaffolds a platform independent role with dependencies
+    on platform-specific roles.
+    """
 
     COMMAND = 'pkg'
-    HELP    = 'Scaffolds a package role with platform-specific subroles.'
 
     def parser(self, sp):
-        sp.add_argument('name', metavar='name')
+        self.add_name_argument(sp)
 
-    def scaffold(args):
+    def scaffold(self, args):
         pkg_role = Role(args.name)
 
-        for plat_name, plat in Platform.all():
-            plat_role = PlatformPkgRole(
-                    '{0}/{1}'.format(pkg_role.name, plat_name),
-                    pkg_role.name,
-                    plat
+        for plat in Platform.all():
+            plat_role = Role(
+                    os.path.join(plat.name, plat.role_name, pkg_role.name)
+                )
+
+            plat_role.add_dependency(
+                    role = os.path.join(plat.name, plat.role_name),
+                    name = pkg_role.name
                 )
 
             pkg_role.add_dependency(
-                    plat_role.name,
-                    when='ansible_os_family == "{0}"'.format(plat.os_family)
+                    role = plat_role.name,
+                    when = 'ansible_os_family == "{0}"'.format(plat.os_family)
                 )
 
             yield plat_role
 
         yield pkg_role
 
-class PlatformPackageScaffolder(ScaffolderCommand):
-
-    COMMAND = 'platform-pkg'
-    HELP    = 'Scaffolds a platform-specific package role.'
-
-    def parser(self, sp):
-        sp.add_argument('-p', '--platform',
-                metavar='platform-name',
-                choices=map(lambda p: p.name, Platform.all())
-            )
-        sp.add_argument('name', metavar='package-name')
-
-    def scaffold(self, args):
-        name = Role.strip_prefix(args.name)
-        platform = None
-
-        if args.platform:
-            platform = Platform.get(args.platform)
-
-        if platform is None:
-            parts    = name.split('/')
-            name     = os.path.join(*parts[1:])
-            platform = Platform.get(parts[0])
-
-            if platform is None:
-                stderr("platform must be specified either using the -p parameter, " +
-                       "or as the first part of the role name")
-                return
-
-        path = os.path.join(platform.name, name)
-        yield PlatformPkgRole(path, name, platform)
+#class PlatformPackageScaffolder(ScaffolderCommand):
+#    """Scaffolds a platform-specific package role."""
+#
+#    COMMAND = 'platform-pkg'
+#
+#    def parser(self, sp):
+#        sp.add_argument('-p', '--platform',
+#                metavar='platform-name',
+#                choices=map(lambda p: p.name, Platform.all())
+#            )
+#        sp.add_argument('name', metavar='package-name')
+#
+#    def scaffold(self, args):
+#        name = Role.strip_prefix(args.name)
+#        platform = None
+#
+#        if args.platform:
+#            platform = Platform.get(args.platform)
+#
+#        if platform is None:
+#            parts    = name.split('/')
+#            name     = os.path.join(*parts[1:])
+#            platform = Platform.get(parts[0])
+#
+#            if platform is None:
+#                stderr("platform must be specified either using the -p parameter, " +
+#                       "or as the first part of the role name")
+#                return
+#
+#        path = os.path.join(platform.name, name)
+#        yield PlatformPkgRole(path, name, platform)
 
 class RoleEditor(ScaffolderCommand):
+    """
+    Open all role files in a text editor.
+    """
+
     COMMAND = 'edit'
-    HELP    = 'Open all role files in a text editor.'
 
     def parser(self, p):
         p.add_argument('name', nargs='+')
