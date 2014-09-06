@@ -1,0 +1,8 @@
+---
+- name: install brew
+  homebrew: >
+    name={{ item.name }}
+    state=latest
+    options={{ item.options }}
+  with_items:
+  - { name: "{{ name }}", options: "{{ options }}" }

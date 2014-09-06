@@ -1,4 +1,4 @@
 ---
 dependencies:
-- { role: git/darwin,  when: ansible_os_family == 'Darwin'  }
-- { role: git/freebsd, when: ansible_os_family == 'FreeBSD' }
+- { role: darwin/brew/git,  when: ansible_os_family == 'Darwin'  }
+- { role: freebsd/port/git, when: ansible_os_family == 'FreeBSD' }
