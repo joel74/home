@@ -1,2 +1,4 @@
 ---
-dependencies: [freebsd/portsnap]
+dependencies:
+- role: freebsd/port
+  name: svnup

@@ -1,0 +1,7 @@
+---
+dependencies:
+- freebsd/ports/mDNSResponder
+- role:  freebsd/port
+  name:  netatalk3
+  set:   MDNSRESPONDER
+  unset: AVAHI

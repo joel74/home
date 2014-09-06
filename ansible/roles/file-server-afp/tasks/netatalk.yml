@@ -1,17 +1,16 @@
 ---
-- name:     netatalk3 installed
-  port:     name=netatalk3
-            options='WITH=MDNSRESPONDER,WITHOUT=AVAHI'
-
-- name:       afp.conf
-  ini_file:   dest='{{ afp_conf_path }}'
-              section=Global
-              option='{{ item.key }}'
-              value='{{ item.value }}'
-  notify:     restart netatalk
+- name:   afp.conf
+  sudo:   yes
+  notify: restart netatalk
+  ini_file: >
+    dest='{{ afp_conf_path }}'
+    section=Global
+    option='{{ item.key }}'
+    value='{{ item.value }}'
   with_items: afp_global
 
 - name:     netatalk enabled and started
+  sudo:     yes
   service:  name=netatalk
             enabled=yes
             state=started

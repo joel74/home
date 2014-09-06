@@ -1,16 +1,15 @@
 ---
-- name: mDNSResponder installed
-  port: name=mDNSResponder state=present
-
-- name:    mdnsresponder enabled
-  service: name=mdnsresponder enabled=yes
-
 - name:     mDNSResponder.conf
   notify:   restart mdnsresponder
   template: src=mDNSResponder.conf
             dest=/usr/local/etc/
 
-- name:       mdnsresponder flags
+- name:    mdnsresponder service enabled
+  service: name=mdnsresponder enabled=yes
+
+# assumes the previous task created
+# the mdnsresponder_enabled line
+- name:       mdnsresponder rc.conf.local flags
   notify:     restart mdnsresponder
   lineinfile: dest=/etc/rc.conf.local
               regexp='^mdnsresponder_flags='

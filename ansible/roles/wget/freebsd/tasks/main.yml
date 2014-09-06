@@ -1,2 +1,0 @@
----
-- {name: install, port: name=wget state=present, sudo: 'yes'}

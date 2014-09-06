@@ -1,6 +1,0 @@
----
-- name: ensure /etc/make.conf .sincludes /etc/make.conf.local
-  sudo: yes
-  lineinfile: >
-    dest=/etc/make.conf
-    'line=.sinclude </etc/make.conf.local>'

@@ -1,4 +1,6 @@
 ---
 dependencies:
-- freebsd/portsnap
-- freebsd/etc/make.conf.local
+- role:  freebsd/port
+  name:  vim
+  set:   CONSOLE
+  unset: GTK2 LUA PERL PYTHON RUBY TCL

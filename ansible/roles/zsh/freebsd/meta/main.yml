@@ -1,3 +1,4 @@
 ---
 dependencies:
-  - freebsd/portsnap
+- role: freebsd/port
+  name: zsh

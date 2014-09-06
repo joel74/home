@@ -1,2 +1,0 @@
----
-- {name: install, port: name=sudo state=present, sudo: 'yes'}

@@ -1,4 +1,0 @@
----
-- name: install ansible
-  sudo: yes
-  port: name=ansible state=present

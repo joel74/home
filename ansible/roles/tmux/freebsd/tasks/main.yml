@@ -1,4 +1,0 @@
----
-- name: install tmux
-  sudo: yes
-  port: name=tmux state=present

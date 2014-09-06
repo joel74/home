@@ -1,2 +1,0 @@
----
-- {name: install, port: name=svnup state=present, sudo: 'yes'}
