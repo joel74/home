@@ -1,3 +1,0 @@
----
-- name: install vim
-  homebrew: name=macvim state=latest options=override-system-vim

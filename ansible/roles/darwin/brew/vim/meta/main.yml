@@ -1,0 +1,5 @@
+---
+dependencies:
+- role:    darwin/brew
+  name:    macvim
+  options: override-system-vim
