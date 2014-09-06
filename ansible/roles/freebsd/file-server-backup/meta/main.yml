@@ -1,6 +1,6 @@
 ---
 dependencies:
-  - role: file-server-afp-share
+  - role: freebsd/file-server-afp-share
     afp_share_name: Backup
     afp_share:
         - { key: 'path',         value: '{{ backup_root|mandatory }}' }

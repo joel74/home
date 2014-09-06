@@ -17,5 +17,5 @@
     - freebsd/port/sudo
     - freebsd/port/svnup
     - freebsd/port/portmaster
-    - file-server-home
-    - file-server-backup
+    - freebsd/file-server-home
+    - freebsd/file-server-backup
