@@ -1,0 +1,3 @@
+---
+dependencies:
+- { role: freebsd/etc/mergemaster-ignore, path: /etc/motd }

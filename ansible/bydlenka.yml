@@ -11,8 +11,8 @@
         quota: 1T
 
   roles:
-    - freebsd-common
     - freebsd/etc/make.conf.local
+    - freebsd/etc/mergemaster.rc
     - freebsd/etc/motd
     - freebsd/etc/sysctl/hw.syscons.bell
     - freebsd/ports/sudo

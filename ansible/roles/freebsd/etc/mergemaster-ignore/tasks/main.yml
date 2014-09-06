@@ -1,0 +1,5 @@
+---
+- name: ignore file
+  sudo: yes
+  lineinfile: dest={{ mergemaster_ignore_file }}
+              line={{ path | mandatory }}

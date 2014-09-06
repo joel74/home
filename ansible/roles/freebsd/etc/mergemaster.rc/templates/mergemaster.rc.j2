@@ -1,3 +1,5 @@
+# {{ ansible_managed }}
+
 # Automatically install files that do not exist on the system already (-i)
 AUTO_INSTALL=
 
@@ -5,7 +7,9 @@ AUTO_INSTALL=
 DELETE_STALE_RC_FILES=
 
 # Files to always avoid comparing
-IGNORE_FILES='/etc/motd /etc/ssh/sshd_config'
+if [ -r {{ mergemaster_ignore_file }} ]; then
+  IGNORE_FILES=$(cat {{ mergemaster_ignore_file }} | tr "\n" " ")
+fi
 
 # Preserve files that you replace (-P)
 PRESERVE_FILES=

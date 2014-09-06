@@ -1,0 +1,2 @@
+---
+dependencies: [freebsd/etc/mergemaster.rc]
