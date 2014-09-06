@@ -1,0 +1,6 @@
+---
+dependencies:
+- role: darwin/brew
+  name: tmux
+- role: darwin/brew
+  name: reattach-to-user-namespace

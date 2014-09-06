@@ -1,4 +1,4 @@
 ---
 dependencies:
-- {role: tmux/darwin, when: ansible_os_family == "Darwin"}
-- {role: tmux/freebsd, when: ansible_os_family == "FreeBSD"}
+- {role: darwin/brew/tmux, when: ansible_os_family == "Darwin"}
+- {role: freebsd/port/tmux, when: ansible_os_family == "FreeBSD"}
