@@ -1,7 +1,9 @@
 ---
 - name: svnup periodic
   sudo: yes
-  copy: >
-    dest=/etc/periodic/{{ svnup_period }}/900.julie-svnup
-    content='#!/bin/sh\n/usr/local/bin/svnup update'
-    mode=0755
+  cron: >
+    name=svnup
+    special_time='{{ item.period }}'
+    job='{{ item.command }}'
+  with_items:
+  - { period: "{{ svnup_period }}", command: /usr/local/bin/svnup update }
