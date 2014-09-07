@@ -5,8 +5,9 @@
     - freebsd/etc/motd
     - freebsd/etc/sysctl.conf/hw.syscons.bell
     - freebsd/port/sudo
-    - freebsd/port/svnup
     - freebsd/port/portmaster
+
+    - freebsd/svnup-periodic
 
     - role:      freebsd/file-server-home
       home_root: /data/home

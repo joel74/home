@@ -1,0 +1,7 @@
+---
+- name: svnup periodic
+  sudo: yes
+  copy: >
+    dest=/etc/periodic/{{ svnup_period }}/900.julie-svnup
+    content='#!/bin/sh\n/usr/local/bin/svnup update'
+    mode=0755
