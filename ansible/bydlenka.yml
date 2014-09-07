@@ -1,11 +1,5 @@
 ---
 - hosts: bydlenka
-  vars:
-    backup_root:  /data/backup
-    backup_group: backup
-    backup_users:
-      - julie
-
   roles:
     - freebsd/etc/mergemaster.rc
     - freebsd/etc/motd
@@ -20,7 +14,7 @@
       - name:  julie
         quota: 1T
 
-    - role:  freebsd/file-server-backup
-#      root:  /data/backup
-#      group: backup
-#      users: [ julie ]
+    - role:         freebsd/file-server-backup
+      backup_root:  /data/backup
+      backup_group: backup
+      backup_users: [ julie ]
