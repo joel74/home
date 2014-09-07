@@ -38,10 +38,12 @@ class Role(object):
         self.name = Role.strip_prefix(name_or_path)
         self.path = Role.prepend_prefix(self.name)
 
+        self.defaults     = {}
         self.dependencies = []
-        self.meta = {}
-        self.tasks = []
+        self.meta         = {}
+        self.tasks        = []
 
+        self.empty_defaults = False
         self.empty_tasks = False
         self.empty_meta = False
 
@@ -52,8 +54,9 @@ class Role(object):
         if self.dependencies:
             self.meta['dependencies'] = self.dependencies
 
-        self._mkyml(self.meta,  'meta',  empty=self.empty_meta)
-        self._mkyml(self.tasks, 'tasks', empty=self.empty_tasks)
+        self._mkyml(self.defaults, 'defaults', empty=self.empty_defaults)
+        self._mkyml(self.meta,     'meta',     empty=self.empty_meta)
+        self._mkyml(self.tasks,    'tasks',    empty=self.empty_tasks)
 
     @property
     def files(self):
@@ -152,10 +155,12 @@ class RoleScaffolder(ScaffolderCommand):
 
     def parser(self, sp):
         self.add_name_argument(sp)
+        sp.add_argument('--defaults', action='store_true')
 
     def scaffold(self, args):
         role = Role(args.name)
         role.empty_tasks = True
+        role.empty_defaults = args.defaults
         yield role
 
 class PackageScaffolder(ScaffolderCommand):
