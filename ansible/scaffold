@@ -199,8 +199,9 @@ class RoleScaffolder(ScaffolderCommand):
         role.empty_tasks = True
         role.empty_defaults = args.defaults
 
-        for dep in args.add_dep:
-            role.add_dependency(dep)
+        if args.add_dep:
+            for dep in args.add_dep:
+                role.add_dependency(dep)
 
         yield role
 
