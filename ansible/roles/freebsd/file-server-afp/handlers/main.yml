@@ -1,6 +1,8 @@
 ---
 - name: restart netatalk
   service: name=netatalk state=restarted
+  sudo: yes
 
 - name: restart mdnsresponder
   service: name=mdnsresponder state=restarted
+  sudo: yes

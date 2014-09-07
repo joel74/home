@@ -1,6 +1,7 @@
 ---
 dependencies:
-  - role: freebsd/file-server-afp-share
-    afp_share_name: Homes
-    afp_share:
-        - { key: 'basedir regex', value: '{{ home_root|mandatory }}' }
+- role: freebsd/file-server-afp-share
+  afp_share_name: Homes
+  afp_share:
+  - { key: 'basedir regex', value: '{{ home_root|mandatory }}' }
+  - { key: 'home name',     value: '$u' }

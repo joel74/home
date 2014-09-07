@@ -1,5 +1,5 @@
 ---
-afp_conf_path: /usr/local/afp.conf
+afp_conf_path: /usr/local/etc/afp.conf
 afp_mimic_model: RackMac
 afp_global:
   - { key: 'mimic model', value: '{{ afp_mimic_model }}' }
