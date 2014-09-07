@@ -13,7 +13,7 @@
   roles:
     - freebsd/etc/mergemaster.rc
     - freebsd/etc/motd
-    - freebsd/etc/sysctl/hw.syscons.bell
+    - freebsd/etc/sysctl.conf/hw.syscons.bell
     - freebsd/port/sudo
     - freebsd/port/svnup
     - freebsd/port/portmaster
