@@ -5,10 +5,6 @@
     backup_group: backup
     backup_users:
       - julie
-    home_root: /data/home
-    home_users:
-      - name: julie
-        quota: 1T
 
   roles:
     - freebsd/etc/mergemaster.rc
@@ -17,5 +13,14 @@
     - freebsd/port/sudo
     - freebsd/port/svnup
     - freebsd/port/portmaster
-    - freebsd/file-server-home
-    - freebsd/file-server-backup
+
+    - role:      freebsd/file-server-home
+      home_root: /data/home
+      home_users:
+      - name:  julie
+        quota: 1T
+
+    - role:  freebsd/file-server-backup
+#      root:  /data/backup
+#      group: backup
+#      users: [ julie ]
