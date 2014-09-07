@@ -1,0 +1,5 @@
+---
+- hosts: FreeBSD
+  roles:
+  - freebsd/update
+

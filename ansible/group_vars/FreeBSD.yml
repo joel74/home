@@ -1,4 +1,8 @@
 ---
 ansible_python_interpreter: /usr/local/bin/python2.7
+
+freebsd_mirror: svn0.eu.freebsd.org
+freebsd_branch: base/stable/10
+
 zpool: zroot
 

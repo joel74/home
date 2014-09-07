@@ -1,0 +1,4 @@
+---
+- name:    svnup update
+  sudo:    yes
+  command: /usr/local/bin/svnup update
