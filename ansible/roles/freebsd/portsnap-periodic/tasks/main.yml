@@ -1,0 +1,9 @@
+---
+- name: portsnap periodic
+  sudo: yes
+  cron: >
+    name=portsnap
+    'special_time={{ item.period }}'
+    'job={{ item.command }}'
+  with_items:
+  - { period: "{{ portsnap_period }}", command: /usr/sbin/portsnap cron update }
