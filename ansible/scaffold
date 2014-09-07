@@ -4,6 +4,7 @@ from __future__ import print_function
 
 import argparse
 import distutils.dir_util
+import errno
 import itertools
 import os.path
 import re
@@ -31,6 +32,67 @@ class Platform(object):
 Platform.DARWIN  = Platform('Darwin',  'brew')
 Platform.FREEBSD = Platform('FreeBSD', 'port')
 
+class RoleYmlDirectory(object):
+    def __init__(self, role, name, file_type=list):
+        self.role     = role
+        self.name     = name
+        self.files    = dict()
+        self.file_type = file_type
+
+        try:
+            files   = os.listdir(self.path)
+            regexp  = re.compile('^(.*)\.yml$')
+            matches = filter(None, map(regexp.match, files))
+
+            for m in matches:
+                name = m.group(1)
+                self.files[name] = self._try_load(name)
+
+        except OSError, e:
+            if e.errno != errno.ENOENT:
+                raise
+
+        if 'main' not in self.files:
+            self.files['main'] = file_type()
+
+        self.main = self.files['main']
+
+    @property
+    def path(self):
+        return os.path.join(self.role.path, self.name)
+
+    def write(self, empty_main = False):
+        distutils.dir_util.mkpath(self.path)
+
+        for filename, contents in self.files.iteritems():
+            force_empty = empty_main and (filename == 'main')
+            self._write(
+                    filename,
+                    contents,
+                    force_empty = force_empty
+                )
+
+    def _open(self, filename, mode):
+        return open(os.path.join(self.path, filename + '.yml'), mode)
+
+    def _try_load(self, filename):
+        try:
+            with self._open(filename, 'r') as f:
+                return yaml.load(f)
+        except OSError, e:
+            if e.errno == errno.ENOENT:
+                return self.file_type()
+            else:
+                raise
+
+    def _write(self, filename, contents, force_empty=False):
+        if contents or force_empty:
+            with self._open(filename, 'w') as f:
+                if contents:
+                    yaml.dump(contents, f, explicit_start=True)
+                else:
+                    f.write('---\n')
+
 class Role(object):
     PREFIX = 'roles'
 
@@ -38,10 +100,11 @@ class Role(object):
         self.name = Role.strip_prefix(name_or_path)
         self.path = Role.prepend_prefix(self.name)
 
-        self.defaults     = {}
         self.dependencies = []
-        self.meta         = {}
-        self.tasks        = []
+
+        self.defaults = RoleYmlDirectory(self, 'defaults', file_type=dict)
+        self.meta     = RoleYmlDirectory(self, 'meta',     file_type=dict)
+        self.tasks    = RoleYmlDirectory(self, 'tasks',    file_type=list)
 
         self.empty_defaults = False
         self.empty_tasks = False
@@ -52,40 +115,17 @@ class Role(object):
 
     def scaffold(self):
         if self.dependencies:
-            self.meta['dependencies'] = self.dependencies
+            self.meta.main['dependencies'] = self.dependencies
 
-        self._mkyml(self.defaults, 'defaults', empty=self.empty_defaults)
-        self._mkyml(self.meta,     'meta',     empty=self.empty_meta)
-        self._mkyml(self.tasks,    'tasks',    empty=self.empty_tasks)
+        self.defaults.write(self.empty_defaults)
+        self.meta.write(self.empty_meta)
+        self.tasks.write(self.empty_tasks)
 
     @property
     def files(self):
         for root, _, filenames in os.walk(self.path):
             for fn in filenames:
                 yield os.path.join(root, fn)
-
-    def _mkyml(self, contents, dirname, filename='main.yml', empty=False):
-        if not empty and Role._is_empty(contents):
-            return
-
-        self._mkdir(dirname)
-        path = os.path.join(self.path, dirname, filename)
-
-        if os.path.isfile(path):
-            stderr("already exists: {0}".format(path))
-            return
-
-        print(path)
-
-        with open(path, 'w') as f:
-            if Role._is_empty(contents):
-                f.write('---\n')
-            else:
-                yaml.dump(contents, f, explicit_start=True)
-
-    def _mkdir(self, *args):
-        path = os.path.join(self.path, *args)
-        distutils.dir_util.mkpath(path)
 
     @staticmethod
     def strip_prefix(path, prefix = PREFIX):
@@ -102,10 +142,6 @@ class Role(object):
     @staticmethod
     def prepend_prefix(name, prefix = PREFIX):
         return os.path.join(prefix, name)
-
-    @staticmethod
-    def _is_empty(obj):
-        return obj is None or len(obj) == 0
 
 
 class ScaffolderCommand(object):
@@ -156,11 +192,16 @@ class RoleScaffolder(ScaffolderCommand):
     def parser(self, sp):
         self.add_name_argument(sp)
         sp.add_argument('--defaults', action='store_true')
+        sp.add_argument('--add-dep',  nargs='+')
 
     def scaffold(self, args):
         role = Role(args.name)
         role.empty_tasks = True
         role.empty_defaults = args.defaults
+
+        for dep in args.add_dep:
+            role.add_dependency(dep)
+
         yield role
 
 class PackageScaffolder(ScaffolderCommand):
