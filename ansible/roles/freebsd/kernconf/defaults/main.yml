@@ -1,0 +1,1 @@
+freebsd_kernconf: "{{ ansible_hostname | default('GENERIC') | upper }}"

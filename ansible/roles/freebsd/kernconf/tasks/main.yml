@@ -1,0 +1,22 @@
+---
+- name: kernel configs in /usr/src/sys/amd64/conf
+  sudo: yes
+  copy: >
+    dest=/usr/src/sys/amd64/conf
+    src=./
+
+- name:     test machine kernel config existence
+  register: kernconf_stat
+  stat: >
+    path=/usr/src/sys/amd64/conf/{{ freebsd_kernconf }}
+    get_md5=no
+
+- name: register default kernel config
+  sudo: yes
+  when: kernconf_stat.stat.exists
+  lineinfile: >
+    dest=/etc/src.conf.local
+    create=yes
+    "regexp=^KERNCONF="
+    "line=KERNCONF={{ freebsd_kernconf }}"
+

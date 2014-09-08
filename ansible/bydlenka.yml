@@ -15,12 +15,12 @@
 
     - freebsd/portsnap-periodic
     - freebsd/svnup-periodic
+    - freebsd/kernconf
 
     - julie
 
 - hosts: bydlenka
   roles:
-
     - role:      freebsd/file-server-home
       home_root: /data/home
       home_users:
