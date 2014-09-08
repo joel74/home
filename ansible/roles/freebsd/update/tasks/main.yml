@@ -1,4 +1,7 @@
 ---
-- name:    svnup update
-  sudo:    yes
-  command: /usr/local/bin/svnup update
+- name:     svnup update
+  sudo:     yes
+  command:  /usr/local/bin/svnup update
+  register: svnup_result
+  changed_when:
+    svnup_result.stdout_lines | count > 1
