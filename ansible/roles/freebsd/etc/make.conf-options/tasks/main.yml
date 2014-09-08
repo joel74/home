@@ -1,0 +1,12 @@
+---
+- name: /etc/make.conf variables
+  sudo: yes
+  lineinfile: >
+    dest=/etc/make.conf
+    create=yes
+    "line={{ item.var }}={{ item.value }}"
+    "regexp=^{{ item.var }}="
+  with_items:
+  - { var: "{{ name|default('OPTIONS') }}_SET",   value: "{{ set|default('') }}" }
+  - { var: "{{ name|default('OPTIONS') }}_UNSET", value: "{{ unset|default('') }}" }
+  when: item.value|length > 0

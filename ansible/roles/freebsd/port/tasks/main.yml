@@ -1,15 +1,4 @@
 ---
-- name: /etc/make.conf variables
-  sudo: yes
-  lineinfile: >
-    dest=/etc/make.conf
-    create=yes
-    "line={{ item.var }}={{ item.value }}"
-  with_items:
-  - { var: "{{ name }}_SET",   value: "{{ set|default('') }}" }
-  - { var: "{{ name }}_UNSET", value: "{{ unset|default('') }}" }
-  when: item.value|length > 0
-
 - name: install port
   sudo: yes
   port: name={{ item }}

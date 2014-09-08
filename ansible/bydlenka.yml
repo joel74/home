@@ -1,6 +1,9 @@
 ---
-- hosts: bydlenka
+- hosts: FreeBSD
   roles:
+    - role:  freebsd/etc/make.conf-options
+      unset: NLS X11
+
     - freebsd/etc/mergemaster.rc
     - freebsd/etc/motd
     - freebsd/etc/sysctl.conf/hw.syscons.bell
@@ -9,6 +12,11 @@
 
     - freebsd/portsnap-periodic
     - freebsd/svnup-periodic
+
+    - julie
+
+- hosts: bydlenka
+  roles:
 
     - role:      freebsd/file-server-home
       home_root: /data/home
