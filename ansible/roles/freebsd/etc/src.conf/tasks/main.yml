@@ -12,3 +12,10 @@
     create=yes
     "line=.sinclude </etc/src.conf.virtual>"
   when: freebsd_is_virtual
+
+- name: set machine-specific defines
+  sudo: yes
+  lineinfile: >
+    dest=/etc/src.conf.local
+    "line={{ item }}="
+  with_items: freebsd_srcconf

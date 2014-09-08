@@ -1,0 +1,14 @@
+---
+backup_root:  /data/backup
+backup_group: backup
+backup_users: [ julie ]
+
+freebsd_srcconf:
+- WITHOUT_BLUETOOTH
+- WITHOUT_NETGRAPH
+- WITHOUT_WIRELESS
+
+home_root: /data/home
+home_users:
+- name:  julie
+  quota: 1T
