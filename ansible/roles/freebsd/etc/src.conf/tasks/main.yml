@@ -1,0 +1,14 @@
+---
+- name: copy /etc/src.conf files
+  sudo: yes
+  copy: >
+    dest=/etc
+    src=./
+
+- name: include /etc/src.conf.virtual
+  sudo: yes
+  lineinfile: >
+    dest=/etc/src.conf.local
+    create=yes
+    "line=.sinclude </etc/src.conf.virtual>"
+  when: freebsd_is_virtual
