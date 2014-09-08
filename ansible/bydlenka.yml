@@ -1,3 +1,4 @@
+#!/usr/bin/env ansible-playbook
 ---
 - hosts: FreeBSD
   roles:
@@ -7,6 +8,8 @@
     - freebsd/etc/mergemaster.rc
     - freebsd/etc/motd
     - freebsd/etc/sysctl.conf/hw.syscons.bell
+    - freebsd/etc/src.conf
+
     - freebsd/port/sudo
     - freebsd/port/portmaster
 
