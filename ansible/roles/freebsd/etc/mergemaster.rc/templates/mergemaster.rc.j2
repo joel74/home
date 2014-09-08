@@ -3,6 +3,8 @@
 # Automatically install files that do not exist on the system already (-i)
 AUTO_INSTALL=
 
+# Install the new file if it differs only by VCS Id ($FreeBSD, -F)
+FREEBSD_ID=
 # Delete stale files in /etc/rc.d without prompting
 DELETE_STALE_RC_FILES=
 
@@ -14,3 +16,6 @@ fi
 # Preserve files that you replace (-P)
 PRESERVE_FILES=
 PRESERVE_FILES_DIR=/var/tmp/mergemaster/preserved-files-`date +%y%m%d-%H%M%S`
+
+# Either always or never run newaliases, pwd_mkdb at the end (--run-updates)
+RUN_UPDATES=always
