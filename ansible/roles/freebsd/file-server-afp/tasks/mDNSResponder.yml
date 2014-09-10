@@ -1,21 +1,25 @@
 ---
 - name:     mDNSResponder.conf
+  sudo:     yes
   notify:   restart mdnsresponder
   template: src=mDNSResponder.conf
             dest=/usr/local/etc/
 
-- name:    mdnsresponder service enabled
-  service: name=mdnsresponder enabled=yes
+- name:    mdnsresponderposix service enabled
+  service: name=mdnsresponderposix enabled=yes
+  sudo:    yes
 
 # assumes the previous task created
 # the mdnsresponder_enabled line
-- name:       mdnsresponder rc.conf.local flags
-  notify:     restart mdnsresponder
+- name:       mdnsresponderposix rc.conf.local flags
+  sudo:       yes
+  notify:     restart mdnsresponderposix
   lineinfile: dest=/etc/rc.conf.local
-              regexp='^mdnsresponder_flags='
-              insertafter='^mdnsresponder_enable='
-              line='mdnsresponder_flags="-f /usr/local/etc/mDNSResponder.conf"'
+              regexp='^mdnsresponderposix_flags='
+              insertafter='^mdnsresponderposix_enable='
+              line='mdnsresponderposix_flags="-f /usr/local/etc/mDNSResponder.conf"'
 
-- name:    mdnsresponder started
-  service: name=mdnsresponder state=started
+- name:    mdnsresponderposix started
+  service: name=mdnsresponderposix state=started
+  sudo:    yes
 
