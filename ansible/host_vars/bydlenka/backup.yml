@@ -1,0 +1,4 @@
+backup_root:  /data/backup
+backup_group: backup
+backup_users: [ julie ]
+
