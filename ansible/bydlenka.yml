@@ -3,7 +3,7 @@
 - hosts: FreeBSD
   roles:
     - role:  freebsd/etc/make.conf-options
-      unset: NLS X11
+      unset: DOCS EXAMPLES NLS X11
 
     - freebsd/etc/mergemaster.rc
     - freebsd/etc/motd
@@ -21,5 +21,10 @@
 
 - hosts: bydlenka
   roles:
-    - freebsd/file-server-home
-    - freebsd/file-server-backup
+    - role: freebsd/file-server-home
+    - role: freebsd/file-server-backup
+
+    - role: freebsd/openvpn-server
+
+    - role: freebsd/openvpn-server
+      openvpn: "{{ openvpn_tcp }}"
