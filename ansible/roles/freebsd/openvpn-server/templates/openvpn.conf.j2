@@ -54,3 +54,24 @@ chroot /var/empty
 persist-key
 persist-tun
 {% endif %}
+
+{% set keys = openvpn_keys %}
+{% if openvpn.keys is defined %}
+{%    set keys = openvpn.keys %}
+{% endif %}
+
+<ca>
+{{ lookup('file', keys.ca) }}
+</ca>
+
+<cert>
+{{ lookup('file', keys.cert) }}
+</cert>
+
+<key>
+{{ lookup('file', keys.key) }}
+</key>
+
+<dh>
+{{ lookup('file', keys.dh) }}
+</dh>
