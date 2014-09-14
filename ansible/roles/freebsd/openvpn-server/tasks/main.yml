@@ -1,9 +1,11 @@
 ---
 - name: does openvpn service instance exist?
+  tags: openvpn
   stat: path=/usr/local/etc/rc.d/{{ openvpn.name | default(openvpn_name) }}
   register: openvpn_rc_script
 
 - name: link openvpn service instance
+  tags: openvpn
   sudo: yes
   when: not openvpn_rc_script.stat.exists
   file: >
@@ -12,12 +14,14 @@
     state=link
 
 - name: ensure openvpn.conf
+  tags: openvpn
   sudo: yes
   template: >
     dest=/usr/local/etc/{{ openvpn.name | default(openvpn_name) }}.conf
     src=openvpn.conf.j2
 
 - name: enable openvpn service
+  tags: openvpn
   sudo: yes
   service: >
     name={{ openvpn.name | default(openvpn_name) }}
