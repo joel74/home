@@ -26,7 +26,7 @@
 - hosts: bydlenka
   roles:
     - role: ansible
-    - role: easy-rsa
+    - role: freebsd/easy-rsa
     - role: freebsd/file-server-home
     - role: freebsd/file-server-backup
 
