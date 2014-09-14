@@ -25,6 +25,13 @@
 
 - hosts: bydlenka
   roles:
+    - role: easy-rsa
+      keydir: /data/ssl
+      certs:
+      - cn: julie-ip5
+      - cn: julie-mba
+      - cn: julie-mbpr
+
     - role: freebsd/file-server-home
     - role: freebsd/file-server-backup
 

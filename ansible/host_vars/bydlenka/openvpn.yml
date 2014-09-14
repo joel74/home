@@ -20,4 +20,6 @@ openvpn_tcp:
 
 openvpn_cipher:      AES-128-CBC
 openvpn_comp_lzo:    true
+openvpn_keys:
+    # TODO
 openvpn_max_clients: 16
