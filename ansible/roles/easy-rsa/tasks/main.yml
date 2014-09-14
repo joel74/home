@@ -19,4 +19,4 @@
     ca_root={{ keydir | default(easyrsa_keydir) | mandatory }}
     cn={{ item.cn }}
     state={{ item.state | default('present') }}
-  with_items: certs
+  with_items: certs | default(easyrsa_certs) | mandatory

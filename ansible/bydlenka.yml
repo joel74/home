@@ -25,19 +25,14 @@
 
 - hosts: bydlenka
   roles:
+    - role: ansible
     - role: easy-rsa
-      keydir: /data/ssl
-      certs:
-      - cn: julie-ip5
-      - cn: julie-mba
-      - cn: julie-mbpr
-
     - role: freebsd/file-server-home
     - role: freebsd/file-server-backup
 
     - role: freebsd/openvpn-server
+      openvpn: "{{ openvpn_udp }}"
 
     - role: freebsd/openvpn-server
       openvpn: "{{ openvpn_tcp }}"
 
-    - role: ansible
