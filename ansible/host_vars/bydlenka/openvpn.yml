@@ -1,4 +1,10 @@
 ---
+easyrsa_keydir: /data/ssl
+easyrsa_certs:
+- cn: julie-ip5
+- cn: julie-mba
+- cn: julie-mbpr
+
 openvpn_udp:
   name:   openvpn
   dev:    tun0

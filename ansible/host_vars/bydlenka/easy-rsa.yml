@@ -1,7 +1,0 @@
----
-easyrsa_keydir: /data/ssl
-easyrsa_certs:
-- cn: julie-ip5
-- cn: julie-mba
-- cn: julie-mbpr
-
