@@ -26,7 +26,7 @@ openvpn_tcp:
 
 openvpn_cipher:      AES-128-CBC
 openvpn_comp_lzo:    true
-openvpn_keys:
+openvpn_cred:
   ca:   "{{ easyrsa_keydir }}/keys/ca.pem"
   cert: "{{ easyrsa_keydir }}/keys/vpn.juliekoubova.net.pem"
   dh:   "{{ easyrsa_keydir }}/keys/dh1024.pem"

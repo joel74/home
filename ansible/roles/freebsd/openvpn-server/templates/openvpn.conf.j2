@@ -1,5 +1,14 @@
 # {{ ansible_managed }}
 
+{% if openvpn.cred is defined %}
+{% set openvpn_cred = openvpn.cred %}
+{% endif %}
+
+ca   {{ openvpn_cred.ca }}
+cert {{ openvpn_cred.cert }}
+key  {{ openvpn_cred.key }}
+dh   {{ openvpn_cred.dh }}
+
 {% if openvpn.bind_ip | default(openvpn_bind_ip) is defined %}
 local {{ openvpn.bind_ip | default(openvpn_bind_ip) }}
 {% endif %}
@@ -54,24 +63,3 @@ chroot /var/empty
 persist-key
 persist-tun
 {% endif %}
-
-{% set keys = openvpn_keys %}
-{% if openvpn.keys is defined %}
-{%    set keys = openvpn.keys %}
-{% endif %}
-
-<ca>
-{{ lookup('file', keys.ca) }}
-</ca>
-
-<cert>
-{{ lookup('file', keys.cert) }}
-</cert>
-
-<key>
-{{ lookup('file', keys.key) }}
-</key>
-
-<dh>
-{{ lookup('file', keys.dh) }}
-</dh>
