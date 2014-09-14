@@ -1,4 +1,8 @@
 ---
 dependencies:
 - role: freebsd/port
+  name: py-setuptools
+
+- role: freebsd/port
   name: ansible
+  unset: ACCELERATE
