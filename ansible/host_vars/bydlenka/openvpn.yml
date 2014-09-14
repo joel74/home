@@ -1,5 +1,5 @@
 ---
-openvpn:
+openvpn_udp:
   name:   openvpn
   dev:    tun0
   proto:  udp
