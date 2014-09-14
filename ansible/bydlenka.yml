@@ -2,37 +2,38 @@
 ---
 - hosts: FreeBSD
   roles:
-    - role:    freebsd/etc/make.conf-default_versions
-      python:  2.7
-      python2: 2.7
+  - role:    freebsd/etc/make.conf-default_versions
+    python:  2.7
+    python2: 2.7
 
-    - role:  freebsd/etc/make.conf-options
-      unset: DOCS EXAMPLES NLS X11
+  - role:  freebsd/etc/make.conf-options
+    unset: DOCS EXAMPLES NLS X11
 
-    - freebsd/etc/mergemaster.rc
-    - freebsd/etc/motd
-    - freebsd/etc/sysctl.conf/hw.syscons.bell
-    - freebsd/etc/src.conf
+  - freebsd/etc/mergemaster.rc
+  - freebsd/etc/motd
+  - freebsd/etc/sysctl.conf/hw.syscons.bell
+  - freebsd/etc/src.conf
 
-    - freebsd/port/sudo
-    - freebsd/port/portmaster
+  - freebsd/port/sudo
+  - freebsd/port/portmaster
 
-    - freebsd/portsnap-periodic
-    - freebsd/svnup-periodic
-    - freebsd/kernconf
+  - freebsd/portsnap-periodic
+  - freebsd/svnup-periodic
+  - freebsd/kernconf
 
-    - julie
+  - julie
 
 - hosts: bydlenka
   roles:
-    - role: ansible
-    - role: freebsd/easy-rsa
-    - role: freebsd/file-server-home
-    - role: freebsd/file-server-backup
+  - role: ansible
+  - role: freebsd/easy-rsa
+  - role: freebsd/file-server-home
+  - role: freebsd/file-server-backup
 
-    - role: freebsd/openvpn-server
-      openvpn: "{{ openvpn_udp }}"
+- hosts: daemonik
+  roles:
+  - role: freebsd/openvpn-server
+    openvpn: "{{ openvpn_udp }}"
 
-    - role: freebsd/openvpn-server
-      openvpn: "{{ openvpn_tcp }}"
-
+  - role: freebsd/openvpn-server
+    openvpn: "{{ openvpn_tcp }}"

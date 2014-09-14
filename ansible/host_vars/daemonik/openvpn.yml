@@ -1,4 +1,9 @@
 ---
+
+daemonik_internal_ip: 10.42.1.1
+daemonik_udp_vpn_net: 10.42.2.0
+daemonik_tcp_vpn_net: 10.42.3.0
+
 easyrsa_keydir: /data/ssl
 easyrsa_certs:
 - cn: julie-ip5
@@ -11,7 +16,7 @@ openvpn_udp:
   proto:  udp
   status: /var/log/openvpn.status
   ipv4:
-    network: 10.20.1.0
+    network: "{{ daemonik_udp_vpn_net }}"
     mask:    255.255.255.0
 
 openvpn_tcp:
@@ -21,7 +26,7 @@ openvpn_tcp:
   tcp_nodelay: true
   status:      /var/log/openvpn_tcp.status
   ipv4:
-    network: 10.20.2.0
+    network: "{{ daemonik_tcp_vpn_net }}"
     mask:    255.255.255.0
 
 openvpn_cipher:      AES-128-CBC
@@ -32,3 +37,6 @@ openvpn_cred:
   dh:   "{{ easyrsa_keydir }}/keys/dh1024.pem"
   key:  "{{ easyrsa_keydir }}/keys/vpn.juliekoubova.net.key"
 openvpn_max_clients: 16
+openvpn_push:
+- route {{ daemonik_internal_ip }} 255.255.255.255 vpn_gateway
+- dhcp-option DNS {{ daemonik_internal_ip }}
