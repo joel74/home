@@ -13,11 +13,17 @@
     src=/usr/local/etc/rc.d/openvpn
     state=link
 
+- name: /usr/local/etc/openvpn
+  tags: openvpn
+  sudo: yes
+  file: dest=/usr/local/etc/openvpn
+        state=directory
+
 - name: ensure openvpn.conf
   tags: openvpn
   sudo: yes
   template: >
-    dest=/usr/local/etc/{{ openvpn.name | default(openvpn_name) }}.conf
+    dest=/usr/local/etc/openvpn/{{ openvpn.name | default(openvpn_name) }}.conf
     src=openvpn.conf.j2
 
 - name: enable openvpn service
