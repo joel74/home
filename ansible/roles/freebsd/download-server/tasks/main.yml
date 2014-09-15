@@ -1,0 +1,28 @@
+---
+- name: transmission rc.conf.d
+  tags: download-server
+  sudo: yes
+  notify: restart transmission
+  template: >
+    dest=/etc/rc.conf.d/transmission
+    src=rc.conf.d.j2
+
+- name: transmission settings.json
+  tags: download-server
+  sudo: yes
+  notify: restart transmission
+  template: >
+    dest=/usr/local/etc/transmission/home/settings.json
+    owner=transmission
+    group=transmission
+    src=settings.json.j2
+
+- name: ensure transmission member of downloads group
+  tags: download-server
+  sudo: yes
+  user: name=transmission groups={{ downloads_group }} append=yes
+
+- name: transmission started
+  tags: download-server
+  sudo: yes
+  service: name=transmission state=started

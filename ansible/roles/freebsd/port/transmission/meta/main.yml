@@ -1,4 +1,4 @@
 ---
 dependencies:
 - role: freebsd/port
-  name: transmission
+  name: net-p2p/transmission-daemon
