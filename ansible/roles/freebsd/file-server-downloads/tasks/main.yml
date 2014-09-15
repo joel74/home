@@ -1,0 +1,22 @@
+---
+- name:  downloads group
+  sudo:  yes
+  group: name={{ downloads_group | mandatory }} state=present
+
+- name: downloads group members
+  sudo: yes
+  user: name={{ item }} groups={{ downloads_group | mandatory }} append=yes
+  with_items: downloads_users | mandatory
+
+- name: downloads filesystem
+  sudo: yes
+  zfs:  name={{ zpool|mandatory }}{{ downloads_root|mandatory }}
+        quota={{ downloads_quota | default(none) }}
+        state=present
+
+- name: downloads dir permissions
+  sudo: yes
+  file: name={{ downloads_root | mandatory }}
+        group={{ downloads_group | mandatory }}
+        state=directory
+        mode=774

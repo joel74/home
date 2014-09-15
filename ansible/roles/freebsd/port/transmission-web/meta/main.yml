@@ -1,0 +1,5 @@
+---
+dependencies:
+- role: freebsd/port/transmission
+- role: freebsd/port
+  name: transmission-web

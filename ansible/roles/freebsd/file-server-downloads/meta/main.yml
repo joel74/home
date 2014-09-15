@@ -1,0 +1,7 @@
+---
+dependencies:
+- role: freebsd/file-server-afp-share
+  afp_share_name: Downloads
+  afp_share:
+  - { key: 'path',         value: '{{ downloads_root|mandatory }}' }
+  - { key: 'valid users',  value: '@{{ downloads_group|mandatory }}' }

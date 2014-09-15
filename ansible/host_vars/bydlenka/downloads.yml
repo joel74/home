@@ -1,0 +1,5 @@
+---
+downloads_root: /data/downloads
+downloads_group: downloads
+downloads_users: julie
+downloads_quota: 100G

@@ -25,10 +25,12 @@
 
 - hosts: bydlenka
   roles:
-  - role: ansible
-  - role: freebsd/easy-rsa
-  - role: freebsd/file-server-home
-  - role: freebsd/file-server-backup
+  - ansible
+# - freebsd/easy-rsa
+  - freebsd/file-server-home
+  - freebsd/file-server-backup
+  - freebsd/file-server-downloads
+  - freebsd/download-server
 
 - hosts: daemonik
   roles:
