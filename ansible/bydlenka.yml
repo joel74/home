@@ -32,6 +32,9 @@
   - freebsd/file-server-downloads
   - freebsd/download-server
   - freebsd/www-server
+  - role: freebsd/www-site
+    name: bydlenka
+    src: sites-available/bydlenka.conf.j2
 
 - hosts: daemonik
   roles:
