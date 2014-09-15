@@ -17,6 +17,24 @@
     group=transmission
     src=settings.json.j2
 
+- name: transmission log
+  tags: download-server
+  sudo: yes
+  copy: dest=/var/log/transmission
+        content=""
+        owner=transmission
+        group=0
+        mode=0640
+
+- name: transmission var dir
+  tags: download-server
+  sudo: yes
+  file: dest=/var/run/transmission
+        state=directory
+        owner=transmission
+        group=0
+        mode=0640
+
 - name: ensure transmission member of downloads group
   tags: download-server
   sudo: yes
