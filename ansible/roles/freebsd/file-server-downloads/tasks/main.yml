@@ -1,22 +1,27 @@
 ---
 - name:  downloads group
+  tags:  file-server
   sudo:  yes
   group: name={{ downloads_group | mandatory }} state=present
 
 - name: downloads group members
+  tags: file-server
   sudo: yes
   user: name={{ item }} groups={{ downloads_group | mandatory }} append=yes
   with_items: downloads_users | mandatory
 
 - name: downloads filesystem
+  tags: file-server
   sudo: yes
   zfs:  name={{ zpool|mandatory }}{{ downloads_root|mandatory }}
         quota={{ downloads_quota | default(none) }}
         state=present
 
 - name: downloads dir permissions
+  tags: file-server
   sudo: yes
   file: name={{ downloads_root | mandatory }}
         group={{ downloads_group | mandatory }}
         state=directory
         mode=774
+        recurse=yes
