@@ -1,10 +1,12 @@
 ---
-- name:       home filesystem
-  sudo:       yes
-  zfs:        name={{ zpool|mandatory }}{{ home_root|mandatory }}
-              state=present
+- name: home filesystem
+  tags: file-server
+  sudo: yes
+  zfs:  name={{ zpool|mandatory }}{{ home_root|mandatory }}
+        state=present
 
 - name:       user home filesystems
+  tags:       file-server
   sudo:       yes
   zfs:        name={{ zpool|mandatory }}{{ home_root|mandatory }}/{{ item.name|mandatory }}
               quota={{ item.quota | default(none) }}
@@ -12,12 +14,18 @@
   with_items: home_users|mandatory
 
 - name:       user home filesystems permissions
+  tags:       file-server
   sudo:       yes
   file:       name={{ home_root|mandatory }}/{{ item.name|mandatory }}
               owner={{ item.name|mandatory }}
+              group=0
+              "mode=u+rwX,g+rX,o="
+              state=directory
+              recurse=yes
   with_items: home_users|mandatory
 
 - name:       assign user homes
+  tags:       file-server
   sudo:       yes
   user:       name={{ item.name|mandatory }}
               home={{ home_root|mandatory }}/{{ item.name|mandatory }}

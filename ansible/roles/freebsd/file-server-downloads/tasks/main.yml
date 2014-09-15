@@ -21,7 +21,8 @@
   tags: file-server
   sudo: yes
   file: name={{ downloads_root | mandatory }}
+        owner=0
         group={{ downloads_group | mandatory }}
         state=directory
-        mode=774
+        mode=ug+rwX,o+rX
         recurse=yes
