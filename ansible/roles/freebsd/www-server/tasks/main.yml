@@ -1,0 +1,30 @@
+---
+- name: site directories
+  tags: www
+  sudo: yes
+  file: dest=/usr/local/etc/nginx/{{ item }}
+        state=directory
+  with_items:
+  - sites-available
+  - sites-enabled
+
+- name: log directories
+  tags: www
+  sudo: yes
+  file: dest=/var/log/nginx
+        state=directory
+        owner=www
+        group=0
+        mode=0770
+
+- name: nginx.conf
+  tags: www
+  sudo: yes
+  notify: reload nginx
+  template: dest=/usr/local/etc/nginx/nginx.conf
+            src=nginx.conf.j2
+
+- name: nginx enabled and started
+  tags: www
+  sudo: yes
+  service: name=nginx enabled=yes state=started

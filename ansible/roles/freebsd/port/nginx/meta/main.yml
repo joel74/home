@@ -1,0 +1,6 @@
+---
+dependencies:
+- role: freebsd/port
+  name: nginx
+  set:  HTTP_GZIP_STATIC SPDY
+
