@@ -7,6 +7,11 @@
     dest=/etc/rc.conf.d/transmission
     src=rc.conf.d.j2
 
+- name: transmission stopped (would overwrite settings.json)
+  tags: download-server
+  sudo: yes
+  service: name=transmission state=stopped
+
 - name: transmission settings.json
   tags: download-server
   sudo: yes
@@ -22,6 +27,7 @@
   sudo: yes
   copy: dest=/var/log/transmission
         content=""
+        force=no
         owner=transmission
         group=0
         mode=0640
@@ -39,6 +45,13 @@
   tags: download-server
   sudo: yes
   user: name=transmission groups={{ downloads_group }} append=yes
+
+- name: OpenSubtitles downloader
+  tags: download-server
+  sudo: yes
+  git:  repo=https://github.com/juliekoubova/OpenSubtitlesDownload.git
+        dest=/usr/local/etc/transmission/home/OpenSubtitlesDownload
+        update=yes
 
 - name: transmission started
   tags: download-server
