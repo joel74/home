@@ -14,6 +14,7 @@
   tags: file-server
   sudo: yes
   zfs:  name={{ zpool|mandatory }}{{ downloads_root|mandatory }}
+        exec=off
         quota={{ downloads_quota | default(none) }}
         state=present
 
@@ -21,8 +22,6 @@
   tags: file-server
   sudo: yes
   file: name={{ downloads_root | mandatory }}
-        owner=0
         group={{ downloads_group | mandatory }}
         state=directory
-        mode=ug+rwX,o+rX
-        recurse=yes
+        mode=ug=rwx,o=rx
