@@ -4,7 +4,7 @@
   sudo: yes
   notify: restart transmission
   template: >
-    dest=/etc/rc.conf.d/transmission
+    dest=/usr/local/etc/rc.conf.d/transmission
     src=rc.conf.d.j2
 
 - name: transmission stopped (would overwrite settings.json)
@@ -19,7 +19,7 @@
   template: >
     dest=/usr/local/etc/transmission/home/settings.json
     owner=transmission
-    group=transmission
+    group={{ downloads_group }}
     src=settings.json.j2
 
 - name: transmission log
@@ -45,6 +45,11 @@
   tags: download-server
   sudo: yes
   user: name=transmission groups={{ downloads_group }} append=yes
+
+- name: remove default transmission group
+  tags: download-server
+  sudo: yes
+  group: name=transmission state=absent
 
 - name: OpenSubtitles downloader
   tags: download-server
