@@ -1,0 +1,10 @@
+#!/bin/sh
+# {{ ansible_managed }}
+
+umask 002
+
+SCRIPT=/usr/local/etc/transmission/home/OpenSubtitlesDownload/AutoDownload.py
+PATH=/usr/local/bin:$PATH
+export PATH
+
+$SCRIPT $TR_TORRENT_DIR

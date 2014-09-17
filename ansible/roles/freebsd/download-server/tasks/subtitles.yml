@@ -1,0 +1,15 @@
+- name: OpenSubtitles downloader
+  tags: download-server
+  sudo: yes
+  git:  repo=https://github.com/juliekoubova/OpenSubtitlesDownload.git
+        dest=/usr/local/etc/transmission/home/OpenSubtitlesDownload
+        update=yes
+
+- name: torrent-done script
+  tags: download-server
+  sudo: yes
+  template: dest=/usr/local/etc/transmission/home/torrent-done
+            src=torrent-done.j2
+            owner=transmission
+            group={{ downloads_group }}
+            mode=755
