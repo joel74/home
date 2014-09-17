@@ -51,13 +51,6 @@
   sudo: yes
   group: name=transmission state=absent
 
-- name: OpenSubtitles downloader
-  tags: download-server
-  sudo: yes
-  git:  repo=https://github.com/juliekoubova/OpenSubtitlesDownload.git
-        dest=/usr/local/etc/transmission/home/OpenSubtitlesDownload
-        update=yes
-
 - name: transmission started
   tags: download-server
   sudo: yes
