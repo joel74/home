@@ -1,6 +1,12 @@
 #!/bin/sh
 # {{ ansible_managed }}
 
-find "{{ source }}"   \
-     -name \*.torrent \
-     -exec sh -c 'scp {} "{{ dest }}" && rm {}' \;
+if [ "$1" ]; then
+    scp "$1" "{{ dest }}" && \
+    rm  "$1"              && \
+    osascript -e "display notification \"$1\" with title \"Torrent Uploader\" subtitle \"Successfully uploaded\""
+else
+    find "{{ source }}"   \
+         -name \*.torrent \
+         -exec $0 \{\} \;
+fi
