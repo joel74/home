@@ -1,0 +1,6 @@
+#!/bin/sh
+# {{ ansible_managed }}
+
+find "{{ source }}"   \
+     -name \*.torrent \
+     -exec sh -c 'scp {} "{{ dest }}" && rm {}' \;

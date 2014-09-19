@@ -1,0 +1,32 @@
+---
+- name: script directory
+  tags: torrent-uploader
+  file: dest=~/Library/JulieKoubova
+        state=directory
+
+- name: script
+  tags: torrent-uploader
+  template: >
+    dest=~/Library/JulieKoubova/TorrentUploader.sh
+    mode=755
+    src=TorrentUploader.sh.j2
+
+- name: launch agent
+  tags: torrent-uploader
+  template: >
+    dest=~/Library/LaunchAgents/net.juliekoubova.TorrentUploader.plist
+    src=TorrentUploader.plist.j2
+  register: plist
+
+- name:    unload launch agent
+  tags:    torrent-uploader
+  command: /bin/launchctl unload ~/Library/LaunchAgents/net.juliekoubova.TorrentUploader.plist
+  when:    plist.changed
+  failed_when: false
+  changed_when: false
+
+- name:     load launch agent
+  tags:     torrent-uploader
+  command:  /bin/launchctl load ~/Library/LaunchAgents/net.juliekoubova.TorrentUploader.plist
+  register: launchctl
+  changed_when: "'Already loaded' not in launchctl.stderr"

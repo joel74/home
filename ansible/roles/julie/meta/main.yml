@@ -7,4 +7,9 @@ dependencies:
 - wget
 - zsh
 
-- julie/gitconfig
+- role: julie/gitconfig
+
+- role:   julie/torrent-uploader
+  source: "{{ ansible_env.HOME }}/Downloads"
+  dest:   bydlenka:/data/downloads
+  when:   ansible_os_family == 'Darwin'
