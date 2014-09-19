@@ -4,7 +4,10 @@
 umask 002
 
 SCRIPT=/usr/local/etc/transmission/home/OpenSubtitlesDownload/AutoDownload.py
+REMOTE=/usr/local/bin/transmission-remote
+
 PATH=/usr/local/bin:$PATH
 export PATH
 
+$REMOTE -t $TR_TORRENT_ID --remove
 $SCRIPT $TR_TORRENT_DIR
