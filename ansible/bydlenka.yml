@@ -25,21 +25,21 @@
 
 - hosts: bydlenka
   roles:
-  - ansible
-# - freebsd/easy-rsa
-  - freebsd/file-server-home
-  - freebsd/file-server-backup
-  - freebsd/file-server-downloads
-  - freebsd/download-server
-  - freebsd/www-server
-  - role: freebsd/www-site
+  - role: ansible
+# - role: easy-rsa
+  - role: file-server-home
+  - role: file-server-backup
+  - role: file-server-downloads
+  - role: download-server
+  - role: www-server
+  - role: www-site
     name: bydlenka
     src: sites-available/bydlenka.conf.j2
 
 - hosts: daemonik
   roles:
-  - role: freebsd/openvpn-server
+  - role: openvpn-server
     openvpn: "{{ openvpn_udp }}"
 
-  - role: freebsd/openvpn-server
+  - role: openvpn-server
     openvpn: "{{ openvpn_tcp }}"

@@ -2,4 +2,4 @@
 dependencies:
 - freebsd/port/transmission
 - freebsd/port/transmission-web
-- freebsd/file-server-downloads
+- file-server-downloads
