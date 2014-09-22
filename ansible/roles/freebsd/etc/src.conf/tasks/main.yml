@@ -1,11 +1,13 @@
 ---
 - name: copy /etc/src.conf files
+  tags: [ freebsd,src.conf ]
   sudo: yes
   copy: >
     dest=/etc
     src=./
 
 - name: include /etc/src.conf.virtual
+  tags: [ freebsd,src.conf ]
   sudo: yes
   lineinfile: >
     dest=/etc/src.conf.local
@@ -14,8 +16,17 @@
   when: freebsd_is_virtual
 
 - name: set machine-specific defines
+  tags: [ freebsd,src.conf ]
   sudo: yes
   lineinfile: >
     dest=/etc/src.conf.local
     "line={{ item }}="
   with_items: freebsd_srcconf
+
+- name: set machine-specific modules
+  tags: [ freebsd,src.conf ]
+  sudo: yes
+  lineinfile:
+    dest: /etc/src.conf.local
+    line: MODULES_OVERRIDE+= {{ item }}
+  with_items: freebsd_modules

@@ -1,2 +1,4 @@
 ---
 freebsd_is_virtual: "{{ ansible_virtualization_role|default('NA') == 'guest' }}"
+freebsd_modules: []
+freebsd_srcconf: []
