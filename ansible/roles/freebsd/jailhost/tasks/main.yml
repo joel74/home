@@ -1,0 +1,15 @@
+---
+- name: jails filesystem
+  tags: jailhost
+  sudo: yes
+  zfs:
+    name:  "{{ zpool | mandatory }}{{ jails_root | mandatory }}"
+    quota: "{{ jails_quota | default(none) }}"
+    state: present
+
+- name: ezjail.conf
+  tags: jailhost
+  sudo: yes
+  template:
+    dest: /usr/local/etc/ezjail.conf
+    src: ezjail.conf.j2

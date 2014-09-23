@@ -1,4 +1,6 @@
 ---
+freebsd_modules:
+- linux
 freebsd_srcconf:
 - WITHOUT_BLUETOOTH
 - WITHOUT_NETGRAPH

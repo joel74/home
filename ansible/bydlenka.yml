@@ -36,6 +36,8 @@
     name: bydlenka
     src: sites-available/bydlenka.conf.j2
 
+  - role: freebsd/jailhost
+
 - hosts: daemonik
   roles:
   - role: openvpn-server
