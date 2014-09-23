@@ -3,5 +3,3 @@ freebsd_srcconf:
 - WITHOUT_BLUETOOTH
 - WITHOUT_NETGRAPH
 - WITHOUT_WIRELESS
-freebsd_modules:
-- linux
