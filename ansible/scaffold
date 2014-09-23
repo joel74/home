@@ -159,8 +159,15 @@ class ScaffolderCommand(object):
     def add_name_argument(self, p):
         p.add_argument(
                 'name',
-                metavar=' name'
+                metavar='name'
             )
+
+    def add_platform_argument(self, p):
+        p.add_argument('-p', '--platform',
+                metavar='platform',
+                choices=map(lambda p: p.name, Platform.all())
+            )
+
 
     @classmethod
     def main(cls):
@@ -215,60 +222,38 @@ class PackageScaffolder(ScaffolderCommand):
 
     def parser(self, sp):
         self.add_name_argument(sp)
+        self.add_platform_argument(sp)
+
+    def scaffold_plat(self, plat, name):
+        plat_role = Role(
+                os.path.join(plat.name, plat.role_name, name)
+            )
+
+        plat_role.add_dependency(
+                role = os.path.join(plat.name, plat.role_name),
+                name = name
+            )
+
+        return plat_role
 
     def scaffold(self, args):
-        pkg_role = Role(args.name)
-
-        for plat in Platform.all():
-            plat_role = Role(
-                    os.path.join(plat.name, plat.role_name, pkg_role.name)
-                )
-
-            plat_role.add_dependency(
-                    role = os.path.join(plat.name, plat.role_name),
-                    name = pkg_role.name
-                )
-
-            pkg_role.add_dependency(
-                    role = plat_role.name,
-                    when = 'ansible_os_family == "{0}"'.format(plat.os_family)
-                )
-
+        if args.platform:
+            plat = Platform.get(args.platform)
+            plat_role = self.scaffold_plat(plat, args.name)
             yield plat_role
+        else:
+            pkg_role = Role(args.name)
 
-        yield pkg_role
+            for plat in Platform.all():
+                plat_role = self.scaffold_plat(plat, pkg_role.name)
 
-#class PlatformPackageScaffolder(ScaffolderCommand):
-#    """Scaffolds a platform-specific package role."""
-#
-#    COMMAND = 'platform-pkg'
-#
-#    def parser(self, sp):
-#        sp.add_argument('-p', '--platform',
-#                metavar='platform-name',
-#                choices=map(lambda p: p.name, Platform.all())
-#            )
-#        sp.add_argument('name', metavar='package-name')
-#
-#    def scaffold(self, args):
-#        name = Role.strip_prefix(args.name)
-#        platform = None
-#
-#        if args.platform:
-#            platform = Platform.get(args.platform)
-#
-#        if platform is None:
-#            parts    = name.split('/')
-#            name     = os.path.join(*parts[1:])
-#            platform = Platform.get(parts[0])
-#
-#            if platform is None:
-#                stderr("platform must be specified either using the -p parameter, " +
-#                       "or as the first part of the role name")
-#                return
-#
-#        path = os.path.join(platform.name, name)
-#        yield PlatformPkgRole(path, name, platform)
+                pkg_role.add_dependency(
+                        role = plat_role.name,
+                        when = 'ansible_os_family == "{0}"'.format(plat.os_family)
+                    )
+                yield plat_role
+
+            yield pkg_role
 
 class RoleEditor(ScaffolderCommand):
     """
