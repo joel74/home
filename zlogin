@@ -1,7 +1,7 @@
 #!/usr/bin/env zsh
 
 if [ -x "~/.julie/tmux/multiplexer" ]; then
-    "~/.julie/tmux/multiplexer"
+    ~/.julie/tmux/multiplexer
 fi
 
 motd
