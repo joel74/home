@@ -37,7 +37,7 @@
     name: bydlenka
     src: sites-available/bydlenka.conf.j2
 
-  - role: freebsd/jailhost
+  - role: freebsd/linux-crashplan
 
 - hosts: daemonik
   roles:

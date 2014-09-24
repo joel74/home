@@ -1,0 +1,10 @@
+---
+- name: crashplan enabled and started
+  tags: crashplan
+  sudo: yes
+  service:
+    name: crashplan
+    state: started
+    enabled: yes
+  register: r
+  failed_when: r.failed and not 'WARNING:' in r.msg
