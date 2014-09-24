@@ -1,9 +1,9 @@
 ---
 - name: linprocfs in fstab
-  tags: linux, linprocfs
+  tags: [ linux, linprocfs ]
   sudo: yes
   lineinfile:
     dest: /etc/fstab
-    line: linprocfs /compat/linux/proc linprocfs rw 0 0
+    line: linprocfs /compat/linux/proc linprocfs rw,late 0 0
     regexp: /compat/linux/proc|linprocfs
     create: yes
