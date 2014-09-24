@@ -20,8 +20,6 @@ function gco {
   git commit -m "$*"
 }
 
-typeset -gx JACHYMKO=`echo ~/.jachymko(:a)`
-
 typeset -gxU PATH=/usr/local/bin:/usr/bin:/bin:/usr/local/sbin:/usr/sbin:/sbin
 typeset -gx  PAGER=less
 typeset -gx  VISUAL=vim
@@ -41,9 +39,9 @@ bindkey "^[[B" history-search-forward
 autoload -U colors && colors
 autoload -U compinit && compinit -U
 
-# autoload all functions in .jachymko/zsh
-fpath=($JACHYMKO/zsh $fpath)
-autoload $JACHYMKO/zsh/*(:t)
+# autoload all functions in .julie/zsh
+fpath=(~/.julie/zsh $fpath)
+autoload ~/.julie/zsh/*(:t)
 
 function precmd {
   tab_label=${PWD/${HOME}/\~} # use 'relative' path
@@ -87,4 +85,4 @@ function source-if-exists {
     [[ -s $1 ]] && source $1
 }
 
-source-if-exists $HOME/.jachymko/`uname`/zshrc
+source-if-exists ~/.julie/`uname`/zshrc
