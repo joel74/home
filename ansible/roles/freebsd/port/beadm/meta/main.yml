@@ -1,0 +1,3 @@
+---
+dependencies:
+- {name: beadm, role: freebsd/port}
