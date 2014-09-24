@@ -31,7 +31,6 @@ COMPRESS=${COMPRESS-lz4} # ZFS compression algorithm
 DESTDIR=${DESTDIR-/mnt}              # mount point for the new filesystem
 DISTDIR=${DISTDIR-/usr/freebsd-dist} # where the FreeBSD distribution files are
 
-   TIMEZONE=${TIMEZONE-Europe/Prague} # local timezone
 WHEEL_USERS=${WHEEL_USERS-julie}      # name of the users to be created and added to the wheel group
 
 # Ensure zpool $ZROOT exists
@@ -114,16 +113,16 @@ chmod 1777 var/tmp
 # Link /usr/home to /home
 ln -s usr/home home
 
-# Link timezone to localtime
-(cd etc && ln -s ../usr/share/zoneinfo/$TIMEZONE localtime)
-
 # Copy zpool.cache so the boot loader is able to locate the pool.
 cp /var/tmp/zpool.cache boot/zfs/zpool.cache
 
-# Enable ZFS in kernel and loader.
-echo 'zfs_enable="YES"'                  >> etc/rc.conf
+# Enable ZFS in the loader.
 echo 'zfs_load="YES"'                    >> boot/loader.conf
 echo "vfs.root.mountfrom=\"zfs:$ZROOT\"" >> boot/loader.conf
+
+# Enable essential services
+echo 'sshd_enable="YES"'                 >> etc/rc.conf.d/sshd
+echo 'zfs_enable="YES"'                  >> etc/rc.conf.d/zfs
 
 # ============================================================================================
 # Create users
@@ -142,10 +141,8 @@ for user in $WHEEL_USERS; do
 done
 
 echo FreeBSD has been installed to $DESTDIR
-echo Type 'exit' to unmount the filesystems.
-sh -i < /dev/tty
-
 echo Unmounting filesystems...
+
 cd /
 zfs umount -a
 
