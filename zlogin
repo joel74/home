@@ -1,9 +1,14 @@
 #!/usr/bin/env zsh
 
-if [ -x "~/.julie/tmux/multiplexer" ]; then
-    ~/.julie/tmux/multiplexer
+if [[ -x "${HOME}/.julie/tmux/multiplexer" ]]
+then
+    ${HOME}/.julie/tmux/multiplexer
 fi
 
 motd
 
-[[ -s "$HOME/.rvm/scripts/rvm" ]] && source "$HOME/.rvm/scripts/rvm" # Load RVM into a shell session *as a function*
+if [[ -s "$HOME/.rvm/scripts/rvm" ]]
+then
+    # Load RVM into a shell session *as a function*
+    source "$HOME/.rvm/scripts/rvm"
+fi
