@@ -19,7 +19,7 @@ fi
 #
 # 3. Run this script
 #
-#       fetch -o - https://raw.github.com/juliekoubova/home/master/install-freebsd | sh
+#       fetch -o - http://goo.gl/RPx9OV | sh
 
 # ============================================================================================
 # Configuration
