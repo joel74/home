@@ -1,7 +1,7 @@
-source-file ~/.jachymko/tmux/tmux.conf.shared
+source-file ~/.julie/tmux/tmux.conf.shared
 
 # reload
-bind r source-file ~/.jachymko/tmux/tmux.conf.master
+bind r source-file ~/.julie/tmux/tmux.conf.master
 
 bind c command-prompt -p ssh 'neww -n "%1" "ssh %1"'
 
