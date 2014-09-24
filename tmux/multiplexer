@@ -1,6 +1,6 @@
 #!/bin/sh
 
-    TMUX_DIR="${HOME}/.jachymko/tmux"
+    TMUX_DIR="${HOME}/.julie/tmux"
 DEFAULT_CONF="${TMUX_DIR}/tmux.conf"
  MASTER_CONF="${TMUX_DIR}/tmux.conf.master"
 
