@@ -1,0 +1,9 @@
+---
+- name: hostname config
+  tags: hostname
+  sudo: yes
+  lineinfile:
+    dest: /etc/rc.conf.d/hostname
+    create: yes
+    regexp: ^hostname=
+    line: hostname="{{ ansible_hostname }}"

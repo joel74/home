@@ -11,6 +11,7 @@
 
   - freebsd/etc/mergemaster.rc
   - freebsd/etc/motd
+  - freebsd/etc/rc.conf.d/hostname
   - freebsd/etc/rc.conf.d/network
   - freebsd/etc/sysctl.conf/hw.syscons.bell
   - freebsd/etc/src.conf
