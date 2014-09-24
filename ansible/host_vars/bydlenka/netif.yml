@@ -1,0 +1,4 @@
+---
+netif_cloned_interfaces: lo1
+netif_ifconfig:
+  igb0: DHCP

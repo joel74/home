@@ -1,0 +1,14 @@
+---
+- name: restart netif
+  pause:
+    prompt: >
+      The network settings on {{ ansible_hostname }} have changed.
+      Please execute the following command manually:
+
+          service netif restart
+
+      If the machine uses DHCP to get its IP address, don't forget to run
+
+          service dhclient restart <interface>
+
+      Then, press ENTER to continue this playbook.
