@@ -6,7 +6,8 @@ if [ "$1" ]; then
     rm  "$1"              && \
     osascript -e "display notification \"$1\" with title \"Torrent Uploader\" subtitle \"Successfully uploaded\""
 else
-    find "{{ source }}"   \
-         -name \*.torrent \
+    find "{{ source }}"           \
+         -name \*.torrent         \
+         -not -path \*.download\* \
          -exec $0 \{\} \;
 fi
