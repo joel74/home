@@ -18,7 +18,7 @@ fi
 #
 # 3. Run this script
 #
-#       fetch -o - https://raw.github.com/jachymko/home/master/FreeBSD/install-zfs | sh
+#       fetch -o - https://raw.github.com/juliekoubova/home/master/ansible/bootstrap | sh
 
 # ============================================================================================
 # Configuration
@@ -32,19 +32,10 @@ DESTDIR=${DESTDIR-/mnt}              # mount point for the new filesystem
 DISTDIR=${DISTDIR-/usr/freebsd-dist} # where the FreeBSD distribution files are
 
    TIMEZONE=${TIMEZONE-Europe/Prague} # local timezone
-WHEEL_USERS=${WHEEL_USERS-julie}   # name of the users to be created and added to the wheel group
-
-HOME_TARBALL=/tmp/jachymko.tgz
- HOME_SOURCE=http://github.com/jachymko/home/tarball/master
+WHEEL_USERS=${WHEEL_USERS-julie}      # name of the users to be created and added to the wheel group
 
 # Ensure zpool $ZROOT exists
 zpool status $ZROOT >/dev/null || exit $?
-
-# Download latest home tarball
-if ! [ -e $HOME_TARBALL ]; then
-    echo "Downloading $HOME_SOURCE..."
-    fetch -o $HOME_TARBALL $HOME_SOURCE
-fi
 
 # ============================================================================================
 # ZFS creation
@@ -149,16 +140,6 @@ for user in $WHEEL_USERS; do
     echo Changing ownership of $DESTDIR/home/$user
     chroot $DESTDIR /usr/sbin/chown -R $user:wheel /home/$user
 done
-
-# ============================================================================================
-# Extract home tarball to /root
-# ============================================================================================
-
-if [ -e $HOME_TARBALL ]; then
-    echo "Extracting $HOME_TARBALL to $DESTDIR/root/.jachymko"
-    pax -z -r -f $HOME_TARBALL "-s,jachymko[^/]*,$DESTDIR/root/.jachymko,p"
-    rm pax_global_header 2>/dev/null
-fi
 
 echo FreeBSD has been installed to $DESTDIR
 echo Type 'exit' to unmount the filesystems.
