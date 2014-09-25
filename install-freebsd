@@ -1,10 +1,10 @@
 #!/bin/sh
 
-# ============================================================================================
+# ==============================================================================
 # Julie's FreeBSD 10.0+ ZFS Installation Script
-# ============================================================================================
+# ==============================================================================
 
-# This script automates installation of FreeBSD 10.0 and later on ZFS filesystems.
+# This script automates installation of FreeBSD 10.0 and later on ZFS.
 # The resulting machine is prepared for further configuration using Ansible,
 # i.e., it has Python installed and SSH access enabled.
 #
@@ -15,9 +15,11 @@
 #
 #    2.  Select the "Live CD" option to quit the installer.
 #
-#    3.  In case you are installing 10.0-RELEASE (or anything older than r271549),
-#        make sure the /tmp/bsdinstall_etc directory exists, because that's where
-#        /etc/resolv.conf is linked from. 10.1 shouldn't need this anymore.
+#    3.  In case you are installing 10.0-RELEASE (anything older than r271549),
+#        make sure the /tmp/bsdinstall_etc directory exists, because that's
+#        where /etc/resolv.conf is linked from.
+#
+#        10.1 shouldn't need this anymore.
 #
 #            mkdir /tmp/bsdinstall_etc
 #
@@ -43,8 +45,8 @@
 #                 gpart create -s gpt ada0
 #
 #            5.2. Create a 64K boot partition, a 2G swap partition, and a ZFS
-#                 partition spanning the rest of the drive. Make sure the partitions
-#                 are aligned on 1M boundaries.
+#                 partition spanning the rest of the drive. Make sure
+#                 the partitions are aligned on 1M boundaries.
 #
 #                 gpart add -t freebsd-boot -l boot0 -s 64K       ada0
 #                 gpart add -t freebsd-swap -l swap0 -s  2G -b 1M ada0
@@ -63,9 +65,9 @@
 #            zpool create -m /mnt zroot /dev/gpt/disk0.nop
 #            zpool export zroot
 #
-#    8.  Destroy the NOP device(s) and reimport the pool. Don't forget to specify
-#        the /dev/gpt directory, otherwise the partitions won't be identified by their
-#        GPT labels.
+#    8.  Destroy the NOP device(s) and reimport the pool. Don't forget to
+#        specify the /dev/gpt directory, otherwise the partitions won't be
+#        identified by their GPT labels.
 #
 #            gnop destroy gpt/disk0.nop
 #            zpool import -d /dev/gpt zroot
@@ -75,9 +77,9 @@
 #            fetch --no-verify-peer -o - http://goo.gl/RPx9OV | ZPOOL=zroot sh
 #
 
-# ============================================================================================
+# ==============================================================================
 # Configuration
-# ============================================================================================
+# ==============================================================================
 
 : ${ZPOOL-zroot}                   # ZFS pool name
 : ${SWAP-/dev/gpt/swap0}           # swap partition name
@@ -113,9 +115,9 @@ do
     fi
 done
 
-# ============================================================================================
+# ==============================================================================
 # ZFS creation
-# ============================================================================================
+# ==============================================================================
 
 _zfs_create() {
     # HACK: set $dataset to the last arg. for implicitly enumerates
@@ -171,10 +173,11 @@ _zfs_create -o ${NOEXEC} -o ${NOSUID} -o ${NOCOMP} ${ZPOOL}/usr.ports/packages
 
 read
 
-echo Set the boot environment ${BOOT_ENV} as bootfs
+echo Set the boot environment \"${BOOT_ENV}\" as bootfs
 zpool set bootfs=${BOOT_ENV} ${ZPOOL} || _errex
 
-echo Re-import the pool using known cache file--will be copied to $DESTDIR/boot when done.
+echo Re-import the pool using known cache file.
+echo The file will be copied to \"${DESTDIR}/boot/zfs\" when done.
 zpool export ${ZPOOL} || _errex
 zpool import -o cachefile=/var/tmp/zpool.cache ${ZPOOL} || _errex
 
@@ -187,7 +190,7 @@ cd $DESTDIR
 echo FreeBSD Installation
 for file in ${DISTFILES}
 do
-    echo "Extract ${DISTDIR}/${file} to ${DESTDIR}..."
+    echo "Extract \"${DISTDIR}/${file}\" to \"${DESTDIR}\"..."
     tar -xpf ${DISTDIR}/${file} || _errex
 done
 
@@ -233,7 +236,7 @@ do
     chroot $DESTDIR /usr/sbin/chown -R $user:wheel /home/$user || _errex
 done
 
-echo FreeBSD has been installed to $DESTDIR
+echo FreeBSD has been installed to \"${DESTDIR}\"
 echo Unmounting filesystems...
 
 cd /
