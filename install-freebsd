@@ -81,12 +81,12 @@
 # Configuration
 # ==============================================================================
 
-: ${ZPOOL-zroot}                   # ZFS pool name
-: ${SWAP-/dev/gpt/swap0}           # swap partition name
-: ${DESTDIR-/mnt}                  # mount point for the new filesystem
-: ${DISTDIR-/usr/freebsd-dist}     # where the FreeBSD distribution files are
-: ${DISTFILES-base.txz kernel.txz} # the distribution files to extract
-: ${WHEEL_USERS-julie}             # name of the users to be created and added
+: ${ZPOOL:=zroot}                   # ZFS pool name
+: ${SWAP:=/dev/gpt/swap0}           # swap partition name
+: ${DESTDIR:=/mnt}                  # mount point for the new filesystem
+: ${DISTDIR:=/usr/freebsd-dist}     # where the FreeBSD distribution files are
+: ${DISTFILES:=base.txz kernel.txz} # the distribution files to extract
+: ${WHEEL_USERS:=julie}             # name of the users to be created and added
                                    # to the wheel group
 
 BE_ROOT=${ZPOOL}/ROOT              # boot environment container dataset
@@ -132,8 +132,6 @@ _zfs_create() {
     fi
 }
 
-# Ensure zpool $ZPOOL exists
-
 echo Disable access time.
 zfs set atime=off ${ZPOOL} || _errex
 
@@ -144,7 +142,8 @@ echo Create ${BE_ROOT} container for boot environments
 _zfs_create -o mountpoint=none ${BE_ROOT}
 
 echo Create the default boot environment ${BOOT_ENV}
-_zfs_create -o mountpoint=${DESTDIR} ${BOOT_ENV}
+echo _zfs_create -o mountpoint=${DESTDIR} ${BOOT_ENV}
+exit 42
 
 COMP="compression=on"; NOCOMP="compression=off"
 EXEC="exec=on";        NOEXEC="exec=off"
