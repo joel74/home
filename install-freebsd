@@ -202,7 +202,6 @@ echo Set the boot environment \"${BOOT_ENV}\" as bootfs
 zpool set bootfs=${BOOT_ENV} ${ZPOOL} || _errex
 
 echo Re-import the pool using known cache file.
-echo The file will be copied to \"${MNT}/boot/zfs\" when done.
 zpool export ${ZPOOL} || _errex
 zpool import -o cachefile=/var/tmp/zpool.cache ${ZPOOL} || _errex
 
@@ -243,8 +242,8 @@ _install_from_web() {
     mkdir -p ${MNT}${DIST_DIR} || _errex
 
     echo Download FreeBSD
-    echo    from ${DIST_URL}
-    echo    to   ${MNT}${DIST_DIR}
+    echo "   from ${DIST_URL}"
+    echo "   to   ${MNT}${DIST_DIR}"
 
     for file in MANIFEST ${DIST_FILES}
     do
