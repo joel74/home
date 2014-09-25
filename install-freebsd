@@ -109,9 +109,9 @@ fi
 
 for swp in ${SWAP}
 do
-    if [ ! -b "${swp}" ]
+    if [ ! -c "${swp}" ]
     then
-        _errex "${swp} is not a block device"
+        _errex "${swp} is not a character device"
     fi
 done
 
