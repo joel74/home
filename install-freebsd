@@ -1,64 +1,117 @@
 #!/bin/sh
 
+# ============================================================================================
+# Julie's FreeBSD 10.0+ ZFS Installation Script
+# ============================================================================================
+
+# This script automates installation of FreeBSD 10.0 and later on ZFS filesystems.
+# The resulting machine is prepared for further configuration using Ansible,
+# i.e., it has Python installed and SSH access enabled.
+#
+#
+#    1.  Boot the FreeBSD installation image, e.g.
+#
+#            http://ftp.cz.freebsd.org/pub/FreeBSD/releases/ISO-IMAGES/10.0/FreeBSD-10.0-RELEASE-amd64-disc1.iso
+#
+#    2.  Select the "Live CD" option to quit the installer.
+#
+#    3.  In case you are installing 10.0-RELEASE (or anything older than r271549),
+#        make sure the /tmp/bsdinstall_etc directory exists, because that's where
+#        /etc/resolv.conf is linked from. 10.1 shouldn't need this anymore.
+#
+#            mkdir /tmp/bsdinstall_etc
+#
+#    3a. Set up networking using a static IPv4 address, e.g.:
+#
+#            ifconfig vtnet0 inet 10.20.30.40/24
+#            route add default 10.20.30.1
+#            echo 'nameserver 8.8.8.8'  > /etc/resolv.conf
+#            echo 'nameserver 8.8.4.4' >> /etc/resolv.conf
+#
+#    3b. Set up networking using DHCP, e.g.:
+#
+#            dhclient igb0
+#
+#    4.  Set the hostname
+#
+#            hostname demonik
+#
+#    5.  For each disk:
+#
+#            5.1. Create a GPT partition table
+#
+#                 gpart create -s gpt ada0
+#
+#            5.2. Create a 64K boot partition, a 2G swap partition, and a ZFS
+#                 partition spanning the rest of the drive. Make sure the partitions
+#                 are aligned on 1M boundaries.
+#
+#                 gpart add -t freebsd-boot -l boot0 -s 64K       ada0
+#                 gpart add -t freebsd-swap -l swap0 -s  2G -b 1M ada0
+#                 gpart add -t freebsd-zfs  -l disk0        -b 1M ada0
+#
+#            5.3. Install the ZFS-aware bootloader
+#
+#                 gpart bootcode -b /boot/pmbr -p /boot/gptzfsboot -i 1 ada0
+#
+#    6.  Create a NOP device(s) to force 4K sectors.
+#
+#            gnop create -S 4096 gpt/disk0
+#
+#    7.  Create a ZFS pool from the NOP device(s) and export it.
+#
+#            zpool create -m /mnt zroot /dev/gpt/disk0.nop
+#            zpool export zroot
+#
+#    8.  Destroy the NOP device(s) and reimport the pool. Don't forget to specify
+#        the /dev/gpt directory, otherwise the partitions won't be identified by their
+#        GPT labels.
+#
+#            gnop destroy gpt/disk0.nop
+#            zpool import -d /dev/gpt zroot
+#
+#    9. Run this script, optionally passing configuration variables.
+#
+#            fetch -o - http://goo.gl/RPx9OV | ZPOOL=zroot sh
+#
+
+# ============================================================================================
+# Configuration
+# ============================================================================================
+
+: ${ZPOOL-zroot}               # ZFS pool name
+: ${SWAP-/dev/gpt/swap0}       # swap partition name
+: ${DESTDIR-/mnt}              # mount point for the new filesystem
+: ${DISTDIR-/usr/freebsd-dist} # where the FreeBSD distribution files are
+: ${WHEEL_USERS-julie}         # name of the users to be created and added
+                               # to the wheel group
+
+BE_ROOT=${ZPOOL}/ROOT          # boot environment container dataset
+BOOT_ENV=${BE_ROOT}/current    # the default boot environment dataset
+
 if [ `id -u` != 0 ]
 then
     echo Must be root >&2
     exit 1
 fi
 
-# 1. Create the necessary partitions on the disk(s) and add ZFS aware boot code.
-#
-#       gpart create -s gpt ada0
-#       gpart add -t freebsd-boot -s 94 ada0
-#       gpart add -t freebsd-zfs -l disk0 ada0
-#       gpart bootcode -b /boot/pmbr -p /boot/gptzfsboot -i 1 ada0
-#
-# 2. Create the pool
-#
-#       zpool create -m /mnt zroot /dev/gpt/disk0
-#
-# 3. Run this script
-#
-#       fetch -o - http://goo.gl/RPx9OV | sh
-
-# ============================================================================================
-# Configuration
-# ============================================================================================
-
-    SWAP=${SWAP-2G}                  # swap dataset size
-   ZPOOL=${ZPOOL-zroot}              # ZFS pool name
- BE_ROOT=${ZPOOL}/ROOT               # boot environment container dataset
-BOOT_ENV=${BE_ROOT}/default          # the default boot environment dataset
-
-DESTDIR=${DESTDIR-/mnt}              # mount point for the new filesystem
-DISTDIR=${DISTDIR-/usr/freebsd-dist} # where the FreeBSD distribution files are
-
-WHEEL_USERS=${WHEEL_USERS-julie}     # name of the users to be created and added
-                                     # to the wheel group
-
-# Ensure zpool $ZPOOL exists
-zpool status $ZPOOL >/dev/null || exit $?
-
 # ============================================================================================
 # ZFS creation
 # ============================================================================================
 
+# Ensure zpool $ZPOOL exists
+zpool status $ZPOOL >/dev/null || exit $?
+
 echo Disable access time.
 zfs set atime=off ${ZPOOL}
 
-echo Make sure pool root is not mounted.
+echo Make sure the root data set is not mounted.
 zfs set mountpoint=none ${ZPOOL}
-
-if [ "${SWAP}" ]
-then
-    echo Create ${SWAP} swap zvol.
-    zfs create -o checksum=off -o org.freebsd:swap=on -V ${SWAP} ${ZPOOL}/swap
-fi
 
 echo Create {$BE_ROOT} container for boot environments
 zfs create -o mountpoint=none ${BE_ROOT}
 
-echoe Create the default boot environment ${BOOT_ENV}
+echo Create the default boot environment ${BOOT_ENV}
 zfs create -o mountpoint=${DESTDIR} ${BOOT_ENV}
 
 COMP="compression=on"; NOCOMP="compression=off"
@@ -112,6 +165,12 @@ done
 
 echo Create an empty fstab file
 touch etc/fstab
+
+for swp in ${SWAP}
+do
+    echo Add ${swp} as a swap partition to fstab
+    echo "${swp} none swap sw 0 0" >> etc/fstab
+done
 
 echo Setting tmp and var/tmp permissions
 # sticky = unprivileged users may not delete or rename files of other users
