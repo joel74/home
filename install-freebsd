@@ -142,8 +142,7 @@ echo Create ${BE_ROOT} container for boot environments
 _zfs_create -o mountpoint=none ${BE_ROOT}
 
 echo Create the default boot environment ${BOOT_ENV}
-echo _zfs_create -o mountpoint=${DESTDIR} ${BOOT_ENV}
-exit 42
+_zfs_create -o mountpoint=${DESTDIR} ${BOOT_ENV}
 
 COMP="compression=on"; NOCOMP="compression=off"
 EXEC="exec=on";        NOEXEC="exec=off"
