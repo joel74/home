@@ -25,11 +25,10 @@ fi
 # Configuration
 # ============================================================================================
 
-COMPRESS=${COMPRESS-lz4}             # ZFS compression algorithm
     SWAP=${SWAP-2G}                  # swap dataset size
    ZPOOL=${ZPOOL-zroot}              # ZFS pool name
  BE_ROOT=${ZPOOL}/ROOT               # boot environment container dataset
-BOOT_ENV=${BEROOT}/default           # the default boot environment dataset
+BOOT_ENV=${BE_ROOT}/default          # the default boot environment dataset
 
 DESTDIR=${DESTDIR-/mnt}              # mount point for the new filesystem
 DISTDIR=${DISTDIR-/usr/freebsd-dist} # where the FreeBSD distribution files are
@@ -44,71 +43,56 @@ zpool status $ZPOOL >/dev/null || exit $?
 # ZFS creation
 # ============================================================================================
 
-mkzfs() {
-    local mountpoint
-    mountpoint=$1; shift
-
-    echo "zfs create $mountpoint"
-    zfs create $* $mountpoint
-}
-
-# Try to enable lz4 compression
-if [ "$COMPRESS" = "lz4" ]
-then
-    zpool set lz4_compress=enabled ${ZPOOL} 2>/dev/null || COMPRESS=on
-fi
-
-if [ "$COMPRESS" = "lz4" ]
-then
-    echo "LZ4 compression enabled."
-fi
-
-# Disable access time
+echo Disable access time.
 zfs set atime=off ${ZPOOL}
 
-# Make sure pool root is not mounted
+echo Make sure pool root is not mounted.
 zfs set mountpoint=none ${ZPOOL}
 
-# Swap, maybe?
 if [ "${SWAP}" ]
 then
+    echo Create ${SWAP} swap zvol.
     zfs create -o checksum=off -o org.freebsd:swap=on -V ${SWAP} ${ZPOOL}/swap
 fi
 
-# Create container for boot environments
-zfs create ${BE_ROOT}
+echo Create {$BE_ROOT} container for boot environments
+zfs create -o mountpoint=none ${BE_ROOT}
 
-# Create the default boot environment
+echoe Create the default boot environment ${BOOT_ENV}
 zfs create -o mountpoint=${DESTDIR} ${BOOT_ENV}
 
-COMP="compression=${COMPRESS}"; NOCOMP="compression=off"
-EXEC="exec=on";                 NOEXEC="exec=off"
-SUID="setuid=on";               NOSUID="setuid=off"
+COMP="compression=on"; NOCOMP="compression=off"
+EXEC="exec=on";        NOEXEC="exec=off"
+SUID="setuid=on";      NOSUID="setuid=off"
 
 # These datasets are part of the boot environment
-mkzfs ${BOOT_ENV}/tmp            -o   ${EXEC} -o ${NOSUID} -o   ${COMP}
-mkzfs ${BOOT_ENV}/usr            -o   ${EXEC} -o   ${SUID} -o ${NOCOMP}
-mkzfs ${BOOT_ENV}/var            -o ${NOEXEC} -o ${NOSUID} -o ${NOCOMP}
-mkzfs ${BOOT_ENV}/var/crash      -o ${NOEXEC} -o ${NOSUID} -o   ${COMP}
-mkzfs ${BOOT_ENV}/var/db         -o ${NOEXEC} -o ${NOSUID} -o   ${COMP}
-mkzfs ${BOOT_ENV}/var/db/pkg     -o   ${EXEC} -o ${NOSUID} -o   ${COMP}
-mkzfs ${BOOT_ENV}/var/empty      -o ${NOEXEC} -o ${NOSUID} -o ${NOCOMP}
-mkzfs ${BOOT_ENV}/var/log        -o ${NOEXEC} -o ${NOSUID} -o   ${COMP}
-mkzfs ${BOOT_ENV}/var/mail       -o ${NOEXEC} -o ${NOSUID} -o   ${COMP}
-mkzfs ${BOOT_ENV}/var/run        -o ${NOEXEC} -o ${NOSUID} -o ${NOCOMP}
-mkzfs ${BOOT_ENV}/var/tmp        -o   ${EXEC} -o ${NOSUID} -o   ${COMP}
+zfs create -o   ${EXEC} -o ${NOSUID} -o   ${COMP} ${BOOT_ENV}/tmp
+zfs create -o   ${EXEC} -o   ${SUID} -o ${NOCOMP} ${BOOT_ENV}/usr
+zfs create -o ${NOEXEC} -o ${NOSUID} -o ${NOCOMP} ${BOOT_ENV}/var
+zfs create -o ${NOEXEC} -o ${NOSUID} -o   ${COMP} ${BOOT_ENV}/var/crash
+zfs create -o ${NOEXEC} -o ${NOSUID} -o   ${COMP} ${BOOT_ENV}/var/db
+zfs create -o   ${EXEC} -o ${NOSUID} -o   ${COMP} ${BOOT_ENV}/var/db/pkg
+zfs create -o ${NOEXEC} -o ${NOSUID} -o   ${COMP} ${BOOT_ENV}/var/log
+zfs create -o ${NOEXEC} -o ${NOSUID} -o   ${COMP} ${BOOT_ENV}/var/mail
+zfs create -o ${NOEXEC} -o ${NOSUID} -o ${NOCOMP} ${BOOT_ENV}/var/run
+zfs create -o   ${EXEC} -o ${NOSUID} -o   ${COMP} ${BOOT_ENV}/var/tmp
 
 # These datasets aren't part of the boot environment
-mkzfs ${ZPOOL}/home                -o   ${EXEC} -o ${NOSUID} -o ${NOCOMP}
-mkzfs ${ZPOOL}/usr.ports           -o   ${EXEC} -o ${NOSUID} -o   ${COMP}
-mkzfs ${ZPOOL}/usr.ports/distfiles -o ${NOEXEC} -o ${NOSUID} -o ${NOCOMP}
-mkzfs ${ZPOOL}/usr.ports/packages  -o ${NOEXEC} -o ${NOSUID} -o ${NOCOMP}
-mkzfs ${ZPOOL}/usr.src             -o ${NOEXEC} -o ${NOSUID} -o   ${COMP}
+zfs create -o   ${EXEC} -o ${NOSUID} -o ${NOCOMP} -o mountpoint=${DESTDIR}/home      ${ZPOOL}/home
+zfs create -o   ${EXEC} -o ${NOSUID} -o   ${COMP} -o mountpoint=${DESTDIR}/usr/ports ${ZPOOL}/usr.ports
+zfs create -o ${NOEXEC} -o ${NOSUID} -o   ${COMP} -o mountpoint=${DESTDIR}/usr/src   ${ZPOOL}/usr.src
+zfs create -o ${NOEXEC} -o ${NOSUID} -o ${NOCOMP} -o mountpoint=${DESTDIR}/var/empty ${ZPOOL}/var.empty
 
-# Set the boot environemnt as bootable
+zfs create -o ${NOEXEC} -o ${NOSUID} -o ${NOCOMP} ${ZPOOL}/usr.ports/distfiles
+zfs create -o ${NOEXEC} -o ${NOSUID} -o ${NOCOMP} ${ZPOOL}/usr.ports/packages
+
+zfs list -o name,exec,setuid,compression,mountpoint
+read
+
+echo Set the boot environemnt ${BOOT_ENV} as bootfs
 zpool set bootfs=${BOOT_ENV} ${ZPOOL}
 
-# Import pool using known cache file--will be copied to $DESTDIR/boot when done.
+echo Re-import the pool using known cache file--will be copied to $DESTDIR/boot when done.
 zpool export ${ZPOOL}
 zpool import -o cachefile=/var/tmp/zpool.cache ${ZPOOL}
 
@@ -116,6 +100,7 @@ zpool import -o cachefile=/var/tmp/zpool.cache ${ZPOOL}
 # FreeBSD Installation
 # ============================================================================================
 
+echo FreeBSD Installation
 cd $DESTDIR
 
 # Install FreeBSD
@@ -125,21 +110,22 @@ do
     tar -xpf $DISTDIR/$file
 done
 
-# Apparently an fstab file is required.
+echo Create an empty fstab file
 touch etc/fstab
 
-# Unprivileged user may not delete or rename files of other users in temp directories.
+echo Setting tmp and var/tmp permissions
+# sticky = unprivileged users may not delete or rename files of other users
 chmod 1777 tmp
 chmod 1777 var/tmp
 
-# Copy zpool.cache so the boot loader is able to locate the pool.
+echo Copy zpool.cache so the boot loader is able to locate the pool.
 cp /var/tmp/zpool.cache boot/zfs/zpool.cache
 
-# Enable ZFS in the loader.
+echo Enable ZFS in the loader.
 echo 'zfs_load="YES"'                         >> boot/loader.conf
 echo "vfs.root.mountfrom=\"zfs:${BOOT_ENV}\"" >> boot/loader.conf
 
-# Enable essential services
+echo Enable sshd and zfs services
 echo 'sshd_enable="YES"' >> etc/rc.conf.d/sshd
 echo 'zfs_enable="YES"'  >> etc/rc.conf.d/zfs
 
@@ -149,14 +135,14 @@ echo 'zfs_enable="YES"'  >> etc/rc.conf.d/zfs
 
 for user in $WHEEL_USERS
 do
-    echo Adding wheel user $user
+    echo Add wheel user $user
     chroot $DESTDIR /usr/sbin/pw useradd $user -g wheel
     chroot $DESTDIR /usr/bin/passwd $user < /dev/tty
 
-    echo Creating $DESTDIR/home/$user
+    echo Create $DESTDIR/home/$user
     mkdir home/$user
 
-    echo Changing ownership of $DESTDIR/home/$user
+    echo Change ownership of $DESTDIR/home/$user
     chroot $DESTDIR /usr/sbin/chown -R $user:wheel /home/$user
 done
 
@@ -167,10 +153,11 @@ cd /
 zfs umount -a
 
 zfs set mountpoint=legacy      ${BOOT_ENV}
-zfs set readonly=on            ${BOOT_ENV}/var/empty
 
 zfs set mountpoint=/home       ${ZPOOL}/home
 zfs set mountpoint=/usr/ports  ${ZPOOL}/usr.ports
 zfs set mountpoint=/usr/src    ${ZPOOL}/usr.src
+zfs set mountpoint=/var/empty  ${ZPOOL}/var.empty
+zfs set readonly=on            ${ZPOOL}/var.empty
 
 echo Done. Type 'reboot' to restart the machine.
