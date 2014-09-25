@@ -81,16 +81,45 @@
 # Configuration
 # ==============================================================================
 
-: ${ZPOOL:=zroot}                   # ZFS pool name
-: ${SWAP:=/dev/gpt/swap0}           # swap partition name
-: ${DESTDIR:=/mnt}                  # mount point for the new filesystem
-: ${DISTDIR:=/usr/freebsd-dist}     # where the FreeBSD distribution files are
-: ${DISTFILES:=base.txz kernel.txz} # the distribution files to extract
-: ${WHEEL_USERS:=julie}             # name of the users to be created and added
-                                   # to the wheel group
+# ZFS pool name
+: ${ZPOOL:=zroot}
 
-BE_ROOT=${ZPOOL}/ROOT              # boot environment container dataset
-BOOT_ENV=${BE_ROOT}/current        # the default boot environment dataset
+# swap partition device file, may be empty
+: ${SWAP:=}
+
+# names of the users to be created and added to the wheel group
+: ${WHEEL_USERS:=julie}
+
+# mount point for the new filesystem
+: ${MNT:=/mnt}
+
+# the distribution files to extract
+: ${DIST_FILES:=base.txz kernel.txz}
+
+# where the FreeBSD distribution files are
+: ${DIST_DIR:=/usr/freebsd-dist}
+
+# which version to download if the distribution files are not available
+: ${DIST_RELEASE:=10.0-RELEASE}
+
+# where from download the distribution files
+: ${DIST_MIRROR:=http://ftp.cz.freebsd.org}
+
+# machine architecture (amd64 or whatever)
+: ${DIST_ARCH:=`uname -m`}
+
+# URL where the txz distribution files are
+: ${DIST_URL:=$DIST_MIRROR/pub/FreeBSD/releases/$DIST_ARCH/$DIST_RELEASE}
+
+# boot environment container dataset
+BE_ROOT=${ZPOOL}/ROOT
+
+# the default boot environment dataset
+BOOT_ENV=${BE_ROOT}/current
+
+# ==============================================================================
+# Config Validation
+# ==============================================================================
 
 _errex() {
     echo $1 >&2
@@ -142,7 +171,7 @@ echo Create ${BE_ROOT} container for boot environments
 _zfs_create -o mountpoint=none ${BE_ROOT}
 
 echo Create the default boot environment ${BOOT_ENV}
-_zfs_create -o mountpoint=${DESTDIR} ${BOOT_ENV}
+_zfs_create -o mountpoint=${MNT} ${BOOT_ENV}
 
 COMP="compression=on"; NOCOMP="compression=off"
 EXEC="exec=on";        NOEXEC="exec=off"
@@ -161,36 +190,83 @@ _zfs_create -o ${NOEXEC} -o ${NOSUID} -o ${NOCOMP} ${BOOT_ENV}/var/run
 _zfs_create -o   ${EXEC} -o ${NOSUID} -o   ${COMP} ${BOOT_ENV}/var/tmp
 
 echo Create datasets that aren\'t part of the boot environment
-_zfs_create -o   ${EXEC} -o ${NOSUID} -o ${NOCOMP} -o mountpoint=${DESTDIR}/home      ${ZPOOL}/home
-_zfs_create -o   ${EXEC} -o ${NOSUID} -o   ${COMP} -o mountpoint=${DESTDIR}/usr/ports ${ZPOOL}/usr.ports
-_zfs_create -o ${NOEXEC} -o ${NOSUID} -o   ${COMP} -o mountpoint=${DESTDIR}/usr/src   ${ZPOOL}/usr.src
-_zfs_create -o ${NOEXEC} -o ${NOSUID} -o ${NOCOMP} -o mountpoint=${DESTDIR}/var/empty ${ZPOOL}/var.empty
-_
+_zfs_create -o   ${EXEC} -o ${NOSUID} -o ${NOCOMP} -o mountpoint=${MNT}/home      ${ZPOOL}/home
+_zfs_create -o   ${EXEC} -o ${NOSUID} -o   ${COMP} -o mountpoint=${MNT}/usr/ports ${ZPOOL}/usr.ports
+_zfs_create -o ${NOEXEC} -o ${NOSUID} -o   ${COMP} -o mountpoint=${MNT}/usr/src   ${ZPOOL}/usr.src
+_zfs_create -o ${NOEXEC} -o ${NOSUID} -o ${NOCOMP} -o mountpoint=${MNT}/var/empty ${ZPOOL}/var.empty
+
 _zfs_create -o ${NOEXEC} -o ${NOSUID} -o ${NOCOMP} ${ZPOOL}/usr.ports/distfiles
 _zfs_create -o ${NOEXEC} -o ${NOSUID} -o ${NOCOMP} ${ZPOOL}/usr.ports/packages
-
-read
 
 echo Set the boot environment \"${BOOT_ENV}\" as bootfs
 zpool set bootfs=${BOOT_ENV} ${ZPOOL} || _errex
 
 echo Re-import the pool using known cache file.
-echo The file will be copied to \"${DESTDIR}/boot/zfs\" when done.
+echo The file will be copied to \"${MNT}/boot/zfs\" when done.
 zpool export ${ZPOOL} || _errex
 zpool import -o cachefile=/var/tmp/zpool.cache ${ZPOOL} || _errex
 
-# ============================================================================================
+# ==============================================================================
 # FreeBSD Installation
-# ============================================================================================
+# ==============================================================================
 
-cd $DESTDIR
+_dist_files_on_media() {
 
-echo FreeBSD Installation
-for file in ${DISTFILES}
-do
-    echo "Extract \"${DISTDIR}/${file}\" to \"${DESTDIR}\"..."
-    tar -xpf ${DISTDIR}/${file} || _errex
-done
+    echo Looking for distribution files in ${DIST_DIR}
+
+    for file in ${DIST_FILES}
+    do
+        if [ ! -r "${DIST_DIR}/${file}" ]
+        then
+            echo "    ${file} not found."
+            return 1
+        fi
+    done
+
+    echo "    all files available."
+    return 0
+}
+
+_install_from() {
+    # TODO: verify MANIFEST
+
+    echo Install FreeBSD from ${1}
+    for file in ${DIST_FILES}
+    do
+        echo "Extract \"${1}/${file}\" to \"${MNT}\"..."
+        tar -xpf -C ${MNT} ${1}/${file} || _errex
+    done
+}
+
+_install_from_web() {
+    echo Create ${MNT}${DIST_DIR}
+    mkdir -p ${MNT}${DIST_DIR} || _errex
+
+    echo Download FreeBSD
+    echo    from ${DIST_URL}
+    echo    to   ${MNT}${DIST_DIR}
+
+    for file in MANIFEST ${DIST_FILES}
+    do
+        fetch --no-verify-peer -o ${MNT}${DIST_DIR} ${DIST_URL}/${file} || _errex
+    done
+
+    _install_from ${MNT}${DIST_DIR}
+}
+
+
+if _dist_files_on_media
+then
+    _install_from ${DIST_DIR}
+else
+    _install_from_web
+fi
+
+# ==============================================================================
+# Configuration
+# ==============================================================================
+
+cd $MNT
 
 echo Create an empty fstab file
 touch etc/fstab || _errex
@@ -217,24 +293,24 @@ echo Enable sshd and zfs services
 echo 'sshd_enable="YES"' >> etc/rc.conf.d/sshd || _errex
 echo 'zfs_enable="YES"'  >> etc/rc.conf.d/zfs || _errex
 
-# ============================================================================================
+# ==============================================================================
 # Create users
-# ============================================================================================
+# ==============================================================================
 
 for user in $WHEEL_USERS
 do
     echo Add wheel user $user
-    chroot $DESTDIR /usr/sbin/pw useradd $user -g wheel || _errex
-    chroot $DESTDIR /usr/bin/passwd $user < /dev/tty || _errex
+    chroot $MNT /usr/sbin/pw useradd $user -g wheel || _errex
+    chroot $MNT /usr/bin/passwd $user < /dev/tty || _errex
 
-    echo Create $DESTDIR/home/$user
+    echo Create $MNT/home/$user
     mkdir home/$user || _errex
 
-    echo Change ownership of $DESTDIR/home/$user
-    chroot $DESTDIR /usr/sbin/chown -R $user:wheel /home/$user || _errex
+    echo Change ownership of $MNT/home/$user
+    chroot $MNT /usr/sbin/chown -R $user:wheel /home/$user || _errex
 done
 
-echo FreeBSD has been installed to \"${DESTDIR}\"
+echo FreeBSD has been installed to \"${MNT}\"
 echo Unmounting filesystems...
 
 cd /
