@@ -72,7 +72,7 @@
 #
 #    9. Run this script, optionally passing configuration variables.
 #
-#            fetch -o - http://goo.gl/RPx9OV | ZPOOL=zroot sh
+#            fetch --no-verify-peer -o - http://goo.gl/RPx9OV | ZPOOL=zroot sh
 #
 
 # ============================================================================================
@@ -90,7 +90,7 @@
 BE_ROOT=${ZPOOL}/ROOT              # boot environment container dataset
 BOOT_ENV=${BE_ROOT}/current        # the default boot environment dataset
 
-function _errex() {
+_errex() {
     echo $1 >&2
     exit 1
 }
@@ -117,7 +117,7 @@ done
 # ZFS creation
 # ============================================================================================
 
-function _zfs_create() {
+_zfs_create() {
     # HACK: set $dataset to the last arg. for implicitly enumerates
     # over arguments and the loop variable isn't scoped
     for dataset; do :; done
