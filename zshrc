@@ -80,9 +80,3 @@ zle -N zle-line-init
     PROMPT='$PR_BOLD_WHITE${${${ZLE_VICMD-0}/1/⌘}/0/%0(?. .$PR_RED⚠$PR_BOLD_WHITE)}%~%# %{$reset_color%}'
     RPROMPT='$PR_BG_BLACK$PR_WHITE%!%{$reset_color%}'
 }
-
-function source-if-exists {
-    [[ -s $1 ]] && source $1
-}
-
-source-if-exists ~/.julie/`uname`/zshrc
