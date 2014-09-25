@@ -124,10 +124,9 @@ _zfs_create() {
 
     if zfs list ${dataset} >/dev/null 2>&1
     then
-        echo already exists: ${dataset}
+        echo "   already exists: ${dataset}"
     else
-        echo create: ${dataset}
-        zfs create $* || _errex
+        zfs create $* && echo "   created: ${dataset}" || _errex
     fi
 }
 
@@ -139,7 +138,7 @@ zfs set atime=off ${ZPOOL} || _errex
 echo Make sure the root data set is not mounted.
 zfs set mountpoint=none ${ZPOOL} || _errex
 
-echo Create {$BE_ROOT} container for boot environments
+echo Create ${BE_ROOT} container for boot environments
 _zfs_create -o mountpoint=none ${BE_ROOT}
 
 echo Create the default boot environment ${BOOT_ENV}
