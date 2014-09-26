@@ -247,7 +247,9 @@ _install_from_web() {
 
     for file in MANIFEST ${DIST_FILES}
     do
-        fetch --no-verify-peer -o ${MNT}${DIST_DIR} ${DIST_URL}/${file} || _errex
+        fetch --no-verify-peer --mirror \
+              -o ${MNT}${DIST_DIR}      \
+              ${DIST_URL}/${file} || _errex
     done
 
     _install_from ${MNT}${DIST_DIR}
