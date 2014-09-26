@@ -127,8 +127,12 @@
 # ZFS pool name
 : ${ZPOOL:=zroot}
 
-# swap partition device file, may be empty
+# swap partition device file, may be empty if the machine has more than 2 GB of
+# RAM
 : ${SWAP:=}
+
+# allow no swap partitions even for machines with less than 2 GB of RAM
+: ${NOSWAP:=}
 
 # names of the users to be created and added to the wheel group
 : ${WHEEL_USERS:=julie}
@@ -164,41 +168,6 @@ _errex()
     exit 1
 }
 
-_fg_reset() { echo -n -e "\033[39m"; }
-_fg_red()   { echo -n -e "\033[31m"; }
-_fg_green() { echo -n -e "\033[32m"; }
-_fg_white() { echo -n -e "\033[97m"; }
-
-_section_begin()
-{
-    _fg_white
-    echo -n " * "
-    _fg_reset
-    echo "${1}"
-}
-
-
-_section_item_bad()
-{
-    _fg_red
-    echo -n "  **  "
-    _fg_reset
-    echo "${1}"
-}
-
-_section_item_ok()
-{
-    _fg_green
-    echo -n "  ok: "
-    _fg_reset
-    echo "${1}"
-}
-
-_section_item()
-{
-    echo "      ${1}"
-}
-
 _zfs_create()
 {
     # HACK: set $dataset to the last arg. "for" implicitly enumerates over all
@@ -209,9 +178,9 @@ _zfs_create()
 
     if zfs list ${dataset} >/dev/null 2>&1
     then
-        _section_item "${dataset} already exists"
+        echo "  already exists: ${dataset}"
     else
-        zfs create $* && _section_item_ok "${dataset} created" || _errex
+        zfs create $* && echo "  created: ${dataset}" || _errex
     fi
 }
 
@@ -235,15 +204,15 @@ _dist_files_on_media()
     local result
     result=0
 
-    _section_begin "Looking for distribution files in \"${DIST_DIR}\""
+    echo  "Looking for distribution files in \"${DIST_DIR}\""
 
     for file in ${DIST_FILES}
     do
         if [ -r "${DIST_DIR}/${file}" ]
         then
-            _section_item_ok "${DIST_DIR}/${file} found"
+            echo "  found: ${DIST_DIR}/${file}"
         else
-            _section_item_bad "${DIST_DIR}/${file} not found"
+            echo "  not found: ${DIST_DIR}/${file}"
             result=1
         fi
     done
@@ -255,23 +224,23 @@ _install_from()
 {
     # TODO: verify MANIFEST SHA signatures
 
-    _section_begin "Remove schg flag from \"${MNT}\"."
+    echo  "Remove schg flag from \"${MNT}\"."
     chflags -R noschg ${MNT}
 
-    _section_begin "Install FreeBSD from \"${1}\"."
+    echo "Install FreeBSD from \"${1}\"."
     for file in ${DIST_FILES}
     do
-        _section_item "Extract \"${1}/${file}\" to \"${MNT}\"..."
+        echo "  Extract \"${1}/${file}\" to \"${MNT}\"."
         tar -xpU -C ${MNT} -f ${1}/${file} || _errex
     done
 }
 
 _install_from_web()
 {
-    echo Create ${MNT}${DIST_DIR}
+    echo "Create ${MNT}${DIST_DIR}."
     mkdir -p ${MNT}${DIST_DIR} || _errex
 
-    echo Download FreeBSD
+    echo "Download FreeBSD"
     echo "  from ${DIST_URL}"
     echo "  to   ${MNT}${DIST_DIR}"
 
@@ -297,6 +266,21 @@ fi
 if ! zpool status ${ZPOOL} >/dev/null
 then
     _errex
+fi
+
+if [ -z "${SWAP}" ]
+then
+    echo "No swap devices specified, are you sure?"
+    sleep 5
+
+    TWO_GIGS=$(( 2 * 1024 * 1024 * 1024 ))
+    if [ -z "${NOSWAP}" -a `sysctl -n hw.physmem` -lt ${TWO_GIGS} ]
+    then
+        echo "This machine has less than 2GB of physical memory."
+        echo "If you are sure you don't want any swap devices,"
+        echo "set NOSWAP environment variable to 'yes' and retry."
+        _errex
+    fi
 fi
 
 for swp in ${SWAP}
