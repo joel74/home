@@ -371,9 +371,6 @@ _zfs_create -o ${NOEXEC} -o ${NOSUID} -o ${NOCOMP} -o mountpoint=${MNT}/var/empt
 _zfs_create -o ${NOEXEC} -o ${NOSUID} -o ${NOCOMP} ${ZPOOL}/usr.ports/distfiles
 _zfs_create -o ${NOEXEC} -o ${NOSUID} -o ${NOCOMP} ${ZPOOL}/usr.ports/packages
 
-echo Set var.empty dataset as read-write for the installation.
-zfs set readonly=off ${ZPOOL}/var.empty || _errex
-
 echo Set the dataset \"${BOOT_ENV}\" as bootfs.
 zpool set bootfs=${BOOT_ENV} ${ZPOOL} || _errex
 
@@ -418,6 +415,9 @@ done
 # FreeBSD Installation
 # ==============================================================================
 
+echo Set var.empty dataset as read-write for the installation.
+zfs set readonly=off ${ZPOOL}/var.empty || _errex
+
 if _dist_files_on_media
 then
     _install_from ${DIST_DIR}
@@ -425,55 +425,58 @@ else
     _install_from_web
 fi
 
+echo Set var.empty readonly.
+zfs set readonly=on ${ZPOOL}/var.empty || _errex
+
 # ==============================================================================
 # Configuration
 # ==============================================================================
 
-cd $MNT
-
 echo Create an fstab file
-echo '' > etc/fstab || _errex
+echo '' > ${MNT}/etc/fstab || _errex
 
 for swp in ${SWAP}
 do
     echo "  add ${swp} as a swap partition"
-    echo "${swp} none swap sw 0 0" >> etc/fstab || _errex
+    echo "${swp} none swap sw 0 0" >> ${MNT}/etc/fstab || _errex
 done
 
 echo Set tmp and var/tmp 1777 permissions.
 # 1000 = sticky
 # means unprivileged users may not delete or rename files of other users
-chmod 1777 tmp || _errex
-chmod 1777 var/tmp || _errex
+chmod 1777 ${MNT}/tmp || _errex
+chmod 1777 ${MNT}/var/tmp || _errex
 
 echo Copy zpool.cache so the boot loader is able to locate the pool.
-cp /var/tmp/zpool.cache boot/zfs/zpool.cache || _errex
+cp /var/tmp/zpool.cache ${MNT}/boot/zfs/zpool.cache || _errex
 
 echo Enable ZFS in the loader.
-echo 'zfs_load="YES"'                          > boot/loader.conf || _errex
-echo "vfs.root.mountfrom=\"zfs:${BOOT_ENV}\"" >> boot/loader.conf || _errex
+cat > ${MNT}/boot/loader.conf << EOF || _errex
+zfs_load="YES"
+vfs.root.mountfrom="zfs:${BOOT_ENV}"
+EOF
 
 echo Copy resolv.conf.
 if [ -r /etc/resolv.conf ]
 then
-    cp /etc/resolv.conf etc/resolv.conf || _errex
+    cp /etc/resolv.conf ${MNT}/etc/resolv.conf || _errex
 else
-    echo "  /etc/resolv.conf is not readable, skipping."
+    echo "  skip: /etc/resolv.conf is not readable"
 fi
 
 echo Create etc/rc.conf.d directory.
-mkdir -p etc/rc.conf.d || _errex
+mkdir -p ${MNT}/etc/rc.conf.d || _errex
 
 echo Enable sshd and zfs services.
-echo 'sshd_enable="YES"' > etc/rc.conf.d/sshd || _errex
-echo 'zfs_enable="YES"'  > etc/rc.conf.d/zfs || _errex
+echo 'sshd_enable="YES"' > ${MNT}/etc/rc.conf.d/sshd || _errex
+echo 'zfs_enable="YES"'  > ${MNT}/etc/rc.conf.d/zfs || _errex
 
 # ==============================================================================
 # etc/rc.conf.d/network
 # ==============================================================================
 
 echo Create etc/rc.conf.d/network file.
-echo '' > etc/rc.conf.d/network
+echo '' > ${MNT}/etc/rc.conf.d/network
 
 for ifname in ${IFS_UP}
 do
@@ -485,7 +488,7 @@ do
     fi
 
     echo "  ifconfig_${ifname}=\"${config}\""
-    echo "ifconfig_${ifname}=\"${config}\"" >> etc/rc.conf.d/network
+    echo "ifconfig_${ifname}=\"${config}\"" >> ${MNT}/etc/rc.conf.d/network
 done
 
 # ==============================================================================
@@ -500,7 +503,7 @@ then
         echo "  skip: default route interface ${DEFAULT_ROUTE_IF} has dhclient"
     else
         echo "  defaultroute=\"${DEFAULT_ROUTE_IP}\""
-        echo "defaultroute=\"${DEFAULT_ROUTE_IP}\"" > etc/rc.conf.d/routing
+        echo "defaultroute=\"${DEFAULT_ROUTE_IP}\"" > ${MNT}/etc/rc.conf.d/routing
     fi
 else
     echo "  skip: no default route (WTF?)"
@@ -510,25 +513,26 @@ fi
 # wheel users
 # ==============================================================================
 
-for user in $WHEEL_USERS
+for user in ${WHEEL_USERS}
 do
-    echo Add wheel user $user
-    chroot $MNT /usr/sbin/pw useradd $user -g wheel || _errex
-    chroot $MNT /usr/bin/passwd $user < /dev/tty || _errex
+    echo "Add wheel user ${user}"
+    chroot ${MNT} /usr/sbin/pw useradd ${user} -g wheel || _errex
 
-    echo Create $MNT/home/$user
-    mkdir -p home/$user || _errex
+    echo "  create ${MNT}/home/${user}"
+    mkdir -p ${MNT}/home/${user} || _errex
 
-    echo Change ownership of $MNT/home/$user
-    chroot $MNT /usr/sbin/chown -R $user:wheel /home/$user || _errex
+    echo "  set ownership of ${MNT}/home/${user}"
+    chroot ${MNT} /usr/sbin/chown -R ${user}:wheel /home/${user} || _errex
 done
 
 # ==============================================================================
 # pkg bootstrap
 # ==============================================================================
 
-chroot ${MNT} env ASSUME_ALWAYS_YES=YES pkg bootstrap || _errex
+echo "Bootstrap pkg"
+chroot ${MNT} /usr/bin/env ASSUME_ALWAYS_YES=YES pkg bootstrap || _errex
 
+exit 42
 cd /
 
 echo Unmount datasets.
@@ -544,9 +548,7 @@ zfs set mountpoint=/usr/src       ${ZPOOL}/usr.src   || _errex
 zfs set mountpoint=/var        ${BOOT_ENV}/var       || _errex
 zfs set mountpoint=/var/empty     ${ZPOOL}/var.empty || _errex
 
-echo Set var.empty readonly.
-zfs set readonly=on ${ZPOOL}/var.empty || _errex
-
+echo
 echo Unmount datasets to avoid having / mounted from the boot media,
 echo and /usr, /var, /tmp, and /home from the new filesystem.
 zfs umount -a || _errex
