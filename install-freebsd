@@ -110,14 +110,15 @@
 #            zpool import -d /dev/gpt zroot
 #
 #
-#    8. Download authorized_keys file for the users that will be created, and
-#       save them to /tmp/username.authorized_keys
+#    8.  Download authorized_keys file for the users that will be created, and
+#        save them to /tmp/username.authorized_keys
 #
-#            fetch -o /tmp/julie.authorized_keys http://example.com/id_rsa.pub
+#            fetch --no-verify-peer -o /tmp/julie.authorized_keys \
+#                  http://goo.gl/9itHsL
 #
 #
-#    8. Run this script, optionally passing configuration variables. The
-#       following example assumes the default tcsh shell (yuck):
+#    9.  Run this script, optionally passing configuration variables. The
+#        following example assumes the default tcsh shell:
 #
 #            setenv ZPOOL       zroot
 #            setenv SWAP        /dev/gpt/swap0
@@ -125,6 +126,12 @@
 #
 #            fetch --no-verify-peer -o - http://goo.gl/RPx9OV | sh
 #
+#
+#  10.  If everything completed successfully, you should be able to reboot the
+#       machine and login via ssh.
+#
+#
+
 
 # ==============================================================================
 # Configuration
@@ -591,7 +598,17 @@ _pkg bootstrap
 echo "Install ${PACKAGES}."
 _pkg install ${PACKAGES}
 
-exit 42
+# ==============================================================================
+# Prepare for reboot
+# ==============================================================================
+
+echo "Installation completed. You are about to enter a shell chroot-ed to the"
+echo "new filesystem."
+echo
+echo "IMPORTANT: Type \'exit\' to change the mountpoints before rebooting!"
+echo
+
+chroot ${MNT} /bin/sh < /dev/tty
 cd /
 
 echo Unmount datasets.
