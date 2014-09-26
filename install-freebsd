@@ -179,8 +179,19 @@ _zfs_create()
     if zfs list ${dataset} >/dev/null 2>&1
     then
         echo "  already exists: ${dataset}"
+
+        while [ $# -gt 1 ]
+        do
+            if [ "$1" = "-o" ]
+            then
+                echo "  set ${2} on ${dataset}"
+                zfs set ${2} ${dataset} || _errex
+                shift 2
+            fi
+        done
     else
-        zfs create $* && echo "  created: ${dataset}" || _errex
+        echo "  create: ${dataset}"
+        zfs create $* || _errex
     fi
 }
 
@@ -517,7 +528,7 @@ chroot ${MNT} env ASSUME_ALWAYS_YES=YES pkg bootstrap || _errex
 
 cd /
 
-echo Unmount datasets
+echo Unmount datasets.
 zfs umount -a || _errex
 
 echo Set dataset mountpoints.
@@ -531,6 +542,8 @@ zfs set mountpoint=/var        ${BOOT_ENV}/var       || _errex
 zfs set mountpoint=/var/empty     ${ZPOOL}/var.empty || _errex
 zfs set readonly=on               ${ZPOOL}/var.empty || _errex
 
+echo Unmount datasets to avoid having / mounted from the boot media,
+echo and /usr, /var, /tmp, and /home from the new filesystem.
 zfs umount -a || _errex
 
 echo
