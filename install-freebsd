@@ -110,6 +110,12 @@
 #            zpool import -d /dev/gpt zroot
 #
 #
+#    8. Download authorized_keys file for the users that will be created, and
+#       save them to /tmp/username.authorized_keys
+#
+#            fetch -o /tmp/julie.authorized_keys http://example.com/id_rsa.pub
+#
+#
 #    8. Run this script, optionally passing configuration variables. The
 #       following example assumes the default tcsh shell (yuck):
 #
@@ -563,6 +569,16 @@ do
 
     echo "  set ownership of ${MNT}/home/${user}"
     chroot ${MNT} /usr/sbin/chown -R ${user}:wheel /home/${user} || _errex
+
+    if [ -r "/tmp/${user}.authorized_keys" ]
+    then
+        echo "  copy authorized_keys"
+        mkdir -p ${MNT}/home/${user}/.ssh || _errex
+        cp /tmp/${user}.authorized_keys \
+           ${MNT}/home/${user}/.ssh/authorized_keys || _errex
+    else
+        echo "  not found: /tmp/${user}.authorized_keys"
+    fi
 done
 
 # ==============================================================================
