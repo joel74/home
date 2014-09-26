@@ -146,6 +146,22 @@ do
 done
 
 # ==============================================================================
+# Enable Swap
+# ==============================================================================
+
+echo Add swap partitions so we don\'t get burned
+for swp in ${SWAP}
+do
+    if swapinfo | grep "^${swp}\b"
+    then
+        echo "  swap already enabled on ${swp}."
+    else
+        echo "  enable swap on ${swp}"
+        swapon ${swp} || _errex
+    fi
+done
+
+# ==============================================================================
 # ZFS creation
 # ==============================================================================
 
@@ -162,23 +178,23 @@ _zfs_create() {
     fi
 }
 
-echo Disable access time.
+echo Disable access time on.
 zfs set atime=off ${ZPOOL} || _errex
 
 echo Make sure the root data set is not mounted.
 zfs set mountpoint=none ${ZPOOL} || _errex
 
-echo Create ${BE_ROOT} container for boot environments
+echo Create container for boot environments.
 _zfs_create -o mountpoint=none ${BE_ROOT}
 
-echo Create the default boot environment ${BOOT_ENV}
+echo Create the default boot environment.
 _zfs_create -o mountpoint=${MNT} ${BOOT_ENV}
 
 COMP="compression=on"; NOCOMP="compression=off"
 EXEC="exec=on";        NOEXEC="exec=off"
 SUID="setuid=on";      NOSUID="setuid=off"
 
-echo Create datasets that are part of the boot environment
+echo Create datasets that are part of the boot environment.
 _zfs_create -o   ${EXEC} -o ${NOSUID} -o   ${COMP} ${BOOT_ENV}/tmp
 _zfs_create -o   ${EXEC} -o   ${SUID} -o ${NOCOMP} ${BOOT_ENV}/usr
 _zfs_create -o ${NOEXEC} -o ${NOSUID} -o ${NOCOMP} ${BOOT_ENV}/var
@@ -190,7 +206,7 @@ _zfs_create -o ${NOEXEC} -o ${NOSUID} -o   ${COMP} ${BOOT_ENV}/var/mail
 _zfs_create -o ${NOEXEC} -o ${NOSUID} -o ${NOCOMP} ${BOOT_ENV}/var/run
 _zfs_create -o   ${EXEC} -o ${NOSUID} -o   ${COMP} ${BOOT_ENV}/var/tmp
 
-echo Create datasets that aren\'t part of the boot environment
+echo Create datasets that aren\'t part of the boot environment.
 _zfs_create -o   ${EXEC} -o ${NOSUID} -o ${NOCOMP} -o mountpoint=${MNT}/home      ${ZPOOL}/home
 _zfs_create -o   ${EXEC} -o ${NOSUID} -o   ${COMP} -o mountpoint=${MNT}/usr/ports ${ZPOOL}/usr.ports
 _zfs_create -o ${NOEXEC} -o ${NOSUID} -o   ${COMP} -o mountpoint=${MNT}/usr/src   ${ZPOOL}/usr.src
@@ -199,19 +215,12 @@ _zfs_create -o ${NOEXEC} -o ${NOSUID} -o ${NOCOMP} -o mountpoint=${MNT}/var/empt
 _zfs_create -o ${NOEXEC} -o ${NOSUID} -o ${NOCOMP} ${ZPOOL}/usr.ports/distfiles
 _zfs_create -o ${NOEXEC} -o ${NOSUID} -o ${NOCOMP} ${ZPOOL}/usr.ports/packages
 
-echo Set the boot environment \"${BOOT_ENV}\" as bootfs
+echo Set the boot environment \"${BOOT_ENV}\" as bootfs.
 zpool set bootfs=${BOOT_ENV} ${ZPOOL} || _errex
 
 echo Re-import the pool using known cache file.
 zpool export ${ZPOOL} || _errex
 zpool import -o cachefile=/var/tmp/zpool.cache ${ZPOOL} || _errex
-
-echo Add swap partitions so we don\'t get burned extracting tars
-for swp in ${SWAP}
-do
-    echo "  swapon ${swp}"
-    swapon ${swp} || _errex
-done
 
 # ==============================================================================
 # FreeBSD Installation
@@ -280,7 +289,7 @@ fi
 cd $MNT
 
 echo Create an empty fstab file
-touch etc/fstab || _errex
+echo '' > etc/fstab || _errex
 
 for swp in ${SWAP}
 do
@@ -297,15 +306,15 @@ echo Copy zpool.cache so the boot loader is able to locate the pool.
 cp /var/tmp/zpool.cache boot/zfs/zpool.cache || _errex
 
 echo Enable ZFS in the loader.
-echo 'zfs_load="YES"'                         >> boot/loader.conf || _errex
+echo 'zfs_load="YES"'                          > boot/loader.conf || _errex
 echo "vfs.root.mountfrom=\"zfs:${BOOT_ENV}\"" >> boot/loader.conf || _errex
 
 echo Create etc/rc.conf.d directory
 mkdir -p etc/rc.conf.d || _errex
 
 echo Enable sshd and zfs services
-echo 'sshd_enable="YES"' >> etc/rc.conf.d/sshd || _errex
-echo 'zfs_enable="YES"'  >> etc/rc.conf.d/zfs || _errex
+echo 'sshd_enable="YES"' > etc/rc.conf.d/sshd || _errex
+echo 'zfs_enable="YES"'  > etc/rc.conf.d/zfs || _errex
 
 # ==============================================================================
 # Create users
@@ -318,7 +327,7 @@ do
     chroot $MNT /usr/bin/passwd $user < /dev/tty || _errex
 
     echo Create $MNT/home/$user
-    mkdir home/$user || _errex
+    mkdir -p home/$user || _errex
 
     echo Change ownership of $MNT/home/$user
     chroot $MNT /usr/sbin/chown -R $user:wheel /home/$user || _errex
