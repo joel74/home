@@ -1,7 +1,7 @@
 #!/bin/sh
 
 # ==============================================================================
-# Julie's FreeBSD 10.0+ ZFS Installation Script
+# Julie's Awesome FreeBSD 10.0+ ZFS Installation Script
 # ==============================================================================
 
 # This script automates installation of FreeBSD 10.0 and later on ZFS.
@@ -9,73 +9,115 @@
 # i.e., it has Python installed and SSH access enabled.
 #
 #
-#    1.  Boot the FreeBSD installation image, e.g.
+#    1.  Boot a FreeBSD 10 image, e.g.
 #
 #            http://ftp.cz.freebsd.org/pub/FreeBSD/releases/ISO-IMAGES/10.0/FreeBSD-10.0-RELEASE-amd64-disc1.iso
 #
+#
 #    2.  Select the "Live CD" option to quit the installer.
 #
-#    3.  In case you are installing 10.0-RELEASE (anything older than r271549),
-#        make sure the /tmp/bsdinstall_etc directory exists, because that's
+#
+#    3.  In case your Live CD is older than r271549 (i.e. 10.0-RELEASE), make
+#        sure the /tmp/bsdinstall_etc directory exists, because that's
 #        where /etc/resolv.conf is linked from.
 #
 #        10.1 shouldn't need this anymore.
 #
 #            mkdir /tmp/bsdinstall_etc
 #
-#    3a. Set up networking using a static IPv4 address, e.g.:
+#
+#    3.  Set up IPv4 networking so you can actually download this script, and
+#        possibly the FreeBSD distribution files, if they are not available on
+#        the boot media.
+#
+#        This script attempts to persist the following settings from the Live CD
+#        environment to the newly created machine:
+#
+#        *   All interfaces with a running dhclient are marked as "DHCP" in the
+#            new /etc/rc.conf.d/network file.
+#
+#        *   Online non-loopback interfaces have their primary IPv4 address and
+#            netmask persisted.
+#
+#        *   The default route is saved to rc.conf.d/routing, unless there is a
+#            dhclient running on its interface.
+#
+#        *   The hostname is saved to /etc/rc.conf.d/hostname.
+#
+#        *   The /etc/resolv.conf file is copied to the new filesystem.
+#
+#        To set up networking using a static IPv4 address, use something like
+#        this:
 #
 #            ifconfig vtnet0 inet 10.20.30.40/24
 #            route add default 10.20.30.1
 #            echo 'nameserver 8.8.8.8'  > /etc/resolv.conf
 #            echo 'nameserver 8.8.4.4' >> /etc/resolv.conf
 #
-#    3b. Set up networking using DHCP, e.g.:
+#        To set up networking using DHCP, use:
 #
 #            dhclient igb0
 #
-#    4.  Set the hostname
+#        To set the hostname, type:
 #
 #            hostname demonik
 #
-#    5.  For each disk:
 #
-#            5.1. Create a GPT partition table
+#    5.  Then, prepare all your disk drives. Do the following for each disk that
+#        should be bootable (ada0 being the disk device name here):
 #
-#                 gpart create -s gpt ada0
+#            5.1. Create a GPT partition table.
+#
+#                     gpart create -s gpt ada0
 #
 #            5.2. Create a 64K boot partition, a 2G swap partition, and a ZFS
 #                 partition spanning the rest of the drive. Make sure
 #                 the partitions are aligned on 1M boundaries.
 #
-#                 gpart add -t freebsd-boot -l boot0 -s 64K       ada0
-#                 gpart add -t freebsd-swap -l swap0 -s  2G -b 1M ada0
-#                 gpart add -t freebsd-zfs  -l disk0        -b 1M ada0
+#                     gpart add -t freebsd-boot -l boot0 -s 64K       ada0
+#                     gpart add -t freebsd-swap -l swap0 -s  2G -b 1M ada0
+#                     gpart add -t freebsd-zfs  -l disk0        -b 1M ada0
 #
-#            5.3. Install the ZFS-aware bootloader
+#                 Don't forget to add the created swap partitions to the SWAP
+#                 environment variable, so the script can add them to /etc/fstab
+#                 later:
 #
-#                 gpart bootcode -b /boot/pmbr -p /boot/gptzfsboot -i 1 ada0
+#                     setenv SWAP "/dev/gpt/swap0 /dev/gpt/swap1"
 #
-#    6.  Create a NOP device(s) to force 4K sectors.
+#            5.3. Install the ZFS-aware bootloader.
 #
-#            gnop create -S 4096 gpt/disk0
+#                     gpart bootcode -b /boot/pmbr -p /boot/gptzfsboot -i 1 ada0
 #
-#    7.  Create a ZFS pool from the NOP device(s) and export it.
+#            5.4. Create a NOP device(s) to force 4K sectors.
 #
-#            zpool create -m /mnt zroot /dev/gpt/disk0.nop
+#                     gnop create -S 4096 gpt/disk0
+#
+#
+#    6.  Create a ZFS pool from the NOP device(s). Make sure it doesn't get
+#        mounted right now, the script will take care of that later.
+#
+#            zpool create -m none zroot /dev/gpt/disk0.nop
+#
+#
+#    7.  Export the pool, destroy the NOP device(s) and reimport it using the
+#        underlying real device(s).
+#
+#        Don't forget to specify the /dev/gpt directory, otherwise the
+#        partitions won't be identified by their GPT labels.
+#
 #            zpool export zroot
-#
-#    8.  Destroy the NOP device(s) and reimport the pool. Don't forget to
-#        specify the /dev/gpt directory, otherwise the partitions won't be
-#        identified by their GPT labels.
-#
 #            gnop destroy gpt/disk0.nop
 #            zpool import -d /dev/gpt zroot
 #
-#    9. Run this script, optionally passing configuration variables.
 #
-#            fetch --no-verify-peer -o - http://goo.gl/RPx9OV | \
-#                  env ZPOOL=zroot SWAP=/dev/gpt/swap0 sh
+#    8. Run this script, optionally passing configuration variables. The
+#       following example assumes the default tcsh shell (yuck):
+#
+#            setenv ZPOOL       zroot
+#            setenv SWAP        /dev/gpt/swap0
+#            setenv WHEEL_USERS jubal
+#
+#            fetch --no-verify-peer -o - http://goo.gl/RPx9OV | sh
 #
 
 # ==============================================================================
@@ -112,30 +154,6 @@
 # URL where the txz distribution files are
 : ${DIST_URL:=$DIST_MIRROR/pub/FreeBSD/releases/$DIST_ARCH/$DIST_RELEASE}
 
-# dhclient process IDs
-DHCLIENT_PIDS=$(pgrep dhclient)
-
-if [ -n "${DHCLIENT_PIDS}" ]
-then
-    # interfaces that have a dhclient running
-    IFS_DHCP=$(ps -o 'command=' -p "${DHCLIENT_PIDS}" | awk '{ print $2 }' | uniq)
-fi
-
-# all interfaces that are up, excluding loopback
-IFS_UP=$(ifconfig -l -u | sed -E -e 's/lo[0-9]+//g')
-
-# default route address
-DEFAULT_ROUTE_IP=$(netstat -nrf inet | grep '^default' | awk '{ print $2 }')
-
-# default route interface
-DEFAULT_ROUTE_IF=$(netstat -nrf inet | grep '^default' | awk '{ print $6 }')
-
-# boot environment container dataset
-BE_ROOT=${ZPOOL}/ROOT
-
-# the default boot environment dataset
-BOOT_ENV=${BE_ROOT}/current
-
 # ==============================================================================
 # Functions
 # ==============================================================================
@@ -148,8 +166,10 @@ _errex()
 
 _zfs_create()
 {
-    # HACK: set $dataset to the last arg. for implicitly enumerates
-    # over arguments and the loop variable isn't scoped
+    # HACK: set $dataset to the last arg. "for" implicitly enumerates over all
+    # arguments and the loop variable isn't scoped. Colon is a built-in
+    # version of /usr/bin/true.
+
     for dataset; do :; done
 
     if zfs list ${dataset} >/dev/null 2>&1
@@ -227,7 +247,7 @@ _install_from_web()
 }
 
 # ==============================================================================
-# Config Validation
+# Make sure the configuration is right
 # ==============================================================================
 
 if [ `id -u` != 0 ]
@@ -249,8 +269,36 @@ do
 done
 
 # ==============================================================================
+# DHCP and default route detection
+# ==============================================================================
+
+# dhclient process IDs
+DHCLIENT_PIDS=$(pgrep dhclient)
+
+if [ -n "${DHCLIENT_PIDS}" ]
+then
+    # interfaces that have a dhclient running
+    IFS_DHCP=$(ps -o 'command=' -p "${DHCLIENT_PIDS}" | awk '{ print $2 }' | uniq)
+fi
+
+# all interfaces that are up, excluding loopback
+IFS_UP=$(ifconfig -l -u | sed -E -e 's/lo[0-9]+//g')
+
+# default route address
+DEFAULT_ROUTE_IP=$(netstat -nrf inet | grep '^default' | awk '{ print $2 }')
+
+# default route interface
+DEFAULT_ROUTE_IF=$(netstat -nrf inet | grep '^default' | awk '{ print $6 }')
+
+# ==============================================================================
 # ZFS creation
 # ==============================================================================
+
+# boot environment container dataset
+BE_ROOT=${ZPOOL}/ROOT
+
+# the default boot environment dataset
+BOOT_ENV=${BE_ROOT}/current
 
 echo Disable access time on the root data set.
 zfs set atime=off ${ZPOOL} || _errex
@@ -309,7 +357,7 @@ do
     fi
 done
 
-echo Re-import the pool using known cache file.
+echo Re-import the pool using a known cache file.
 zpool export ${ZPOOL} || _errex
 zpool import -o cachefile=/var/tmp/zpool.cache ${ZPOOL} || _errex
 
@@ -317,7 +365,7 @@ zpool import -o cachefile=/var/tmp/zpool.cache ${ZPOOL} || _errex
 # Enable Swap
 # ==============================================================================
 
-echo Add swap partitions so we don\'t get burned
+echo Add swap partitions so we don\'t get burned on little machines
 for swp in ${SWAP}
 do
     if _is_swap_on ${swp}
@@ -355,7 +403,7 @@ do
     echo "${swp} none swap sw 0 0" >> etc/fstab || _errex
 done
 
-echo Set tmp and var/tmp permissions.
+echo Set tmp and var/tmp 1777 permissions.
 # 1000 = sticky
 # means unprivileged users may not delete or rename files of other users
 chmod 1777 tmp || _errex
@@ -383,6 +431,10 @@ echo Enable sshd and zfs services.
 echo 'sshd_enable="YES"' > etc/rc.conf.d/sshd || _errex
 echo 'zfs_enable="YES"'  > etc/rc.conf.d/zfs || _errex
 
+# ==============================================================================
+# etc/rc.conf.d/network
+# ==============================================================================
+
 echo Create etc/rc.conf.d/network file.
 echo '' > etc/rc.conf.d/network
 
@@ -399,6 +451,10 @@ do
     echo "ifconfig_${ifname}=\"${config}\"" >> etc/rc.conf.d/network
 done
 
+# ==============================================================================
+# etc/rc.conf.d/routing
+# ==============================================================================
+
 echo Create etc/rc.conf.d/routing file.
 if [ -n "${DEFAULT_ROUTE_IP}" ]
 then
@@ -410,11 +466,11 @@ then
         echo "defaultroute=\"${DEFAULT_ROUTE_IP}\"" > etc/rc.conf.d/routing
     fi
 else
-    echo "  skip: no default route"
+    echo "  skip: no default route (WTF?)"
 fi
 
 # ==============================================================================
-# Create users
+# wheel users
 # ==============================================================================
 
 for user in $WHEEL_USERS
