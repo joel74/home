@@ -258,6 +258,8 @@ _install_from_web()
 # Make sure the configuration is right
 # ==============================================================================
 
+clear
+
 if [ `id -u` != 0 ]
 then
     _errex "Must be root"
