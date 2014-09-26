@@ -278,16 +278,14 @@ DHCLIENT_PIDS=$(pgrep dhclient)
 if [ -n "${DHCLIENT_PIDS}" ]
 then
     # interfaces that have a dhclient running
-    IFS_DHCP=$(ps -o 'command=' -p "${DHCLIENT_PIDS}" | awk '{ print $2 }' | uniq)
+    IFS_DHCP=$(ps -o 'command=' -p ${DHCLIENT_PIDS} | awk '{ print $2 }' | uniq)
 fi
 
 # all interfaces that are up, excluding loopback
 IFS_UP=$(ifconfig -l -u | sed -E -e 's/lo[0-9]+//g')
 
-# default route address
+# default route address and interface
 DEFAULT_ROUTE_IP=$(netstat -nrf inet | grep '^default' | awk '{ print $2 }')
-
-# default route interface
 DEFAULT_ROUTE_IF=$(netstat -nrf inet | grep '^default' | awk '{ print $6 }')
 
 # ==============================================================================
