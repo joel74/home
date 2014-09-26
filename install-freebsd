@@ -383,9 +383,9 @@ for ifname in ${IFS_UP}
 do
     if _is_dhcp_iface ${ifname}
     then
-        config = "DHCP"
+        config="DHCP"
     else
-        config = $(ifconfig ${ifname} | grep -e inet\\b | head -n 1)
+        config=$(ifconfig ${ifname} | grep -e inet\\b | head -n 1)
     fi
 
     echo "  ifconfig_${ifname}=\"${config}\""
