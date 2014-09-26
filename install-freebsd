@@ -75,8 +75,8 @@
 #                 the partitions are aligned on 1M boundaries.
 #
 #                     gpart add -t freebsd-boot -l boot0 -s 64K       ada0
-#                     gpart add -t freebsd-swap -l swap0 -s  2G -b 1M ada0
-#                     gpart add -t freebsd-zfs  -l disk0        -b 1M ada0
+#                     gpart add -t freebsd-swap -l swap0 -s  2G -a 1M ada0
+#                     gpart add -t freebsd-zfs  -l disk0        -a 1M ada0
 #
 #                 Don't forget to add the created swap partitions to the SWAP
 #                 environment variable, so the script can add them to /etc/fstab
