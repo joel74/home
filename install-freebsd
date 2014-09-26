@@ -156,6 +156,9 @@
 # mount point for the new filesystem
 : ${MNT:=/mnt}
 
+# hostname of the new machine
+: ${HOSTNAME:=`hostname`}
+
 # the distribution files to extract
 : ${DIST_FILES:=base.txz kernel.txz}
 
@@ -318,12 +321,18 @@ then
     _errex
 fi
 
+if [ -z "${HOSTNAME}" ]
+then
+    _errex "ERROR: No hostname specified."
+fi
+
 if [ -z "${SWAP}" ]
 then
-    echo "No swap devices specified, are you sure?"
+    echo "WARNING: No swap devices specified!"
     sleep 5
 
     TWO_GIGS=$(( 2 * 1024 * 1024 * 1024 ))
+
     if [ -z "${NOSWAP}" -a `sysctl -n hw.physmem` -lt ${TWO_GIGS} ]
     then
         echo "This machine has less than 2GB of physical memory."
@@ -520,6 +529,9 @@ echo Enable sshd and zfs services.
 echo 'sshd_enable="YES"' > ${MNT}/etc/rc.conf.d/sshd || _errex
 echo 'zfs_enable="YES"'  > ${MNT}/etc/rc.conf.d/zfs || _errex
 
+echo Set hostname.
+echo "hostname=\"${HOSTNAME}\"" > ${MNT}/etc/rc.conf.d/hostname || _errex
+
 echo Enable sudo for wheel members.
 mkdir -p ${MNT}/usr/local/etc/sudoers.d || _errex
 echo '%wheel ALL = (ALL) ALL' > ${MNT}/usr/local/etc/sudoers.d/wheel || _errex
@@ -555,8 +567,8 @@ then
     then
         echo "  skip: default route interface ${DEFAULT_ROUTE_IF} has dhclient"
     else
-        echo "  defaultroute=\"${DEFAULT_ROUTE_IP}\""
-        echo "defaultroute=\"${DEFAULT_ROUTE_IP}\"" > ${MNT}/etc/rc.conf.d/routing
+        echo "  defaultrouter=\"${DEFAULT_ROUTE_IP}\""
+        echo "defaultrouter=\"${DEFAULT_ROUTE_IP}\"" > ${MNT}/etc/rc.conf.d/routing
     fi
 else
     echo "  skip: no default route (WTF?)"
@@ -635,5 +647,5 @@ sync || _errex
 
 echo
 echo Done. You may now reboot the machine.
-echo Don't forget to remove the boot media.
+echo Don\'t forget to remove the boot media.
 echo
