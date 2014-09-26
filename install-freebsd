@@ -605,7 +605,7 @@ _pkg install ${PACKAGES}
 echo "Installation completed. You are about to enter a shell chroot-ed to the"
 echo "new filesystem."
 echo
-echo "IMPORTANT: Type \'exit\' to change the mountpoints before rebooting!"
+echo "IMPORTANT: Type 'exit' to change the mountpoints before rebooting!"
 echo
 
 chroot ${MNT} /bin/sh < /dev/tty
@@ -630,4 +630,10 @@ echo and /usr, /var, /tmp, and /home from the new filesystem.
 zfs umount -a || _errex
 
 echo
-echo Done. Type \'reboot\' to restart the machine.
+echo Syncing filesystem.
+sync || _errex
+
+echo
+echo Done. You may now reboot the machine.
+echo Don't forget to remove the boot media.
+echo
