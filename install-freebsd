@@ -181,30 +181,30 @@ _zfs_create()
     if zfs list ${dataset} >/dev/null 2>&1
     then
         echo "  already exists: ${dataset}"
-
-        while [ $# -gt 1 ]
-        do
-            if [ "$1" != "-o" ]
-            then
-                _errex "invalid _zfs_create() call: $*"
-            fi
-
-            if [ `echo "${2}" | cut -f2 -d=` = "inherit" ]
-            then
-                field=`echo "${2}" | cut -f1 -d=`
-                echo "    inherit ${field}"
-                zfs inherit ${field} || _errex
-            else
-                echo "    set ${2}"
-                zfs set ${2} ${dataset} || _errex
-            fi
-
-            shift 2
-        done
     else
         echo "  create: ${dataset}"
-        zfs create $* || _errex
+        zfs create -o mountpoint=none ${dataset} || _errex
     fi
+
+    while [ $# -gt 1 ]
+    do
+        if [ "$1" != "-o" ]
+        then
+            _errex "invalid _zfs_create() call: $*"
+        fi
+
+        if [ `echo "${2}" | cut -f2 -d=` = "inherit" ]
+        then
+            field=`echo "${2}" | cut -f1 -d=`
+            echo "    inherit ${field}"
+            zfs inherit ${field} || _errex
+        else
+            echo "    set ${2}"
+            zfs set ${2} ${dataset} || _errex
+        fi
+
+        shift 2
+    done
 }
 
 _is_swap_on()
@@ -374,7 +374,6 @@ _zfs_create -o canmount=off -o mountpoint=none ${BE_ROOT}
 
 echo Create the default boot environment.
 _zfs_create -o mountpoint=${MNT} ${BOOT_ENV}
-
 
 echo Create datasets that are part of the boot environment.
 _zfs_create -o   ${EXEC} -o ${NOSUID} -o   ${COMP} -o mountpoint=inherit ${BOOT_ENV}/tmp
