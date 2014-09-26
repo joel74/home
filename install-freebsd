@@ -509,7 +509,14 @@ do
     chroot $MNT /usr/sbin/chown -R $user:wheel /home/$user || _errex
 done
 
+# ==============================================================================
+# pkg bootstrap
+# ==============================================================================
+
+chroot ${MNT} env ASSUME_ALWAYS_YES=YES pkg bootstrap || _errex
+
 cd /
+
 echo Unmount datasets
 zfs umount -a || _errex
 
@@ -523,6 +530,8 @@ zfs set mountpoint=/usr/src       ${ZPOOL}/usr.src   || _errex
 zfs set mountpoint=/var        ${BOOT_ENV}/var       || _errex
 zfs set mountpoint=/var/empty     ${ZPOOL}/var.empty || _errex
 zfs set readonly=on               ${ZPOOL}/var.empty || _errex
+
+zfs umount -a || _errex
 
 echo
 echo Done. Type \'reboot\' to restart the machine.
