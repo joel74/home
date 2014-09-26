@@ -334,21 +334,28 @@ BE_ROOT=${ZPOOL}/ROOT
 # the default boot environment dataset
 BOOT_ENV=${BE_ROOT}/current
 
-echo Disable access time on the root data set.
-zfs set atime=off ${ZPOOL} || _errex
-
-echo Make sure the root data set is not mounted.
-zfs set mountpoint=none ${ZPOOL} || _errex
-
-echo Create container for boot environments.
-_zfs_create -o mountpoint=none ${BE_ROOT}
-
-echo Create the default boot environment.
-_zfs_create -o mountpoint=${MNT} ${BOOT_ENV}
-
+# various dataset options
 COMP="compression=on"; NOCOMP="compression=off"
 EXEC="exec=on";        NOEXEC="exec=off"
 SUID="setuid=on";      NOSUID="setuid=off"
+
+echo Unmount all ZFS filesystems.
+zfs umount -a
+
+echo Disable access time on the root data set.
+zfs set atime=off ${ZPOOL} || _errex
+
+echo Make sure the root dataset has no mountpoint.
+zfs set mountpoint=none ${ZPOOL} || _errex
+
+echo Make sure the root dataset cannot be mounted.
+zfs set canmount=off  ${ZPOOL} || _errex
+
+echo Create container for boot environments.
+_zfs_create -o canmount=off -o mountpoint=none ${BE_ROOT}
+
+echo Create the default boot environment.
+_zfs_create -o mountpoint=${MNT} ${BOOT_ENV}
 
 echo Create datasets that are part of the boot environment.
 _zfs_create -o   ${EXEC} -o ${NOSUID} -o   ${COMP} ${BOOT_ENV}/tmp
