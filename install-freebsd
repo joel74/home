@@ -509,8 +509,10 @@ do
     chroot $MNT /usr/sbin/chown -R $user:wheel /home/$user || _errex
 done
 
-echo Set dataset mountpoints.
+echo Unmount datasets
+zfs umount -a || _errex
 
+echo Set dataset mountpoints.
 zfs set mountpoint=legacy      ${BOOT_ENV}           || _errex
 zfs set mountpoint=/home          ${ZPOOL}/home      || _errex
 zfs set mountpoint=/tmp        ${BOOT_ENV}/tmp       || _errex
@@ -520,9 +522,6 @@ zfs set mountpoint=/usr/src       ${ZPOOL}/usr.src   || _errex
 zfs set mountpoint=/var        ${BOOT_ENV}/var       || _errex
 zfs set mountpoint=/var/empty     ${ZPOOL}/var.empty || _errex
 zfs set readonly=on               ${ZPOOL}/var.empty || _errex
-
-echo Unmount datasets
-zfs umount -a || _errex
 
 echo
 echo Done. Type \'reboot\' to restart the machine.
