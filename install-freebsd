@@ -164,6 +164,41 @@ _errex()
     exit 1
 }
 
+_fg_reset() { echo -ne "\033[39m"; }
+_fg_red()   { echo -ne "\033[31m"; }
+_fg_green() { echo -ne "\033[32m"; }
+_fg_white() { echo -ne "\033[97m"; }
+
+_section_begin()
+{
+    _fg_white
+    echo -n " * "
+    _fg_reset
+    echo "${1}"
+}
+
+
+_section_item_bad()
+{
+    _fg_red
+    echo -n "  **  "
+    _fg_reset
+    echo "${1}"
+}
+
+_section_item_ok()
+{
+    _fg_green
+    echo -n "  ok: "
+    _fg_reset
+    echo "${1}"
+}
+
+_section_item()
+{
+    echo "      ${1}"
+}
+
 _zfs_create()
 {
     # HACK: set $dataset to the last arg. "for" implicitly enumerates over all
@@ -174,9 +209,9 @@ _zfs_create()
 
     if zfs list ${dataset} >/dev/null 2>&1
     then
-        echo "  already exists: ${dataset}"
+        _section_item "${dataset} already exists"
     else
-        zfs create $* && echo "  created: ${dataset}" || _errex
+        zfs create $* && _section_item_ok "${dataset} created" || _errex
     fi
 }
 
@@ -197,32 +232,36 @@ _is_dhcp_iface()
 
 _dist_files_on_media()
 {
-    echo Looking for distribution files in ${DIST_DIR}
+    local result
+    result=0
+
+    _section_begin "Looking for distribution files in \"${DIST_DIR}\""
 
     for file in ${DIST_FILES}
     do
-        if [ ! -r "${DIST_DIR}/${file}" ]
+        if [ -r "${DIST_DIR}/${file}" ]
         then
-            echo "  ${file} not found."
-            return 1
+            _section_item_ok "${DIST_DIR}/${file} found"
+        else
+            _section_item_bad "${DIST_DIR}/${file} not found"
+            result=1
         fi
     done
 
-    echo "  all files available."
-    return 0
+    return ${result}
 }
 
 _install_from()
 {
     # TODO: verify MANIFEST SHA signatures
 
-    echo Remove schg flag from any existing files
+    _section_begin "Remove schg flag from \"${MNT}\"."
     chflags -R noschg ${MNT}
 
-    echo Install FreeBSD from ${1}
+    _section_begin "Install FreeBSD from \"${1}\"."
     for file in ${DIST_FILES}
     do
-        echo "Extract \"${1}/${file}\" to \"${MNT}\"..."
+        _section_item "Extract \"${1}/${file}\" to \"${MNT}\"..."
         tar -xpU -C ${MNT} -f ${1}/${file} || _errex
     done
 }
