@@ -112,8 +112,14 @@
 # URL where the txz distribution files are
 : ${DIST_URL:=$DIST_MIRROR/pub/FreeBSD/releases/$DIST_ARCH/$DIST_RELEASE}
 
-# interfaces that should be configured to use DHCP
-IFS_DHCP=$(ps -o 'command=' -p `pgrep dhclient` | awk '{ print $2 }' | uniq)
+# dhclient process IDs
+DHCLIENT_PIDS=$(pgrep dhclient)
+
+if [ -n "${DHCLIENT_PIDS}" ]
+then
+    # interfaces that have a dhclient running
+    IFS_DHCP=$(ps -o 'command=' -p "${DHCLIENT_PIDS}" | awk '{ print $2 }' | uniq)
+fi
 
 # all interfaces that are up, excluding loopback
 IFS_UP=$(ifconfig -l -u | sed -E -e 's/lo[0-9]+//g')
@@ -140,7 +146,8 @@ _errex()
     exit 1
 }
 
-_zfs_create() {
+_zfs_create()
+{
     # HACK: set $dataset to the last arg. for implicitly enumerates
     # over arguments and the loop variable isn't scoped
     for dataset; do :; done
