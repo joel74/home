@@ -271,7 +271,7 @@ zpool set bootfs=${BOOT_ENV} ${ZPOOL} || _errex
 echo Remove any swap partitions residing on the pool
 for swp in ${SWAP}
 do
-    if _is_swap_on_zvol ${swp}
+    if _is_swap_on_zpool ${swp}
     then
         if _is_swap_on ${swp}
         then
