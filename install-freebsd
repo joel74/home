@@ -184,7 +184,7 @@ _zfs_create()
         do
             if [ "$1" = "-o" ]
             then
-                echo "  set ${2} on ${dataset}"
+                echo "    set ${2}"
                 zfs set ${2} ${dataset} || _errex
                 shift 2
             fi
