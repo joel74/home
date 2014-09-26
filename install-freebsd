@@ -251,7 +251,7 @@ _install_from_web()
     echo "Create ${MNT}${DIST_DIR}."
     mkdir -p ${MNT}${DIST_DIR} || _errex
 
-    echo "Download FreeBSD"
+    echo "Download distribution files"
     echo "  from ${DIST_URL}"
     echo "  to   ${MNT}${DIST_DIR}"
 
@@ -371,10 +371,13 @@ _zfs_create -o ${NOEXEC} -o ${NOSUID} -o ${NOCOMP} -o mountpoint=${MNT}/var/empt
 _zfs_create -o ${NOEXEC} -o ${NOSUID} -o ${NOCOMP} ${ZPOOL}/usr.ports/distfiles
 _zfs_create -o ${NOEXEC} -o ${NOSUID} -o ${NOCOMP} ${ZPOOL}/usr.ports/packages
 
+echo Set var.empty dataset as read-write for the installation.
+zfs set readonly=off ${ZPOOL}/var.empty || _errex
+
 echo Set the dataset \"${BOOT_ENV}\" as bootfs.
 zpool set bootfs=${BOOT_ENV} ${ZPOOL} || _errex
 
-echo Remove any swap partitions residing on the pool
+echo Remove any swap partitions residing on the pool.
 for swp in ${SWAP}
 do
     if _is_swap_on_zpool ${swp}
@@ -399,14 +402,14 @@ zpool import -o cachefile=/var/tmp/zpool.cache ${ZPOOL} || _errex
 # Enable Swap
 # ==============================================================================
 
-echo Add swap partitions so we don\'t get burned on little machines
+echo Add swap partitions so we don\'t get burned on little machines.
 for swp in ${SWAP}
 do
     if _is_swap_on ${swp}
     then
-        echo "  swap already enabled on ${swp}."
+        echo "  already enabled: ${swp}"
     else
-        echo "  enable swap on ${swp}"
+        echo "  enable on: ${swp}"
         swapon ${swp} || _errex
     fi
 done
@@ -540,7 +543,9 @@ zfs set mountpoint=/usr/ports     ${ZPOOL}/usr.ports || _errex
 zfs set mountpoint=/usr/src       ${ZPOOL}/usr.src   || _errex
 zfs set mountpoint=/var        ${BOOT_ENV}/var       || _errex
 zfs set mountpoint=/var/empty     ${ZPOOL}/var.empty || _errex
-zfs set readonly=on               ${ZPOOL}/var.empty || _errex
+
+echo Set var.empty readonly.
+zfs set readonly=on ${ZPOOL}/var.empty || _errex
 
 echo Unmount datasets to avoid having / mounted from the boot media,
 echo and /usr, /var, /tmp, and /home from the new filesystem.
