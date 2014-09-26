@@ -119,51 +119,14 @@ BE_ROOT=${ZPOOL}/ROOT
 BOOT_ENV=${BE_ROOT}/current
 
 # ==============================================================================
-# Config Validation
+# Functions
 # ==============================================================================
 
-_errex() {
+_errex()
+{
     echo $1 >&2
     exit 1
 }
-
-if [ `id -u` != 0 ]
-then
-    _errex "Must be root"
-fi
-
-if ! zpool status ${ZPOOL} >/dev/null
-then
-    _errex
-fi
-
-for swp in ${SWAP}
-do
-    if [ ! -c "${swp}" ]
-    then
-        _errex "${swp} is not a character device"
-    fi
-done
-
-# ==============================================================================
-# Enable Swap
-# ==============================================================================
-
-echo Add swap partitions so we don\'t get burned
-for swp in ${SWAP}
-do
-    if swapinfo | grep "^${swp}\b" >/dev/null
-    then
-        echo "  swap already enabled on ${swp}."
-    else
-        echo "  enable swap on ${swp}"
-        swapon ${swp} || _errex
-    fi
-done
-
-# ==============================================================================
-# ZFS creation
-# ==============================================================================
 
 _zfs_create() {
     # HACK: set $dataset to the last arg. for implicitly enumerates
@@ -178,53 +141,15 @@ _zfs_create() {
     fi
 }
 
-echo Disable access time on the root data set.
-zfs set atime=off ${ZPOOL} || _errex
+_is_swap_on()
+{
+    swapinfo | grep "^${1}\b" >/dev/null
+}
 
-echo Make sure the root data set is not mounted.
-zfs set mountpoint=none ${ZPOOL} || _errex
-
-echo Create container for boot environments.
-_zfs_create -o mountpoint=none ${BE_ROOT}
-
-echo Create the default boot environment.
-_zfs_create -o mountpoint=${MNT} ${BOOT_ENV}
-
-COMP="compression=on"; NOCOMP="compression=off"
-EXEC="exec=on";        NOEXEC="exec=off"
-SUID="setuid=on";      NOSUID="setuid=off"
-
-echo Create datasets that are part of the boot environment.
-_zfs_create -o   ${EXEC} -o ${NOSUID} -o   ${COMP} ${BOOT_ENV}/tmp
-_zfs_create -o   ${EXEC} -o   ${SUID} -o ${NOCOMP} ${BOOT_ENV}/usr
-_zfs_create -o ${NOEXEC} -o ${NOSUID} -o ${NOCOMP} ${BOOT_ENV}/var
-_zfs_create -o ${NOEXEC} -o ${NOSUID} -o   ${COMP} ${BOOT_ENV}/var/crash
-_zfs_create -o ${NOEXEC} -o ${NOSUID} -o   ${COMP} ${BOOT_ENV}/var/db
-_zfs_create -o   ${EXEC} -o ${NOSUID} -o   ${COMP} ${BOOT_ENV}/var/db/pkg
-_zfs_create -o ${NOEXEC} -o ${NOSUID} -o   ${COMP} ${BOOT_ENV}/var/log
-_zfs_create -o ${NOEXEC} -o ${NOSUID} -o   ${COMP} ${BOOT_ENV}/var/mail
-_zfs_create -o ${NOEXEC} -o ${NOSUID} -o ${NOCOMP} ${BOOT_ENV}/var/run
-_zfs_create -o   ${EXEC} -o ${NOSUID} -o   ${COMP} ${BOOT_ENV}/var/tmp
-
-echo Create datasets that aren\'t part of the boot environment.
-_zfs_create -o   ${EXEC} -o ${NOSUID} -o ${NOCOMP} -o mountpoint=${MNT}/home      ${ZPOOL}/home
-_zfs_create -o   ${EXEC} -o ${NOSUID} -o   ${COMP} -o mountpoint=${MNT}/usr/ports ${ZPOOL}/usr.ports
-_zfs_create -o ${NOEXEC} -o ${NOSUID} -o   ${COMP} -o mountpoint=${MNT}/usr/src   ${ZPOOL}/usr.src
-_zfs_create -o ${NOEXEC} -o ${NOSUID} -o ${NOCOMP} -o mountpoint=${MNT}/var/empty ${ZPOOL}/var.empty
-
-_zfs_create -o ${NOEXEC} -o ${NOSUID} -o ${NOCOMP} ${ZPOOL}/usr.ports/distfiles
-_zfs_create -o ${NOEXEC} -o ${NOSUID} -o ${NOCOMP} ${ZPOOL}/usr.ports/packages
-
-echo Set the boot environment \"${BOOT_ENV}\" as bootfs.
-zpool set bootfs=${BOOT_ENV} ${ZPOOL} || _errex
-
-echo Re-import the pool using known cache file.
-zpool export ${ZPOOL} || _errex
-zpool import -o cachefile=/var/tmp/zpool.cache ${ZPOOL} || _errex
-
-# ==============================================================================
-# FreeBSD Installation
-# ==============================================================================
+_is_swap_on_zpool()
+{
+    [ "${1#*/dev/zvol/${ZPOOL}}" != "${1}" ]
+}
 
 _dist_files_on_media()
 {
@@ -276,6 +201,113 @@ _install_from_web()
 
     _install_from "${MNT}${DIST_DIR}"
 }
+
+# ==============================================================================
+# Config Validation
+# ==============================================================================
+
+if [ `id -u` != 0 ]
+then
+    _errex "Must be root"
+fi
+
+if ! zpool status ${ZPOOL} >/dev/null
+then
+    _errex
+fi
+
+for swp in ${SWAP}
+do
+    if [ ! -c "${swp}" ]
+    then
+        _errex "${swp} is not a character device"
+    fi
+done
+
+# ==============================================================================
+# ZFS creation
+# ==============================================================================
+
+echo Disable access time on the root data set.
+zfs set atime=off ${ZPOOL} || _errex
+
+echo Make sure the root data set is not mounted.
+zfs set mountpoint=none ${ZPOOL} || _errex
+
+echo Create container for boot environments.
+_zfs_create -o mountpoint=none ${BE_ROOT}
+
+echo Create the default boot environment.
+_zfs_create -o mountpoint=${MNT} ${BOOT_ENV}
+
+COMP="compression=on"; NOCOMP="compression=off"
+EXEC="exec=on";        NOEXEC="exec=off"
+SUID="setuid=on";      NOSUID="setuid=off"
+
+echo Create datasets that are part of the boot environment.
+_zfs_create -o   ${EXEC} -o ${NOSUID} -o   ${COMP} ${BOOT_ENV}/tmp
+_zfs_create -o   ${EXEC} -o   ${SUID} -o ${NOCOMP} ${BOOT_ENV}/usr
+_zfs_create -o ${NOEXEC} -o ${NOSUID} -o ${NOCOMP} ${BOOT_ENV}/var
+_zfs_create -o ${NOEXEC} -o ${NOSUID} -o   ${COMP} ${BOOT_ENV}/var/crash
+_zfs_create -o ${NOEXEC} -o ${NOSUID} -o   ${COMP} ${BOOT_ENV}/var/db
+_zfs_create -o   ${EXEC} -o ${NOSUID} -o   ${COMP} ${BOOT_ENV}/var/db/pkg
+_zfs_create -o ${NOEXEC} -o ${NOSUID} -o   ${COMP} ${BOOT_ENV}/var/log
+_zfs_create -o ${NOEXEC} -o ${NOSUID} -o   ${COMP} ${BOOT_ENV}/var/mail
+_zfs_create -o ${NOEXEC} -o ${NOSUID} -o ${NOCOMP} ${BOOT_ENV}/var/run
+_zfs_create -o   ${EXEC} -o ${NOSUID} -o   ${COMP} ${BOOT_ENV}/var/tmp
+
+echo Create datasets that aren\'t part of the boot environment.
+_zfs_create -o   ${EXEC} -o ${NOSUID} -o ${NOCOMP} -o mountpoint=${MNT}/home      ${ZPOOL}/home
+_zfs_create -o   ${EXEC} -o ${NOSUID} -o   ${COMP} -o mountpoint=${MNT}/usr/ports ${ZPOOL}/usr.ports
+_zfs_create -o ${NOEXEC} -o ${NOSUID} -o   ${COMP} -o mountpoint=${MNT}/usr/src   ${ZPOOL}/usr.src
+_zfs_create -o ${NOEXEC} -o ${NOSUID} -o ${NOCOMP} -o mountpoint=${MNT}/var/empty ${ZPOOL}/var.empty
+
+_zfs_create -o ${NOEXEC} -o ${NOSUID} -o ${NOCOMP} ${ZPOOL}/usr.ports/distfiles
+_zfs_create -o ${NOEXEC} -o ${NOSUID} -o ${NOCOMP} ${ZPOOL}/usr.ports/packages
+
+echo Set the dataset \"${BOOT_ENV}\" as bootfs.
+zpool set bootfs=${BOOT_ENV} ${ZPOOL} || _errex
+
+echo Remove any swap partitions residing on the pool
+for swp in ${SWAP}
+do
+    if _is_swap_on_zvol ${swp}
+    then
+        if _is_swap_on ${swp}
+        then
+            echo "  disable swap on ${swp}"
+            swapoff ${swp} || _errex
+        else
+            echo "  swap is not enabled on ${swp}"
+        fi
+    else
+        echo "  ${swp} is not on ${ZPOOL}"
+    fi
+done
+
+echo Re-import the pool using known cache file.
+zpool export ${ZPOOL} || _errex
+zpool import -o cachefile=/var/tmp/zpool.cache ${ZPOOL} || _errex
+
+# ==============================================================================
+# Enable Swap
+# ==============================================================================
+
+echo Add swap partitions so we don\'t get burned
+for swp in ${SWAP}
+do
+    if _is_swap_on ${swp}
+    then
+        echo "  swap already enabled on ${swp}."
+    else
+        echo "  enable swap on ${swp}"
+        swapon ${swp} || _errex
+    fi
+done
+
+# ==============================================================================
+# FreeBSD Installation
+# ==============================================================================
 
 
 if _dist_files_on_media
