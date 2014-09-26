@@ -113,7 +113,7 @@
 : ${DIST_URL:=$DIST_MIRROR/pub/FreeBSD/releases/$DIST_ARCH/$DIST_RELEASE}
 
 # interfaces that should be configured to use DHCP
-IFS_DHCP=$(ps -o command= -p `pgrep dhclient` | awk '{ print $2 }' | uniq)
+IFS_DHCP=$(ps -o 'command=' -p `pgrep dhclient` | awk '{ print $2 }' | uniq)
 
 # all interfaces that are up, excluding loopback
 IFS_UP=$(ifconfig -l -u | sed -E -e 's/lo[0-9]+//g')
