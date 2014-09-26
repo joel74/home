@@ -164,10 +164,10 @@ _errex()
     exit 1
 }
 
-_fg_reset() { echo -ne "\033[39m"; }
-_fg_red()   { echo -ne "\033[31m"; }
-_fg_green() { echo -ne "\033[32m"; }
-_fg_white() { echo -ne "\033[97m"; }
+_fg_reset() { echo -n -e "\033[39m"; }
+_fg_red()   { echo -n -e "\033[31m"; }
+_fg_green() { echo -n -e "\033[32m"; }
+_fg_white() { echo -n -e "\033[97m"; }
 
 _section_begin()
 {
