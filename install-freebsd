@@ -615,7 +615,8 @@ _pkg install ${PACKAGES}
 # ==============================================================================
 
 echo "Installation completed. You are about to enter a shell chroot-ed to the"
-echo "new filesystem."
+echo "new filesystem. It's probably a good idea to set passwords, so you can"
+echo "sudo later."
 echo
 echo "IMPORTANT: Type 'exit' to change the mountpoints before rebooting!"
 echo
