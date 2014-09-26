@@ -507,6 +507,10 @@ echo Enable sshd and zfs services.
 echo 'sshd_enable="YES"' > ${MNT}/etc/rc.conf.d/sshd || _errex
 echo 'zfs_enable="YES"'  > ${MNT}/etc/rc.conf.d/zfs || _errex
 
+echo Enable sudo for wheel members.
+mkdir -p ${MNT}/usr/local/etc/sudoers.d || _errex
+echo '%wheel ALL = (ALL) ALL' > ${MNT}/usr/local/etc/sudoers.d/wheel || _errex
+
 # ==============================================================================
 # etc/rc.conf.d/network
 # ==============================================================================
