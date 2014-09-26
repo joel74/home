@@ -137,6 +137,9 @@
 # names of the users to be created and added to the wheel group
 : ${WHEEL_USERS:=julie}
 
+# packages to install
+: ${PACKAGES:=python sudo}
+
 # mount point for the new filesystem
 : ${MNT:=/mnt}
 
@@ -279,6 +282,11 @@ _install_from_web()
     done
 
     _install_from "${MNT}${DIST_DIR}"
+}
+
+_pkg()
+{
+    chroot ${MNT} /usr/bin/env ASSUME_ALWAYS_YES=YES pkg $* || _errex
 }
 
 # ==============================================================================
@@ -557,8 +565,11 @@ done
 # pkg bootstrap
 # ==============================================================================
 
-echo "Bootstrap pkg"
-chroot ${MNT} /usr/bin/env ASSUME_ALWAYS_YES=YES pkg bootstrap || _errex
+echo "Bootstrap pkg."
+_pkg bootstrap
+
+echo "Install ${PACKAGES}."
+_pkg install ${PACKAGES}
 
 exit 42
 cd /
