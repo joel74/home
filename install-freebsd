@@ -240,7 +240,7 @@ _install_from() {
     for file in ${DIST_FILES}
     do
         echo "Extract \"${1}/${file}\" to \"${MNT}\"..."
-        tar -x -p -C ${MNT} -f ${1}/${file} || _errex
+        tar -xpU -C ${MNT} -f ${1}/${file} || _errex
     done
 }
 
