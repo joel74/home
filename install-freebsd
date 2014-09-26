@@ -188,16 +188,20 @@ _zfs_create()
 
     while [ $# -gt 1 ]
     do
-        if [ "$1" != "-o" ]
+        if [ "$1" != "-o" -o -z "${2}" ]
         then
             _errex "invalid _zfs_create() call: $*"
         fi
+
+        # parse the field=value argument, if the value
+        # equals to inherit, use `zfs inherit`, otherwise
+        # pass to `zfs set` unchanged.
 
         if [ `echo "${2}" | cut -f2 -d=` = "inherit" ]
         then
             field=`echo "${2}" | cut -f1 -d=`
             echo "    inherit ${field}"
-            zfs inherit ${field} || _errex
+            zfs inherit ${field} ${dataset} || _errex
         else
             echo "    set ${2}"
             zfs set ${2} ${dataset} || _errex
