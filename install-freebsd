@@ -340,16 +340,22 @@ EXEC="exec=on";        NOEXEC="exec=off"
 SUID="setuid=on";      NOSUID="setuid=off"
 
 echo Unmount all ZFS filesystems.
+# in case there were previous attempts to run this scripts
 zfs umount -a
 
 echo Disable access time on the root data set.
 zfs set atime=off ${ZPOOL} || _errex
 
+echo Make sure the root dataset cannot be mounted.
+zfs set canmount=off ${ZPOOL} || _errex
+
+# explicitly specify the mountpoints for all datasets as they may exist
+# from previous installation attempts. otherwise, the datasets could end up
+# mounted under /, hiding our /tmp/bsdinstall_etc and possibly making all
+# kinds of mess.
+
 echo Make sure the root dataset has no mountpoint.
 zfs set mountpoint=none ${ZPOOL} || _errex
-
-echo Make sure the root dataset cannot be mounted.
-zfs set canmount=off  ${ZPOOL} || _errex
 
 echo Create container for boot environments.
 _zfs_create -o canmount=off -o mountpoint=none ${BE_ROOT}
@@ -357,26 +363,26 @@ _zfs_create -o canmount=off -o mountpoint=none ${BE_ROOT}
 echo Create the default boot environment.
 _zfs_create -o mountpoint=${MNT} ${BOOT_ENV}
 
+
 echo Create datasets that are part of the boot environment.
-_zfs_create -o   ${EXEC} -o ${NOSUID} -o   ${COMP} ${BOOT_ENV}/tmp
-_zfs_create -o   ${EXEC} -o   ${SUID} -o ${NOCOMP} ${BOOT_ENV}/usr
-_zfs_create -o ${NOEXEC} -o ${NOSUID} -o ${NOCOMP} ${BOOT_ENV}/var
-_zfs_create -o ${NOEXEC} -o ${NOSUID} -o   ${COMP} ${BOOT_ENV}/var/crash
-_zfs_create -o ${NOEXEC} -o ${NOSUID} -o   ${COMP} ${BOOT_ENV}/var/db
-_zfs_create -o   ${EXEC} -o ${NOSUID} -o   ${COMP} ${BOOT_ENV}/var/db/pkg
-_zfs_create -o ${NOEXEC} -o ${NOSUID} -o   ${COMP} ${BOOT_ENV}/var/log
-_zfs_create -o ${NOEXEC} -o ${NOSUID} -o   ${COMP} ${BOOT_ENV}/var/mail
-_zfs_create -o ${NOEXEC} -o ${NOSUID} -o ${NOCOMP} ${BOOT_ENV}/var/run
-_zfs_create -o   ${EXEC} -o ${NOSUID} -o   ${COMP} ${BOOT_ENV}/var/tmp
+_zfs_create -o   ${EXEC} -o ${NOSUID} -o   ${COMP} -o mountpoint=inherit ${BOOT_ENV}/tmp
+_zfs_create -o   ${EXEC} -o   ${SUID} -o ${NOCOMP} -o mountpoint=inherit ${BOOT_ENV}/usr
+_zfs_create -o ${NOEXEC} -o ${NOSUID} -o ${NOCOMP} -o mountpoint=inherit ${BOOT_ENV}/var
+_zfs_create -o ${NOEXEC} -o ${NOSUID} -o   ${COMP} -o mountpoint=inherit ${BOOT_ENV}/var/crash
+_zfs_create -o ${NOEXEC} -o ${NOSUID} -o   ${COMP} -o mountpoint=inherit ${BOOT_ENV}/var/db
+_zfs_create -o   ${EXEC} -o ${NOSUID} -o   ${COMP} -o mountpoint=inherit ${BOOT_ENV}/var/db/pkg
+_zfs_create -o ${NOEXEC} -o ${NOSUID} -o   ${COMP} -o mountpoint=inherit ${BOOT_ENV}/var/log
+_zfs_create -o ${NOEXEC} -o ${NOSUID} -o   ${COMP} -o mountpoint=inherit ${BOOT_ENV}/var/mail
+_zfs_create -o ${NOEXEC} -o ${NOSUID} -o ${NOCOMP} -o mountpoint=inherit ${BOOT_ENV}/var/run
+_zfs_create -o   ${EXEC} -o ${NOSUID} -o   ${COMP} -o mountpoint=inherit ${BOOT_ENV}/var/tmp
 
 echo Create datasets that aren\'t part of the boot environment.
 _zfs_create -o   ${EXEC} -o ${NOSUID} -o ${NOCOMP} -o mountpoint=${MNT}/home      ${ZPOOL}/home
 _zfs_create -o   ${EXEC} -o ${NOSUID} -o   ${COMP} -o mountpoint=${MNT}/usr/ports ${ZPOOL}/usr.ports
+_zfs_create -o ${NOEXEC} -o ${NOSUID} -o ${NOCOMP} -o mountpoint=inherit          ${ZPOOL}/usr.ports/distfiles
+_zfs_create -o ${NOEXEC} -o ${NOSUID} -o ${NOCOMP} -o mountpoint=inherit          ${ZPOOL}/usr.ports/packages
 _zfs_create -o ${NOEXEC} -o ${NOSUID} -o   ${COMP} -o mountpoint=${MNT}/usr/src   ${ZPOOL}/usr.src
 _zfs_create -o ${NOEXEC} -o ${NOSUID} -o ${NOCOMP} -o mountpoint=${MNT}/var/empty ${ZPOOL}/var.empty
-
-_zfs_create -o ${NOEXEC} -o ${NOSUID} -o ${NOCOMP} ${ZPOOL}/usr.ports/distfiles
-_zfs_create -o ${NOEXEC} -o ${NOSUID} -o ${NOCOMP} ${ZPOOL}/usr.ports/packages
 
 echo Set the dataset \"${BOOT_ENV}\" as bootfs.
 zpool set bootfs=${BOOT_ENV} ${ZPOOL} || _errex
