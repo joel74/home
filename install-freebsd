@@ -152,7 +152,7 @@ done
 echo Add swap partitions so we don\'t get burned
 for swp in ${SWAP}
 do
-    if swapinfo | grep "^${swp}\b"
+    if swapinfo | grep "^${swp}\b" >/dev/null
     then
         echo "  swap already enabled on ${swp}."
     else
@@ -178,7 +178,7 @@ _zfs_create() {
     fi
 }
 
-echo Disable access time on.
+echo Disable access time on the root data set.
 zfs set atime=off ${ZPOOL} || _errex
 
 echo Make sure the root data set is not mounted.
@@ -246,6 +246,9 @@ _dist_files_on_media()
 _install_from()
 {
     # TODO: verify MANIFEST SHA signatures
+
+    echo Remove schg flag from any existing files
+    chflags -R noschg ${MNT}
 
     echo Install FreeBSD from ${1}
     for file in ${DIST_FILES}
