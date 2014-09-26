@@ -430,18 +430,20 @@ do
     chroot $MNT /usr/sbin/chown -R $user:wheel /home/$user || _errex
 done
 
-echo FreeBSD has been installed to \"${MNT}\"
-echo Unmounting filesystems...
+echo Set dataset mountpoints.
 
-cd /
+zfs set mountpoint=legacy      ${BOOT_ENV}           || _errex
+zfs set mountpoint=/home          ${ZPOOL}/home      || _errex
+zfs set mountpoint=/tmp        ${BOOT_ENV}/tmp       || _errex
+zfs set mountpoint=/usr        ${BOOT_ENV}/usr       || _errex
+zfs set mountpoint=/usr/ports     ${ZPOOL}/usr.ports || _errex
+zfs set mountpoint=/usr/src       ${ZPOOL}/usr.src   || _errex
+zfs set mountpoint=/var        ${BOOT_ENV}/var       || _errex
+zfs set mountpoint=/var/empty     ${ZPOOL}/var.empty || _errex
+zfs set readonly=on               ${ZPOOL}/var.empty || _errex
+
+echo Unmount datasets
 zfs umount -a || _errex
 
-zfs set mountpoint=legacy      ${BOOT_ENV} || _errex
-
-zfs set mountpoint=/home       ${ZPOOL}/home || _errex
-zfs set mountpoint=/usr/ports  ${ZPOOL}/usr.ports || _errex
-zfs set mountpoint=/usr/src    ${ZPOOL}/usr.src || _errex
-zfs set mountpoint=/var/empty  ${ZPOOL}/var.empty || _errex
-zfs set readonly=on            ${ZPOOL}/var.empty || _errex
-
+echo
 echo Done. Type \'reboot\' to restart the machine.
