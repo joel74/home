@@ -192,8 +192,8 @@ _zfs_create()
             if [ `echo "${2}" | cut -f2 -d=` = "inherit" ]
             then
                 field = `echo "${2}" | cut -f1 -d=`
-                echo "    reset ${field}"
-                zfs reset ${field} || _errex
+                echo "    inherit ${field}"
+                zfs inherit ${field} || _errex
             else
                 echo "    set ${2}"
                 zfs set ${2} ${dataset} || _errex
