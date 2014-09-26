@@ -170,6 +170,8 @@ _errex()
 
 _zfs_create()
 {
+    local dataset field
+
     # HACK: set $dataset to the last arg. "for" implicitly enumerates over all
     # arguments and the loop variable isn't scoped. Colon is a built-in
     # version of /usr/bin/true.
@@ -182,12 +184,22 @@ _zfs_create()
 
         while [ $# -gt 1 ]
         do
-            if [ "$1" = "-o" ]
+            if [ "$1" != "-o" ]
             then
+                _errex "invalid _zfs_create() call: $*"
+            fi
+
+            if [ `echo "${2}" | cut -f2 -d=` = "inherit" ]
+            then
+                field = `echo "${2}" | cut -f1 -d=`
+                echo "    reset ${field}"
+                zfs reset ${field} || _errex
+            else
                 echo "    set ${2}"
                 zfs set ${2} ${dataset} || _errex
-                shift 2
             fi
+
+            shift 2
         done
     else
         echo "  create: ${dataset}"
