@@ -112,6 +112,18 @@
 # URL where the txz distribution files are
 : ${DIST_URL:=$DIST_MIRROR/pub/FreeBSD/releases/$DIST_ARCH/$DIST_RELEASE}
 
+# interfaces that should be configured to use DHCP
+IFS_DHCP=$(ps -o command= -p `pgrep dhclient` | awk '{ print $2 }' | uniq)
+
+# all interfaces that are up, excluding loopback
+IFS_UP=$(ifconfig -l -u | sed -E -e 's/lo[0-9]+//g')
+
+# default route address
+DEFAULT_ROUTE_IP=$(netstat -nrf inet | grep '^default' | awk '{ print $2 }')
+
+# default route interface
+DEFAULT_ROUTE_IF=$(netstat -nrf inet | grep '^default' | awk '{ print $6 }')
+
 # boot environment container dataset
 BE_ROOT=${ZPOOL}/ROOT
 
@@ -149,6 +161,11 @@ _is_swap_on()
 _is_swap_on_zpool()
 {
     [ "${1#*/dev/zvol/${ZPOOL}}" != "${1}" ]
+}
+
+_is_dhcp_iface()
+{
+    [ "${IFS_DHCP#*${1}}" != "${IFS_DHCP}" ]
 }
 
 _dist_files_on_media()
@@ -309,7 +326,6 @@ done
 # FreeBSD Installation
 # ==============================================================================
 
-
 if _dist_files_on_media
 then
     _install_from ${DIST_DIR}
@@ -323,17 +339,18 @@ fi
 
 cd $MNT
 
-echo Create an empty fstab file
+echo Create an fstab file
 echo '' > etc/fstab || _errex
 
 for swp in ${SWAP}
 do
-    echo Add ${swp} as a swap partition to fstab
+    echo "  add ${swp} as a swap partition"
     echo "${swp} none swap sw 0 0" >> etc/fstab || _errex
 done
 
-echo Set tmp and var/tmp permissions
-# 1000 = sticky = unprivileged users may not delete or rename files of other users
+echo Set tmp and var/tmp permissions.
+# 1000 = sticky
+# means unprivileged users may not delete or rename files of other users
 chmod 1777 tmp || _errex
 chmod 1777 var/tmp || _errex
 
@@ -344,12 +361,50 @@ echo Enable ZFS in the loader.
 echo 'zfs_load="YES"'                          > boot/loader.conf || _errex
 echo "vfs.root.mountfrom=\"zfs:${BOOT_ENV}\"" >> boot/loader.conf || _errex
 
-echo Create etc/rc.conf.d directory
+echo Copy resolv.conf.
+if [ -r /etc/resolv.conf ]
+then
+    cp /etc/resolv.conf etc/resolv.conf || _errex
+else
+    echo "  /etc/resolv.conf is not readable, skipping."
+fi
+
+echo Create etc/rc.conf.d directory.
 mkdir -p etc/rc.conf.d || _errex
 
-echo Enable sshd and zfs services
+echo Enable sshd and zfs services.
 echo 'sshd_enable="YES"' > etc/rc.conf.d/sshd || _errex
 echo 'zfs_enable="YES"'  > etc/rc.conf.d/zfs || _errex
+
+echo Create etc/rc.conf.d/network file.
+echo '' > etc/rc.conf.d/network
+
+for ifname in ${IFS_UP}
+do
+    if _is_dhcp_iface ${ifname}
+    then
+        config = "DHCP"
+    else
+        config = $(ifconfig ${ifname} | grep -e inet\\b | head -n 1)
+    fi
+
+    echo "  ifconfig_${ifname}=\"${config}\""
+    echo "ifconfig_${ifname}=\"${config}\"" >> etc/rc.conf.d/network
+done
+
+echo Create etc/rc.conf.d/routing file.
+if [ -n "${DEFAULT_ROUTE_IP}" ]
+then
+    if _is_dhcp_iface ${DEFAULT_ROUTE_IF}
+    then
+        echo "  skip: default route interface ${DEFAULT_ROUTE_IF} has dhclient"
+    else
+        echo "  defaultroute=\"${DEFAULT_ROUTE_IP}\""
+        echo "defaultroute=\"${DEFAULT_ROUTE_IP}\"" > etc/rc.conf.d/routing
+    fi
+else
+    echo "  skip: no default route"
+fi
 
 # ==============================================================================
 # Create users
