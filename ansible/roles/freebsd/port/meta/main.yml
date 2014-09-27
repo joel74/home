@@ -1,10 +1,9 @@
 ---
 dependencies:
 - role:     freebsd/etc/make.conf-line
-  variable: "{{ name }}_SET"
-  value:    "{{ set }}"
-
-- role:     freebsd/etc/make.conf-line
-  variable: "{{ name }}_UNSET"
-  value:    "{{ unset }}"
+  variables:
+  - var:   "{{ name }}_SET"
+    value: "{{ set }}"
+  - var:   "{{ name }}_UNSET"
+    value: "{{ unset }}"
 

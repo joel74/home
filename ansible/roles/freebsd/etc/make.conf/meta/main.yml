@@ -1,9 +1,8 @@
 ---
 dependencies:
 - role: freebsd/etc/make.conf-line
-  variable: OPTIONS_SET
-  value:    "{{ make_conf_set }}"
-
-- role: freebsd/etc/make.conf-line
-  variable: OPTIONS_UNSET
-  value:    "{{ make_conf_unset }}"
+  variables:
+  - var:   OPTIONS_SET
+    value: "{{ freebsd_makeconf_set }}"
+  - var:   OPTIONS_UNSET
+    value: "{{ freebsd_makeconf_unset }}"

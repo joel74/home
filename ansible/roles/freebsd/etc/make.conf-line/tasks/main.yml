@@ -7,7 +7,5 @@
     create: yes
     line: "{{ item.var }}={{ item.value }}"
     regexp: "^{{ item.var }}="
-  with_items:
-  - var:   "{{ variable|mandatory }}"
-    value: "{{ value|default('') }}"
+  with_items: variables
   when: item.value|length > 0 and item.var|length > 0
