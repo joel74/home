@@ -52,3 +52,6 @@
 [submodule "lib/OpenSubtitlesDownload"]
 	path = lib/OpenSubtitlesDownload
 	url = https://github.com/juliekoubova/OpenSubtitlesDownload.git
+[submodule "lib/vranger"]
+	path = lib/vranger
+	url = https://github.com/juliekoubova/vranger.git
