@@ -1,12 +1,15 @@
 ---
 dependencies:
-- fortune
-- git
-- ranger
-- tmux
-- vim
-- wget
-- zsh
+- role: ansible
+  when: ansible_os_family == 'Darwin'
+
+- role: fortune
+- role: git
+- role: ranger
+- role: tmux
+- role: vim
+- role: wget
+- role: zsh
 
 - role: julie/gitconfig
 
