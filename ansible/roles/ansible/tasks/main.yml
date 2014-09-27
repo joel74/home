@@ -1,9 +1,11 @@
 ---
 - name: install pip
+  tags: [ python, pip ]
   sudo: yes
   easy_install: name=pip
 
 - name: install pip packages
+  tags: [ python, pip ]
   sudo: yes
   pip:  name={{ item }}
   with_items:
