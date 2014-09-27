@@ -1,3 +1,23 @@
 ---
 - name: homebrew update
+  tags: brew
   homebrew: update_homebrew=yes
+
+- name: get homebrew prefix
+  tags: [ brew, python ]
+  command: "/usr/local/bin/brew --prefix"
+  changed_when: false
+  register: brew_prefix
+
+- name: system python site-packages directory
+  tags: [ brew, python ]
+  file:
+    dest: ~/Library/Python/2.7/lib/python/site-packages
+    state: directory
+
+- name: system python register homebrew site-packages
+  tags: [ brew, python ]
+  copy:
+    dest: ~/Library/Python/2.7/lib/python/site-packages/homebrew.pth
+    content: "{{ brew_prefix.stdout }}/lib/python2.7/site-packages"
+    force: yes
