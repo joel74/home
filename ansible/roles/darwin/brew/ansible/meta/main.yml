@@ -2,3 +2,4 @@
 dependencies:
 - role: darwin/brew
   name: ansible
+  options: HEAD
