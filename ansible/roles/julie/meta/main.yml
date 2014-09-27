@@ -1,17 +1,20 @@
 ---
 dependencies:
-- role: fortune
-- role: git
-- role: htop
-- role: ranger
-- role: tmux
-- role: vim
-- role: wget
-- role: zsh
+- fortune
+- git
+- htop
+- ranger
+- tmux
+- vim
+- wget
+- zsh
 
-- role: julie/gitconfig
+- julie/gitconfig
 
 - role:   julie/torrent-uploader
   source: "{{ ansible_env.HOME }}/Downloads"
   dest:   bydlenka:/data/downloads
   when:   ansible_os_family == 'Darwin'
+
+- role: highlight
+  when: ansible_os_family == 'Darwin'
