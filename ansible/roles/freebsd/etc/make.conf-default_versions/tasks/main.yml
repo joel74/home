@@ -1,8 +1,0 @@
----
-- name: /etc/make.conf DEFAULT_VERSIONS
-  sudo: yes
-  lineinfile: >
-    dest=/etc/make.conf
-    create=yes
-    "line=DEFAULT_VERSIONS=python={{ python }} python2={{ python2 }}"
-    "regexp=^DEFAULT_VERSIONS="

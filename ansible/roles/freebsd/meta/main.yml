@@ -1,18 +1,23 @@
 ---
 dependencies:
-- role:    freebsd/etc/make.conf-default_versions
-  python:  2.7
-  python2: 2.7
-
+- freebsd/etc/make.conf
+- freebsd/etc/mergemaster.rc
 - freebsd/etc/motd
 - freebsd/etc/rc.conf.d/hostname
 - freebsd/etc/rc.conf.d/network
 - freebsd/etc/rc.conf.d/routing
+- freebsd/etc/src.conf
 - freebsd/etc/sysctl.conf/hw.syscons.bell
+
+- freebsd/portsnap-periodic
+- freebsd/svnup-periodic
 
 - freebsd/port/beadm
 - freebsd/port/portmaster
 - freebsd/port/rsync
 - freebsd/port/sudo
+
+- freebsd/sudoers-wheel
+- freebsd/kernconf
 
 - julie
