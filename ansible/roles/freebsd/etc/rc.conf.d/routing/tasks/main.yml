@@ -1,0 +1,9 @@
+---
+- name: defaultrouter
+  sudo: yes
+  lineinfile:
+    dest: /etc/rc.conf.d/routing
+    create: yes
+    regexp: '^defaultrouter='
+    line: "defaultrouter=\"{{ netif_defaultrouter }}\""
+  when: netif_defaultrouter != ''

@@ -4,6 +4,16 @@
   roles:
   - role: freebsd
 
+  - role:  freebsd/etc/make.conf-options
+    unset: DOCS EXAMPLES NLS X11
+
+  - role: freebsd/etc/mergemaster.rc
+  - role: freebsd/etc/src.conf
+
+  - role: freebsd/portsnap-periodic
+  - role: freebsd/svnup-periodic
+  - role: freebsd/kernconf
+
   - role: ansible
   - role: crashplan
   - role: file-server-home
