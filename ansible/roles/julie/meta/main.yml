@@ -1,10 +1,8 @@
 ---
 dependencies:
-- role: ansible
-  when: ansible_os_family == 'Darwin'
-
 - role: fortune
 - role: git
+- role: htop
 - role: ranger
 - role: tmux
 - role: vim

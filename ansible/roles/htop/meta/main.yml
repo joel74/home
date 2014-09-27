@@ -1,0 +1,4 @@
+---
+dependencies:
+- {role: freebsd/port/htop, when: ansible_os_family == "FreeBSD"}
+- {role: darwin/brew/htop, when: ansible_os_family == "Darwin"}
