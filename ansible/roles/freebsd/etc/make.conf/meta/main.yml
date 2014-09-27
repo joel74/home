@@ -1,2 +1,9 @@
 ---
-allow_duplicates: yes
+dependencies:
+- role: freebsd/etc/make.conf-line
+  variable: OPTIONS_SET
+  value:    "{{ make_conf_set }}"
+
+- role: freebsd/etc/make.conf-line
+  variable: OPTIONS_UNSET
+  value:    "{{ make_conf_unset }}"
