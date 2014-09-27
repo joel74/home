@@ -1,5 +1,6 @@
 ---
 dependencies:
+- role:     freebsd/portsnap
 - role:     freebsd/etc/make.conf-line
   variables:
   - var:   "{{ name }}_SET"
