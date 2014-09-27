@@ -1,9 +1,0 @@
-hostname="bydlenka"
-
-# IP addresses
-ifconfig_igb0="DHCP"
-
-# Sendmail (listen only on loopback)
-sendmail_enable="NO"
-sendmail_submit_enable="YES"
-

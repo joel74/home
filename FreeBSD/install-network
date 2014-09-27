@@ -1,7 +1,0 @@
-#!/bin/sh
-
-if ! ping -c 1 google.com >/dev/null 2>&1; then
-    for svc in netif routing defaultroute; do
-        service $svc restart
-    done
-fi
