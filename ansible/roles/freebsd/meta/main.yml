@@ -1,0 +1,26 @@
+---
+dependencies:
+- role:    freebsd/etc/make.conf-default_versions
+  python:  2.7
+  python2: 2.7
+
+- role:  freebsd/etc/make.conf-options
+  unset: DOCS EXAMPLES NLS X11
+
+- freebsd/etc/mergemaster.rc
+- freebsd/etc/motd
+- freebsd/etc/rc.conf.d/hostname
+- freebsd/etc/rc.conf.d/network
+- freebsd/etc/sysctl.conf/hw.syscons.bell
+- freebsd/etc/src.conf
+
+- freebsd/port/beadm
+- freebsd/port/portmaster
+- freebsd/port/rsync
+- freebsd/port/sudo
+
+- freebsd/portsnap-periodic
+- freebsd/svnup-periodic
+- freebsd/kernconf
+
+- julie
