@@ -2,6 +2,7 @@
 dependencies:
 - fortune
 - git
+- ranger
 - tmux
 - vim
 - wget

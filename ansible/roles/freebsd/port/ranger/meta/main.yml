@@ -1,0 +1,3 @@
+---
+dependencies:
+- {name: py-ranger, role: freebsd/port}

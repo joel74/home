@@ -1,0 +1,4 @@
+---
+dependencies:
+- {role: freebsd/port/ranger, when: ansible_os_family == "FreeBSD"}
+- {role: darwin/brew/ranger, when: ansible_os_family == "Darwin"}

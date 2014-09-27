@@ -1,0 +1,3 @@
+---
+dependencies:
+- {name: ranger, role: darwin/brew}
