@@ -1,5 +1,6 @@
 ---
 - name: install port
+  tags: port
   sudo: yes
   port: name={{ item }}
   with_items:
