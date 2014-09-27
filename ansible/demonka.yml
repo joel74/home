@@ -1,5 +1,3 @@
-#!/usr/bin/env ansible-playbook
+#!/usr/bin/env ansible-playbook -l demonka
 ---
-- hosts: demonka
-  roles:
-  - role: freebsd
+- include: site.yml

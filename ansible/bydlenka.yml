@@ -1,16 +1,3 @@
-#!/usr/bin/env ansible-playbook
+#!/usr/bin/env ansible-playbook -l bydlenka
 ---
-- hosts: bydlenka
-  roles:
-  - role: freebsd
-
-  - role: ansible
-  - role: crashplan
-  - role: file-server-home
-  - role: file-server-backup
-  - role: file-server-downloads
-  - role: download-server
-  - role: www-server
-  - role: www-site
-    name: bydlenka
-    src: sites-available/bydlenka.conf.j2
+- include: site.yml

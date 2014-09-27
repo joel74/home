@@ -1,0 +1,18 @@
+#!/usr/bin/env ansible-playbook
+---
+- hosts: FreeBSD
+  roles:
+  - freebsd
+
+- hosts: bydlenka
+  roles:
+  - ansible
+  - crashplan
+  - file-server-home
+  - file-server-backup
+  - file-server-downloads
+  - download-server
+  - www-server
+  - role: www-site
+    name: bydlenka
+    src: sites-available/bydlenka.conf.j2
