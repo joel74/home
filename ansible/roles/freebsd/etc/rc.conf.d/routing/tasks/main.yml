@@ -6,4 +6,4 @@
     create: yes
     regexp: '^defaultrouter='
     line: "defaultrouter=\"{{ netif_defaultrouter }}\""
-  when: netif_defaultrouter != ''
+  when: netif_defaultrouter is defined
