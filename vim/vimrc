@@ -49,9 +49,6 @@ let mapleader=","
 silent! runtime bundle/pathogen/autoload/pathogen.vim
 silent! call pathogen#infect()
 
-" Open MiniBufExplorer
-MBEOpenAll
-
 " Set 256 color terminal support
 set t_Co=256
 
