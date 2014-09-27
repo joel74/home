@@ -7,6 +7,8 @@
     "line={{ item.var }}={{ item.value }}"
     "regexp=^{{ item.var }}="
   with_items:
-  - { var: "{{ name|default('OPTIONS') }}_SET",   value: "{{ set|default('') }}" }
-  - { var: "{{ name|default('OPTIONS') }}_UNSET", value: "{{ unset|default('') }}" }
+  - var:   "{{ name|default('OPTIONS') }}_SET"
+    value: "{{ set|make_conf_set|default('') }}" }
+  - var:   "{{ name|default('OPTIONS') }}_UNSET"
+    value: "{{ unset|make_conf_unset|default('') }}" }
   when: item.value|length > 0
