@@ -1,8 +1,7 @@
 ---
 ansible_python_interpreter: /usr/local/bin/python2.7
-
-freebsd_branch:  base/stable/10
-freebsd_mirror:  svn0.eu.freebsd.org
-make_conf_unset: DOCS EXAMPLES NLS X11
-zpool:           zroot
+freebsd_branch:             base/stable/10
+freebsd_mirror:             svn0.eu.freebsd.org
+freebsd_makeconf_unset:     DOCS EXAMPLES NLS X11
+zpool:                      zroot
 
