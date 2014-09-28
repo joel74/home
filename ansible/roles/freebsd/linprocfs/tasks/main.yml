@@ -1,9 +1,49 @@
 ---
+- name: /usr/compat/linux/proc exists
+  tags: [ linux, linprocfs ]
+  sudo: yes
+  file:
+    dest: /usr/compat/linux/proc
+    state: directory
+
+- name: /compat symlink exists
+  tags: [ linux, linprocfs ]
+  sudo: yes
+  file:
+    dest: /compat
+    src:  /usr/compat
+    state: link
+
 - name: linprocfs in fstab
   tags: [ linux, linprocfs ]
   sudo: yes
+  register: fstab
   lineinfile:
     dest: /etc/fstab
     line: linprocfs /compat/linux/proc linprocfs rw,late 0 0
     regexp: /compat/linux/proc|linprocfs
     create: yes
+
+- name: is linprocfs.ko loaded?
+  tags: [ linux, linprocfs ]
+  command: /sbin/kldstat -v
+  changed_when: false
+  register: kldstat
+
+- name: load linprocfs.ko
+  tags: [ linux, linprocfs ]
+  sudo: yes
+  command: /sbin/kldload linprocfs
+  when: "'linprocfs' not in kldstat.stdout"
+
+- name: is linprocfs mounted?
+  tags: [ linux, linprocfs ]
+  command: /sbin/mount
+  changed_when: false
+  register: mount
+
+- name: mount linprocfs
+  tags: [ linux, linprocfs ]
+  sudo: yes
+  command: /sbin/mount /compat/linux/proc
+  when: "'linprocfs' not in mount.stdout"

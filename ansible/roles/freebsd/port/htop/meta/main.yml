@@ -1,3 +1,5 @@
 ---
 dependencies:
-- {name: htop, role: freebsd/port}
+- role: freebsd/linprocfs
+- role: freebsd/port
+  name: htop
