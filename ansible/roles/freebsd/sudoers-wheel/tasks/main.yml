@@ -10,4 +10,3 @@
   copy:
     dest: /usr/local/etc/sudoers.d/wheel
     content: "%wheel ALL=(ALL) ALL"
-    create: yes
