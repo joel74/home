@@ -1,6 +1,7 @@
-Host jachymko.net
-Port 37157
-User jachymko
+Host demonka
+HostName 37.157.194.41
+#Port 37157
+User julie
 
 Host bydlenka
 User julie
