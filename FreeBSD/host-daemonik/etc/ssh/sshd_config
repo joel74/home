@@ -1,9 +1,0 @@
-AllowGroups wheel
-Banner none
-ListenAddress 10.186.211.1:37157
-PasswordAuthentication no
-X11Forwarding no
-
-VersionAddendum ""
-
-Subsystem   sftp    /usr/libexec/sftp-server
