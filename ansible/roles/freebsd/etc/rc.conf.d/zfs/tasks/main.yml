@@ -1,0 +1,8 @@
+---
+- name: zfs_enable
+  sudo: yes
+  copy:
+    dest: /etc/rc.conf.d/zfs
+    content: 'zfs_enable="YES"'
+
+
