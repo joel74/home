@@ -1,2 +1,3 @@
 ---
+allow_duplicates: yes
 dependencies: [freebsd/etc/mergemaster.rc]
