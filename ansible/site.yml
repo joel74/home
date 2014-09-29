@@ -18,6 +18,7 @@
   - freebsd/portsnap-periodic
   - freebsd/svnup-periodic
 
+  - freebsd/port/ansible
   - freebsd/port/beadm
   - freebsd/port/portmaster
   - freebsd/port/rsync
@@ -34,7 +35,6 @@
 
 - hosts: bydlenka
   roles:
-  - freebsd/port/ansible
   - crashplan
   - file-server-home
   - file-server-backup
