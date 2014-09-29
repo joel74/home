@@ -592,9 +592,6 @@ do
     echo "  create ${MNT}/home/${user}"
     mkdir -p ${MNT}/home/${user} || _errex
 
-    echo "  set ownership of ${MNT}/home/${user}"
-    chroot ${MNT} /usr/sbin/chown -R ${user}:wheel /home/${user} || _errex
-
     if [ -r "/tmp/${user}.authorized_keys" ]
     then
         echo "  copy authorized_keys"
@@ -604,6 +601,9 @@ do
     else
         echo "  not found: /tmp/${user}.authorized_keys"
     fi
+
+    echo "  set ownership of ${MNT}/home/${user}"
+    chroot ${MNT} /usr/sbin/chown -R ${user}:wheel /home/${user} || _errex
 done
 
 # ==============================================================================
