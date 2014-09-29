@@ -1,4 +1,0 @@
----
-dependencies:
-- {role: freebsd/port/highlight, when: ansible_os_family == "FreeBSD"}
-- {role: darwin/brew/highlight, when: ansible_os_family == "Darwin"}

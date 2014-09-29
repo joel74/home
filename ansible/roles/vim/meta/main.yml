@@ -1,4 +1,0 @@
----
-dependencies:
-- {role: darwin/brew/macvim, when: ansible_os_family == "Darwin"}
-- {role: freebsd/port/vim,   when: ansible_os_family == "FreeBSD"}

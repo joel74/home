@@ -8,19 +8,8 @@
     changed_when: False
 
   roles:
-  - darwin/brew/fortune
-  - darwin/brew/git
-  - darwin/brew/git-crypt
-  - darwin/brew/highlight
-  - darwin/brew/htop
-  - darwin/brew/macvim
-  - darwin/brew/ranger
-  - darwin/brew/tmux
-  - darwin/brew/wget
-  - darwin/brew/zsh
-
+  - julie/darwin-software
   - julie/gitconfig
   - julie/home
   - julie/ssh-config
-
   - julie/torrent-uploader

@@ -3,7 +3,7 @@
 - hosts: bydlenka
   roles:
   - freebsd
-  - julie
+  - julie/freebsd-software
   - ansible
   - crashplan
   - file-server-home
