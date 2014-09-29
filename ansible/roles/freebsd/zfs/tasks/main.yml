@@ -1,0 +1,9 @@
+---
+- name: datasets
+  tags: zfs
+  sudo: yes
+  zfs:
+    name:  "{{ item.name }}"
+    state: present
+    mountpoint: "{{ item.mountpoint }}"
+  with_items: zfs

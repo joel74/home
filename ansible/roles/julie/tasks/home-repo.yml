@@ -5,7 +5,7 @@
         force=no
         update=no
 
-- name: link home to .julie.home
+- name: link home to .julie
   file: src={{ julie_home_path }}
         dest={{ julie_home_link }}
         state=link

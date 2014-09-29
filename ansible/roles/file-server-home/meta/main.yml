@@ -1,5 +1,6 @@
 ---
 dependencies:
+- role: freebsd/zfs
 - role: file-server-afp-share
   afp_share_name: Homes
   afp_share:

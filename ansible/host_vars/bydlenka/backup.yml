@@ -1,4 +1,5 @@
-backup_root:  /data/backup
+---
+backup_root:  "{{ data_root }}/backup"
 backup_group: backup
 backup_users: [ julie ]
 

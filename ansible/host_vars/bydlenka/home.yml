@@ -1,4 +1,5 @@
-home_root: /data/home
+---
+home_root: "{{ data_root }}/home"
 home_users:
 - name:  julie
   quota: 1T

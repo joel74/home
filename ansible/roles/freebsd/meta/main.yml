@@ -17,7 +17,6 @@ dependencies:
 - freebsd/port/rsync
 - freebsd/port/sudo
 
-- freebsd/sudoers-wheel
 - freebsd/kernconf
-
-- julie
+- freebsd/sudoers-wheel
+- freebsd/zfs
