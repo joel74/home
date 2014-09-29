@@ -9,8 +9,6 @@
 
   roles:
   - julie/darwin-software
-  - julie/gitconfig
-  - julie/home
-  - julie/ssh-config
+  - julie/common
   - julie/torrent-uploader
   - darwin/login-shell

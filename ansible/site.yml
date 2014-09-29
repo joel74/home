@@ -29,8 +29,7 @@
   - freebsd/zfs
 
   - julie/freebsd-software
-  - julie/gitconfig
-  - julie/home
+  - julie/common
   - freebsd/login-shell
 
 - hosts: bydlenka
@@ -45,4 +44,3 @@
   - role: www-site
     name: bydlenka
     src: sites-available/bydlenka.conf.j2
-

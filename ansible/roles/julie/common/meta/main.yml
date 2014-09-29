@@ -1,0 +1,5 @@
+---
+dependencies:
+- julie/gitconfig
+- julie/home
+- julie/ssh-config
