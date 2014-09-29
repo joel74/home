@@ -1,6 +1,8 @@
 ---
 - include: home-repo.yml
+
 - include: ssh-config.yml
+  when: ansible_os_family == 'Darwin'
 
 - name: link
   file: src={{ julie_home_path }}/{{ item.src }}
