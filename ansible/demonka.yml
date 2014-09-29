@@ -1,6 +1,0 @@
-#!/usr/bin/env ansible-playbook
----
-- hosts: demonka
-  roles:
-  - freebsd
-  - julie/freebsd-software
