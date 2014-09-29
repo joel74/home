@@ -29,6 +29,9 @@
   - freebsd/zfs
 
   - julie/freebsd-software
+  - julie/gitconfig
+  - julie/home
+  - freebsd/login-shell
 
 - hosts: bydlenka
   roles:

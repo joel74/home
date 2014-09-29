@@ -1,0 +1,12 @@
+---
+- name:         get current shell from dscl
+  tags:         login-shell
+  shell:        "dscl . read ~ UserShell | awk '{ print $2 }'"
+  register:     dscl
+  changed_when: false
+
+- name:         change shell
+  tags:         login-shell
+  sudo:         yes
+  command:      "chsh -s {{ user_login_shell }} \"{{ ansible_env.USER }}\""
+  when:         (user_login_shell is defined) and (dscl.stdout != user_login_shell)

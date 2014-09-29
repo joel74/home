@@ -1,0 +1,12 @@
+---
+- name:         get current shell from /etc/passwd
+  tags:         login-shell
+  command:      "awk -F: '$1 == \"{{ ansible_env.USER }}\" {print $NF}' /etc/passwd"
+  register:     passwd
+  changed_when: false
+
+- name:         change shell
+  tags:         login-shell
+  sudo:         yes
+  command:      "chsh -s {{ user_login_shell }} \"{{ ansible_env.USER }}\""
+  when:         (user_login_shell is defined) and (passwd.stdout != user_login_shell)
