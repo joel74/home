@@ -1,7 +1,6 @@
-Host demonka
-HostName 37.157.194.41
-#Port 37157
+Host bydlenka demonka
+Port 37157
 User julie
 
-Host bydlenka
-User julie
+Host     demonka
+HostName 37.157.194.41

@@ -1,0 +1,4 @@
+---
+dependencies:
+- role: freebsd/etc/mergemaster-ignore
+  path: /etc/ssh/sshd_config

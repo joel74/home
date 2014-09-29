@@ -1,0 +1,10 @@
+---
+- name: sshd_config
+  sudo: yes
+  tags: sshd
+  register: sshd_config
+  template:
+    dest: /etc/ssh/sshd_config
+    src: sshd_config.j2
+  notify: prompt sshd reload
+

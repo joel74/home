@@ -6,8 +6,10 @@ dependencies:
 - freebsd/etc/rc.conf.d/hostname
 - freebsd/etc/rc.conf.d/network
 - freebsd/etc/rc.conf.d/routing
+- freebsd/etc/rc.conf.d/sshd
 - freebsd/etc/rc.conf.d/zfs
 - freebsd/etc/src.conf
+- freebsd/etc/sshd_config
 - freebsd/etc/sysctl.conf/hw.syscons.bell
 
 - freebsd/portsnap-periodic

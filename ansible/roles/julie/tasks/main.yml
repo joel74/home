@@ -1,5 +1,6 @@
 ---
 - include: home-repo.yml
+- include: ssh-config.yml
 
 - name: link
   file: src={{ julie_home_path }}/{{ item.src }}

@@ -140,6 +140,9 @@
 # ZFS pool name
 : ${ZPOOL:=zroot}
 
+# SSH port
+: ${SSH_PORT:=37157}
+
 # swap partition device file, may be empty if the machine has more than 2 GB of
 # RAM
 : ${SWAP:=}
@@ -535,6 +538,9 @@ echo "hostname=\"${HOSTNAME}\"" > ${MNT}/etc/rc.conf.d/hostname || _errex
 echo Enable sudo for wheel members.
 mkdir -p ${MNT}/usr/local/etc/sudoers.d || _errex
 echo '%wheel ALL = (ALL) ALL' > ${MNT}/usr/local/etc/sudoers.d/wheel || _errex
+
+echo Set custom SSH port.
+echo "Port ${SSH_PORT}" > ${MNT}/etc/ssh/sshd_config || _errex
 
 # ==============================================================================
 # etc/rc.conf.d/network

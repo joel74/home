@@ -1,0 +1,15 @@
+# {{ ansible_managed }}
+AllowGroups wheel
+Banner none
+{% if sshd_port is defined %}
+Port {{ sshd_port }}
+{% endif %}
+{% for address in sshd_addresses %}
+ListenAddress {{ address }}
+{% endfor %}
+PasswordAuthentication no
+X11Forwarding no
+
+VersionAddendum ""
+
+Subsystem   sftp    /usr/libexec/sftp-server

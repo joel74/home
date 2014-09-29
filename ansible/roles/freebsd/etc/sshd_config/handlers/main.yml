@@ -1,0 +1,16 @@
+---
+- name: prompt sshd reload
+  tags: sshd
+  when: sshd_listen_address is defined or sshd_port is defined
+  pause:
+    prompt: |
+      sshd will listen on the following endpoints after restart:
+
+         {% if sshd_port is defined %}
+         Port {{ sshd_port }}
+         {% endif %}
+         {% for a in sshd_addresses %}
+         ListenAddress {{ a }}
+         {% endfor %}
+
+      Don't forget to manually `service sshd reload` when ready.
