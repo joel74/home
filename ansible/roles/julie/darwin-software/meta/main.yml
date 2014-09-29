@@ -1,0 +1,14 @@
+---
+dependencies:
+- darwin/brew/ansible
+- darwin/brew/fortune
+- darwin/brew/git
+- darwin/brew/git-crypt
+- darwin/brew/highlight
+- darwin/brew/htop
+- darwin/brew/macvim
+- darwin/brew/ranger
+- darwin/brew/tmux
+- darwin/brew/wget
+- darwin/brew/zsh
+

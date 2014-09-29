@@ -1,0 +1,15 @@
+#!/usr/bin/env ansible-playbook --ask-sudo-pass
+---
+- hosts: localhost
+  connection: local
+  pre_tasks:
+  - name: assign to os family group
+    group_by: key={{ ansible_os_family }}
+    changed_when: False
+
+  roles:
+  - julie/darwin-software
+  - julie/gitconfig
+  - julie/home
+  - julie/ssh-config
+  - julie/torrent-uploader

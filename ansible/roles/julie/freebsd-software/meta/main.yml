@@ -1,0 +1,11 @@
+---
+dependencies:
+- freebsd/port/git
+- freebsd/port/htop
+- freebsd/port/vim
+- freebsd/port/ranger
+- freebsd/port/tmux
+- freebsd/port/wget
+- freebsd/port/zsh
+
+

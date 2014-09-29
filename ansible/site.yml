@@ -1,4 +1,20 @@
 #!/usr/bin/env ansible-playbook
 ---
-- include: bydlenka.yml
-- include: demonka.yml
+- hosts: FreeBSD
+  roles:
+  - freebsd
+  - julie/freebsd-software
+
+- hosts: bydlenka
+  roles:
+  - freebsd/port/ansible
+  - crashplan
+  - file-server-home
+  - file-server-backup
+  - file-server-downloads
+  - download-server
+  - www-server
+  - role: www-site
+    name: bydlenka
+    src: sites-available/bydlenka.conf.j2
+

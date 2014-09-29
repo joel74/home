@@ -1,4 +1,0 @@
----
-dependencies:
-- {role: darwin/brew/wget, when: ansible_os_family == "Darwin"}
-- {role: freebsd/port/wget, when: ansible_os_family == "FreeBSD"}

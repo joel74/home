@@ -1,3 +1,0 @@
----
-dependencies:
-- {role: darwin/brew/fortune, when: ansible_os_family == "Darwin"}
