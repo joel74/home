@@ -44,3 +44,7 @@
   - role: www-site
     name: bydlenka
     src: sites-available/bydlenka.conf.j2
+
+- hosts: demonka
+  roles:
+  - easyrsa

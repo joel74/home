@@ -4,12 +4,6 @@ daemonik_internal_ip: 10.42.1.1
 daemonik_udp_vpn_net: 10.42.2.0
 daemonik_tcp_vpn_net: 10.42.3.0
 
-easyrsa_keydir: /data/ssl
-easyrsa_certs:
-- cn: julie-ip5
-- cn: julie-mba
-- cn: julie-mbpr
-
 openvpn_udp:
   name:   openvpn
   dev:    tun0

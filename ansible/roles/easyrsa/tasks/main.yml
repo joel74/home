@@ -1,0 +1,66 @@
+---
+- name: directories
+  tags: easyrsa
+  sudo: yes
+  file: dest={{ item }}
+        state=directory
+  with_items:
+  - "{{ easyrsa_cadir }}"
+  - "{{ easyrsa_keydir }}"
+
+- name: vars
+  tags: easyrsa
+  sudo: yes
+  template:
+    dest={{ easyrsa_cadir | mandatory  }}/vars
+    src=vars.j2
+
+- name: index files
+  tags: easyrsa
+  sudo: yes
+  copy:
+    dest: "{{ easyrsa_keydir }}/{{ item.name }}"
+    content: "{{ item.content|default('') }}"
+    force: no
+  with_items:
+  - name: 'index.txt'
+  - name: 'serial'
+    content: '01'
+
+
+- name: dh
+  tags: easyrsa
+  sudo: yes
+  shell: >
+    . {{ easyrsa_cadir  }}/vars &&
+    {{ easyrsa_root }}/build-dh
+  args:
+    creates: "{{ easyrsa_keydir }}/dh1024.pem"
+
+- name: ca cert
+  tags: easyrsa
+  sudo: yes
+  shell: >
+    . {{ easyrsa_cadir  }}/vars &&
+    {{ easyrsa_root }}/pkitool --initca
+  args:
+    creates: "{{ easyrsa_keydir }}/ca.key"
+
+- name: server cert
+  tags: easyrsa
+  sudo: yes
+  shell: >
+    . {{ easyrsa_cadir  }}/vars &&
+    {{ easyrsa_root }}/pkitool --server {{ easyrsa_server_cn }}
+  args:
+    creates: "{{ easyrsa_keydir }}/{{ easyrsa_server_cn }}.key"
+
+- name: client certs
+  tags: easyrsa
+  sudo: yes
+  shell: >
+    . {{ easyrsa_cadir  }}/vars &&
+    {{ easyrsa_root }}/pkitool {{ item }}
+  args:
+    creates: "{{ easyrsa_keydir }}/{{ item }}.key"
+  with_items: easyrsa_certs
