@@ -4,7 +4,9 @@ data_root:                  /data
 freebsd_branch:             base/stable/10
 freebsd_mirror:             svn0.eu.freebsd.org
 freebsd_makeconf_unset:     DOCS EXAMPLES NLS X11
+sshd_password_auth:         no
 sshd_port:                  37157
+sshd_use_pam:               no
 zpool:                      zroot
 zfs:
 - name: "{{ zpool }}{{ data_root }}"

@@ -4,13 +4,21 @@ Banner none
 VersionAddendum ""
 X11Forwarding no
 
-{% if sshd_privilege_separation is defined %}
-UsePrivilegeSeparation {{ sshd_privilege_separation }}
+{% macro yesno(label, val) %}
+{% if val is defined %}
+{% set val = 'yes' if val == true else val %}
+{{ label }} {{ val if val else 'no' }}
 {% endif %}
+{% endmacro %}
+
+{{ yesno('PasswordAuthentication', sshd_password_auth) }}
+{{ yesno('UsePAM',                 sshd_use_pam)  }}
+{{ yesno('UsePrivilegeSeparation', sshd_privilege_separation) }}
 
 {% if sshd_port is defined %}
 Port {{ sshd_port }}
 {% endif %}
+
 {% for address in sshd_addresses %}
 ListenAddress {{ address }}
 {% endfor %}
