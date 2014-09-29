@@ -1,5 +1,6 @@
 ---
 dependencies:
+- darwin/brew/ansible
 - darwin/brew/fortune
 - darwin/brew/git
 - darwin/brew/git-crypt

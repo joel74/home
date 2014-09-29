@@ -1,4 +1,0 @@
----
-dependencies:
-- {role: darwin/brew/ansible, when: ansible_os_family == "Darwin"}
-- {role: freebsd/port/ansible, when: ansible_os_family == "FreeBSD"}
