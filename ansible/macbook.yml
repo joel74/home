@@ -6,5 +6,23 @@
   - name: assign to os family group
     group_by: key={{ ansible_os_family }}
     changed_when: False
+
   roles:
-  - julie
+  - darwin/brew/fortune
+  - darwin/brew/git
+  - darwin/brew/git-crypt
+  - darwin/brew/highlight
+  - darwin/brew/htop
+  - darwin/brew/macvim
+  - darwin/brew/ranger
+  - darwin/brew/tmux
+  - darwin/brew/wget
+  - darwin/brew/zsh
+
+  - julie/gitconfig
+  - julie/home
+  - julie/ssh-config
+
+  - role:   julie/torrent-uploader
+    source: "{{ ansible_env.HOME }}/Downloads"
+    dest:   bydlenka:/data/downloads

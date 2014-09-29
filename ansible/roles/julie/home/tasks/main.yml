@@ -9,3 +9,9 @@
   file: src={{ julie_home_path }}
         dest={{ julie_home_link }}
         state=link
+
+- name: link dotfiles
+  file: src={{ julie_home_path }}/{{ item.src }}
+        dest=~/{{ item.dest }}
+        state=link
+  with_items: julie_home_sublinks
