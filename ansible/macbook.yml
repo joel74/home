@@ -23,6 +23,4 @@
   - julie/home
   - julie/ssh-config
 
-  - role:   julie/torrent-uploader
-    source: "{{ ansible_env.HOME }}/Downloads"
-    dest:   bydlenka:/data/downloads
+  - julie/torrent-uploader

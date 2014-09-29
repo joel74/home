@@ -1,0 +1,3 @@
+---
+torrent_uploader_source: "{{ ansible_env.HOME }}/Downloads"
+torrent_uploader_dest:   bydlenka:/data/downloads
