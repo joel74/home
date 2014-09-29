@@ -16,5 +16,8 @@ dependencies:
   dest:   bydlenka:/data/downloads
   when:   ansible_os_family == 'Darwin'
 
+- role: darwin/brew/git-crypt
+  when: ansible_os_family == 'Darwin'
+
 - role: highlight
   when: ansible_os_family == 'Darwin'

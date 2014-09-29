@@ -1,0 +1,3 @@
+---
+dependencies:
+- {name: git-crypt, role: darwin/brew}
