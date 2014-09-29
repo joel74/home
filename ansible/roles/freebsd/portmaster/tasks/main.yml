@@ -1,0 +1,6 @@
+---
+- name: portmaster.rc
+  sudo: yes
+  copy:
+    dest: /usr/local/etc/portmaster.rc
+    src:  portmaster.rc

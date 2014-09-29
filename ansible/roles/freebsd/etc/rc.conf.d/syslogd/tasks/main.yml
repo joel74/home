@@ -1,0 +1,8 @@
+---
+- name: syslogd_enable="YES"
+  sudo: yes
+  copy:
+    dest: /etc/rc.conf.d/syslogd
+    content: |
+      syslogd_enable="YES"
+      syslogd_flags="-ss" # no network

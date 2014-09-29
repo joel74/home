@@ -2,7 +2,32 @@
 ---
 - hosts: FreeBSD
   roles:
-  - freebsd
+  - freebsd/etc/make.conf
+  - freebsd/etc/mergemaster.rc
+  - freebsd/etc/motd
+  - freebsd/etc/rc.conf.d/hostname
+  - freebsd/etc/rc.conf.d/network
+  - freebsd/etc/rc.conf.d/routing
+  - freebsd/etc/rc.conf.d/sshd
+  - freebsd/etc/rc.conf.d/syslogd
+  - freebsd/etc/rc.conf.d/zfs
+  - freebsd/etc/src.conf
+  - freebsd/etc/sshd_config
+  - freebsd/etc/sysctl.conf/hw.syscons.bell
+
+  - freebsd/portsnap-periodic
+  - freebsd/svnup-periodic
+
+  - freebsd/port/beadm
+  - freebsd/port/portmaster
+  - freebsd/port/rsync
+  - freebsd/port/sudo
+
+  - freebsd/kernconf
+  - freebsd/portmaster
+  - freebsd/sudoers-wheel
+  - freebsd/zfs
+
   - julie/freebsd-software
 
 - hosts: bydlenka
