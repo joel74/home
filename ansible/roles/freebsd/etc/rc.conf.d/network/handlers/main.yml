@@ -5,10 +5,10 @@
       The network settings on {{ ansible_hostname }} have changed.
       Please execute the following command manually:
 
-          service netif restart
-
-      If the machine uses DHCP to get its IP address, don't forget to run
-
-          service dhclient restart <interface>
+          sudo sh <<EOF
+             service netif restart
+             service routing restart
+             service dhclient restart <dhcp_interfaces>
+          EOF
 
       Then, press ENTER to continue this playbook.

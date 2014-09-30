@@ -1,0 +1,16 @@
+# {{ ansible_managed }}
+
+{% if netif_cloned_interfaces | default(None) %}
+cloned_interfaces="{{ netif_cloned_interfaces }}"
+{% endif %}
+
+{% for ifname, value in netif_ifconfig.iteritems() %}
+{% if value is string %}
+ifconfig_{{ ifname }}="{{ value }}"
+{% elif value.inet is defined %}
+ifconfig_{{ ifname }}="inet {{ value.inet }}"
+{% for alias in value.inet_aliases | default([]) %}
+ifconfig_{{ ifname }}_alias{{ loop.index0 }}="inet {{ alias }}"
+{% endfor %}
+{% endif %}
+{% endfor %}

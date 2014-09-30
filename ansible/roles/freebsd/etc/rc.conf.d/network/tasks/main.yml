@@ -3,21 +3,6 @@
   tags: netif
   sudo: yes
   notify: restart netif
-  lineinfile:
+  template:
     dest: /etc/rc.conf.d/network
-    create: yes
-    regexp: ^ifconfig_{{ item.key }}=
-    line: 'ifconfig_{{ item.key }}="{{ item.value }}"'
-  with_dict: netif_ifconfig
-
-
-- name: cloned interfaces
-  tags: netif
-  sudo: yes
-  notify: restart netif
-  lineinfile:
-    dest: /etc/rc.conf.d/network
-    create: yes
-    regexp: ^cloned_interfaces=
-    line: 'cloned_interfaces="{{ netif_cloned_interfaces }}"'
-  when: netif_cloned_interfaces|default('') != ''
+    src: network.j2

@@ -1,4 +1,16 @@
 ---
+demonka_ext_inet_ip0: 37.157.194.41
+demonka_ext_inet_ip1: 46.28.110.74
+demonka_int_inet_ip0: 10.42.1.1
+
+demonka_openpvn_udp_inet_net: 10.42.2.0
+demonka_openvpn_tcp_inet_net: 10.42.3.0
+
 netif_cloned_interfaces: lo1 tun0 tun1
 netif_ifconfig:
-  vtnet0: inet 37.157.194.41/24
+  lo1:
+    inet: "{{ demonka_int_inet_ip0 }}/24"
+  vtnet0:
+    inet: "{{ demonka_ext_inet_ip0 }}/24"
+    inet_aliases:
+    - "{{ demonka_ext_inet_ip1 }}/24"
