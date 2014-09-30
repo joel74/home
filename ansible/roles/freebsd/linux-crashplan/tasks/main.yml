@@ -1,8 +1,17 @@
 ---
-- name: crashplan enabled and started
+- name: crashplan enabled
   tags: crashplan
   sudo: yes
-  service:
-    name: crashplan
-    state: started
-    enabled: yes
+  copy:
+    dest: /etc/rc.conf.d/crashplan
+    content: 'crashplan_enable="YES"'
+
+- name: crashplan started
+  tags: crashplan
+  sudo: yes
+  command: /usr/local/etc/rc.d/crashplan start
+  register: start_result
+  changed_when: >
+    'is already running' not in start_result.stdout
+  failed_when: >
+    start_result|failed and 'WARNING: no shebang' not in start_result.stderr
