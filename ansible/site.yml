@@ -47,4 +47,4 @@
 
 - hosts: demonka
   roles:
-  - easyrsa
+  - openvpn-server

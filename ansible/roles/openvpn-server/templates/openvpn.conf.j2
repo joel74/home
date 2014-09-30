@@ -1,5 +1,7 @@
 # {{ ansible_managed }}
 
+{% set openvpn = item %}
+
 {% if openvpn.cred is defined %}
 {% set openvpn_cred = openvpn.cred %}
 {% endif %}
@@ -54,11 +56,13 @@ tcp-nodelay
 # reduce privileges
 user   nobody
 group  nobody
-chroot /var/empty
 
-# The persist options will try to avoid
-# accessing certain resources on restart
-# that may no longer be accessible because
+{% if openvpn.chroot | default(openvpn_chroot) | default(false) %}
+chroot {{ openvpn.chroot | default(openvpn_chroot) | mandatory }}
+{% endif %}
+
+# The persist options will try to avoid accessing certain
+# resources on restart that may no longer be accessible because
 # of the privilege downgrade.
 persist-key
 persist-tun

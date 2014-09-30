@@ -1,3 +1,4 @@
 ---
+netif_cloned_interfaces: lo1 tun0 tun1
 netif_ifconfig:
   vtnet0: inet 37.157.194.41/24

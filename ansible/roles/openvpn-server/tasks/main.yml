@@ -1,34 +1,57 @@
 ---
-- name: does openvpn service instance exist?
-  tags: openvpn
-  stat: path=/usr/local/etc/rc.d/{{ openvpn.name | default(openvpn_name) }}
-  register: openvpn_rc_script
-
-- name: link openvpn service instance
+- name: config directory
   tags: openvpn
   sudo: yes
-  when: not openvpn_rc_script.stat.exists
-  file: >
-    dest=/usr/local/etc/rc.d/{{ openvpn.name | default(openvpn_name) }}
-    src=/usr/local/etc/rc.d/openvpn
-    state=link
+  file:
+    dest:  "{{ item }}"
+    state: directory
+  with_items:
+  - /usr/local/etc/openvpn
 
-- name: /usr/local/etc/openvpn
+- name: jail directories
   tags: openvpn
   sudo: yes
-  file: dest=/usr/local/etc/openvpn
-        state=directory
+  file:
+    dest:  "{{ item[0].chroot }}{{ item[1].name }}"
+    mode:  "{{ item[1].mode }}"
+    state: directory
+  when: item[0].chroot | default(false)
+  with_nested:
+  - openvpn_instances
+  -
+    - { name: '/',    mode:  '755' }
+    - { name: '/tmp', mode: '1777' }
 
-- name: ensure openvpn.conf
+- name: link openvpn service instances
   tags: openvpn
   sudo: yes
-  template: >
-    dest=/usr/local/etc/openvpn/{{ openvpn.name | default(openvpn_name) }}.conf
-    src=openvpn.conf.j2
+  file:
+    dest:  /usr/local/etc/rc.d/{{ item.name }}
+    src:   /usr/local/etc/rc.d/openvpn
+    state: link
+  with_items: openvpn_instances
+  when: item.name != 'openvpn'
 
-- name: enable openvpn service
+- name: ensure openvpn.confs
   tags: openvpn
   sudo: yes
-  service: >
-    name={{ openvpn.name | default(openvpn_name) }}
-    enabled=yes
+  template:
+    dest: /usr/local/etc/openvpn/{{ item.name }}.conf
+    src:  openvpn.conf.j2
+  with_items: openvpn_instances
+
+- name: openvpn services enabled
+  tags: openvpn
+  sudo: yes
+  copy:
+    dest: /etc/rc.conf.d/{{ item.name }}
+    content: "{{ item.name }}_enable=\"YES\""
+  with_items: openvpn_instances
+
+- name: openvpn services started
+  tags: openvpn
+  sudo: yes
+  service:
+    name: "{{ item.name }}"
+    state: started
+  with_items: openvpn_instances

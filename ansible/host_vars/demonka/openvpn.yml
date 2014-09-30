@@ -1,16 +1,17 @@
 ---
 
-daemonik_internal_ip: 10.42.1.1
-daemonik_udp_vpn_net: 10.42.2.0
-daemonik_tcp_vpn_net: 10.42.3.0
+demonka_internal_ip: 10.42.1.1
+demonka_udp_vpn_net: 10.42.2.0
+demonka_tcp_vpn_net: 10.42.3.0
 
 openvpn_udp:
   name:   openvpn
   dev:    tun0
   proto:  udp
+  chroot: /usr/local/etc/openvpn/openvpn_root
   status: /var/log/openvpn.status
   ipv4:
-    network: "{{ daemonik_udp_vpn_net }}"
+    network: "{{ demonka_udp_vpn_net }}"
     mask:    255.255.255.0
 
 openvpn_tcp:
@@ -18,19 +19,25 @@ openvpn_tcp:
   dev:         tun1
   proto:       tcp
   tcp_nodelay: true
+  chroot:      /usr/local/etc/openvpn/openvpn_tcp_root
   status:      /var/log/openvpn_tcp.status
   ipv4:
-    network: "{{ daemonik_tcp_vpn_net }}"
+    network: "{{ demonka_tcp_vpn_net }}"
     mask:    255.255.255.0
+
+openvpn_instances:
+- "{{ openvpn_udp }}"
+- "{{ openvpn_tcp }}"
 
 openvpn_cipher:      AES-128-CBC
 openvpn_comp_lzo:    true
 openvpn_cred:
-  ca:   "{{ easyrsa_keydir }}/keys/ca.pem"
-  cert: "{{ easyrsa_keydir }}/keys/vpn.juliekoubova.net.pem"
-  dh:   "{{ easyrsa_keydir }}/keys/dh1024.pem"
-  key:  "{{ easyrsa_keydir }}/keys/vpn.juliekoubova.net.key"
+  ca:   "{{ easyrsa_keydir }}/ca.crt"
+  cert: "{{ easyrsa_keydir }}/vpn.juliekoubova.net.crt"
+  dh:   "{{ easyrsa_keydir }}/dh1024.pem"
+  key:  "{{ easyrsa_keydir }}/vpn.juliekoubova.net.key"
 openvpn_max_clients: 16
 openvpn_push:
-- route {{ daemonik_internal_ip }} 255.255.255.255 vpn_gateway
-- dhcp-option DNS {{ daemonik_internal_ip }}
+- route {{ demonka_internal_ip }} 255.255.255.255 vpn_gateway
+- dhcp-option DNS {{ demonka_internal_ip }}
+

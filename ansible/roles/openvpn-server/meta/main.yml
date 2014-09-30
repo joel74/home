@@ -1,3 +1,4 @@
 ---
 dependencies:
 - freebsd/port/openvpn
+- easyrsa

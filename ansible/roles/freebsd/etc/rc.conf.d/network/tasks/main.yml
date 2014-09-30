@@ -20,4 +20,4 @@
     create: yes
     regexp: ^cloned_interfaces=
     line: 'cloned_interfaces="{{ netif_cloned_interfaces }}"'
-  when: netif_cloned_interfaces
+  when: netif_cloned_interfaces|default('') != ''
