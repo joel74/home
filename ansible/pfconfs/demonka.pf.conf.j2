@@ -1,11 +1,18 @@
-ext_if      = "vtnet0"
+# {{ ansible_managed }}
+
+{#
+sshd_port is defined in group_vars/FreeBSD.
+demonka_* network variables are defined in host_vars/demonka/network.yml
+#}
+
+ext_if      = "{{ pfconf_ext_if }}"
+int_if      = "{{ pfconf_int_if }}"
 int_if      = "lo1"
 vpn_if      = "{ tun0 tun1 }"
 
 # Ports
 bt          = "51413"
-ssh         = "37157"
-isakmp_natt = "4500"
+ssh         = "{{ sshd_port if sshd_port is defined else 'ssh' }}"
 
 udp_noise   = "{ mdns
                  netbios-ns
@@ -17,13 +24,13 @@ udp_noise   = "{ mdns
 
 # IPs
 ext_ip0 = $ext_if:0
-ext_ip1 = 46.28.110.74
+ext_ip1 = {{ demonka_ext_inet_ip1 }}
 
-table <daemonik>   const { $ext_ip0 $ext_ip1 $int_if:0 }
-table <int_net>    const { 10.186/16 }
+table <demonka>   const { $ext_ip0 $ext_ip1 $int_if:0 }
+table <int_net>   const { {{ demonka_int_inet_net }} }
 
-table <private>    const { 10/8 172.16/12 169.254/16 192.168/16 }
-table <multicast>  const { $ext_if:broadcast 224/4 255.255.255.255 }
+table <private>   const { 10/8 172.16/12 169.254/16 192.168/16 }
+table <multicast> const { $ext_if:broadcast 224/4 255.255.255.255 }
 
 set skip on lo0
 set block-policy return
@@ -35,7 +42,7 @@ scrub on $vpn_if reassemble tcp
 # TRANSLATION
 ############################################
 
-# nat for jails and vpn clients
+# nat for vpn clients
 nat from <int_net> to ! <int_net> -> $ext_ip0
 
 # tcp services on primary IP
@@ -86,10 +93,10 @@ pass proto tcp to $int_if:0 port { domain http https openvpn $ssh }
 pass proto udp to $int_if:0 port { domain openvpn $bt }
 
 # allow pings
-pass inet proto icmp to   <daemonik> icmp-type echoreq
-pass inet proto icmp from <daemonik> icmp-type echoreq
-pass inet proto icmp from <int_net>  icmp-type echoreq
+pass proto icmp to   <demonka> icmp-type echoreq
+pass proto icmp from <demonka> icmp-type echoreq
+pass proto icmp from <int_net> icmp-type echoreq
 
 # allow outbound traffic
-pass inet proto { tcp udp } from <int_net>
-pass inet proto { tcp udp } from <daemonik>
+pass proto { tcp udp } from <int_net>
+pass proto { tcp udp } from <demonka>

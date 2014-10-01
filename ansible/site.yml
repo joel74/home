@@ -26,6 +26,7 @@
 
   - freebsd/kernconf
   - freebsd/portmaster
+  - freebsd/pf
   - freebsd/sudoers-wheel
   - freebsd/zfs
 

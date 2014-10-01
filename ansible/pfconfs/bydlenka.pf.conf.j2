@@ -1,0 +1,67 @@
+# {{ ansible_managed }}
+
+{#
+sshd_port is defined in group_vars/FreeBSD.
+#}
+
+int_if      = "{{ pfconf_int_if }}"
+
+# Ports
+bt          = "51413"
+ssh         = "{{ sshd_port if sshd_port is defined else 'ssh' }}"
+
+udp_noise   = "{ netbios-ns
+                 netbios-dgm
+                 netbios-ssn
+                 1947
+                 5355
+                 17500 }"
+
+# IPs
+int_ip = $int_if:0
+int_net = $int_if:network
+
+set skip on lo0
+set block-policy return
+
+scrub on $int_if reassemble tcp
+
+############################################
+# QUICK FILTERING
+############################################
+
+antispoof quick log for { lo0 tun $int_if }
+
+# block drop and don't log various UDP noise
+block drop quick on $int_if proto udp to port $udp_noise
+
+# block drop packets from impossible addresses
+block drop in log quick on $int_if from no-route
+block drop in log quick on $int_if from urpf-failed
+
+# don't log and return ICMP UNREACHABLE, probably BitTorrent peers
+block return quick on $int_if proto udp to port >= 49152
+
+############################################
+# FILTERING
+############################################
+
+# block everything
+block log
+
+# allow external services
+pass proto udp  from any      to $int_ip     port { $bt }
+
+# allow internal services
+pass proto tcp  from $int_net to $int_ip     port { afpovertcp http $ssh } 
+pass proto udp  from $int_net to $int_ip     port { afpovertcp }
+pass proto udp  from $int_net to 224.0.0.251 port { mdns }
+
+# allow pings from local network
+pass proto icmp from $int_net to $int_ip icmp-type echoreq
+
+# allow pinging anything
+pass proto icmp from $int_ip  to any     icmp-type echoreq
+
+# allow outbound traffic
+pass proto { tcp udp } from $int_ip

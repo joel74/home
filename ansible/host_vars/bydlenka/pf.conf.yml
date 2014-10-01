@@ -1,0 +1,3 @@
+---
+pfconf: bydlenka.pf.conf.j2
+pfconf_int_if: igb0

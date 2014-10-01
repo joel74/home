@@ -1,0 +1,10 @@
+---
+- name: pf.conf
+  tags: pf
+  sudo: yes
+  notify: reload pf.conf
+  template:
+    dest: /etc/pf.conf
+    src: pfconfs/{{ pfconf }}
+    validate: /sbin/pfctl -nf %s
+
