@@ -1,6 +1,8 @@
 cpu         HAMMER
 
 makeoptions DEBUG=-g                # Build kernel with gdb(1) debug symbols
+makeoptions MODULES_OVERRIDE=""     # No need for modules anymore!
+
 options     PRINTF_BUFR_SIZE=128    # Prevent printf output being interspersed.
 options     INCLUDE_CONFIG_FILE     # Include this file in kernel
 
