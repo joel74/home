@@ -93,9 +93,9 @@ pass proto tcp to $int_if:0 port { domain http https openvpn $ssh }
 pass proto udp to $int_if:0 port { domain openvpn $bt }
 
 # allow pings
-pass proto icmp to   <demonka> icmp-type echoreq
-pass proto icmp from <demonka> icmp-type echoreq
-pass proto icmp from <int_net> icmp-type echoreq
+pass inet proto icmp to   <demonka> icmp-type echoreq
+pass inet proto icmp from <demonka> icmp-type echoreq
+pass inet proto icmp from <int_net> icmp-type echoreq
 
 # allow outbound traffic
 pass proto { tcp udp } from <int_net>
