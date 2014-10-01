@@ -1,4 +1,18 @@
 ---
+- name: enabled
+  tags: pf
+  sudo: yes
+  copy:
+    dest: /etc/rc.conf.d/pf
+    content: "pf_enable=\"YES\""
+
+- name: started
+  tags: pf
+  sudo: yes
+  service:
+    name: pf
+    state: started
+
 - name: pf.conf
   tags: pf
   sudo: yes
