@@ -12,7 +12,7 @@
   lineinfile: >
     dest=/etc/src.conf.local
     create=yes
-    "line=.sinclude </etc/src.conf.virtual>"
+    "line=.include </etc/src.conf.virtual>"
   when: freebsd_is_virtual
 
 - name: set machine-specific defines
