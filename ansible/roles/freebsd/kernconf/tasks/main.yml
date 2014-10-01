@@ -1,17 +1,20 @@
 ---
 - name: kernel configs in /usr/src/sys/amd64/conf
+  tags: kernconf
   sudo: yes
   copy: >
     dest=/usr/src/sys/amd64/conf
-    src=./
+    src=kernconfs/
 
-- name:     test machine kernel config existence
+- name: test machine kernel config existence
+  tags: kernconf
   register: kernconf_stat
   stat: >
     path=/usr/src/sys/amd64/conf/{{ freebsd_kernconf }}
     get_md5=no
 
 - name: register default kernel config
+  tags: kernconf
   sudo: yes
   when: kernconf_stat.stat.exists
   lineinfile: >

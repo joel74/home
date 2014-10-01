@@ -1,0 +1,29 @@
+include     JULIE
+ident       BYDLENKA
+
+#
+# Temperature sensors:
+#
+# coretemp: on-die sensor on Intel Core and newer CPUs
+device      coretemp
+
+# Network
+device      igb         # Intel PRO/1000 PCIE Server Gigabit Family
+
+# ATA controllers
+device      ahci        # AHCI-compatible SATA controllers
+
+# ATA/SCSI peripherals
+device      scbus       # SCSI bus (required for ATA/SCSI)
+device      da          # Direct Access (disks)
+device      ses         # Enclosure Services (SES and SAF-TE)
+
+# USB support
+options     USB_DEBUG   # enable debug msgs
+device      uhci        # UHCI PCI->USB interface
+device      ohci        # OHCI PCI->USB interface
+device      ehci        # EHCI PCI->USB interface (USB 2.0)
+device      xhci        # XHCI PCI->USB interface (USB 3.0)
+device      usb         # USB Bus (required)
+device      ukbd        # Keyboard
+device      umass       # Disks/Mass storage - Requires scbus and da

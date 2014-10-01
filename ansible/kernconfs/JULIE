@@ -1,0 +1,91 @@
+cpu         HAMMER
+
+makeoptions DEBUG=-g                # Build kernel with gdb(1) debug symbols
+options     PRINTF_BUFR_SIZE=128    # Prevent printf output being interspersed.
+options     INCLUDE_CONFIG_FILE     # Include this file in kernel
+
+options     SMP                         # Make an SMP-capable kernel by default
+options     SCHED_ULE                   # ULE scheduler
+options     PREEMPTION                  # Enable kernel thread preemption
+options     _KPOSIX_PRIORITY_SCHEDULING # POSIX P1003_1B real-time extensions
+options     KTRACE                      # ktrace(1) support
+options     STACK                       # stack(9) support
+options     MAC                         # TrustedBSD MAC Framework
+options     KDTRACE_FRAME               # Ensure frames are compiled in
+options     KDTRACE_HOOKS               # Kernel DTrace hooks
+options     DDB_CTF                     # Kernel ELF linker loads CTF data
+
+options     CAPABILITIES    # fine-grained rights on file descriptors
+options     CAPABILITY_MODE # sandboxes with no global namespace access
+options     PROCDESC        # Support for process descriptors
+
+options     SYSVSHM         # SYSV-style shared memory
+options     SYSVMSG         # SYSV-style message queues
+options     SYSVSEM         # SYSV-style semaphores
+
+# Debugging support.  Always need this:
+options     KDB             # Enable kernel debugger support.
+options     KDB_TRACE       # Print a stack trace for a panic.
+
+#
+# Don't enter the debugger for a panic. Intended for unattended operation
+# where you may want to enter the debugger from the console, but still want
+# the machine to recover from a panic.
+#
+options     KDB_UNATTENDED
+
+# Enable 32-bit Linux ABI emulation (requires COMPAT_43 and COMPAT_FREEBSD32)
+options     COMPAT_43
+options     COMPAT_FREEBSD32
+options     COMPAT_LINUX32
+options     LINPROCFS       # Enable the linux-like proc filesystem support
+                            # (requires COMPAT_LINUX32 and PSEUDOFS)
+
+# Filesystem
+options     NULLFS          # NULL filesystem
+options     PROCFS          # Process filesystem (requires PSEUDOFS)
+options     PSEUDOFS        # Pseudo-filesystem framework
+options     NFSD            # New Network Filesystem Server
+options     ZFS             # (requires NFSD)
+
+options     GEOM_LABEL      # Provides labelization
+options     GEOM_NOP        # Test class.
+options     GEOM_PART_GPT   # GUID Partition Tables.
+
+# CPU frequency control
+device      cpufreq
+
+device      hwpmc           # Driver (also a loadable module)
+options     HWPMC_HOOKS     # Other necessary kernel hooks
+
+# Bus support
+device      acpi
+options     ACPI_DMAR
+device      pci
+
+# Legacy stuff
+device      atkbdc      # AT keyboard controller
+device      atkbd       # AT keyboard
+device      kbdmux      # keyboard multiplexer
+device      vga         # VGA video card driver
+
+# vt is the new video console driver
+device      vt          # New console
+device      vt_vga
+
+# Networking
+options     INET
+options     INET6
+options     TCP_OFFLOAD # TCP offload support.
+
+# Pseudo devices
+device      bpf         # Berkeley Packet Filter (required by pflog and DHCP)
+device      ether       # Ethernet support
+device      loop        # Network loopback
+device      md          # Memory "disks"
+device      pf          # PF firewall
+device      pflog       # PF logging
+device      tun         # Packet tunnel (for OpenVPN)
+
+# Cryptographically secure random number generator; /dev/random
+device      random

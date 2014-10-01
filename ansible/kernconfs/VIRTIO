@@ -1,9 +1,5 @@
-include     JULIE
-ident       DAEMONIK
-
 # VirtIO support
 device      virtio      # Generic VirtIO bus (required)
 device      virtio_pci  # VirtIO PCI Interface
 device      virtio_blk  # VirtIO Block device
 device      vtnet       # VirtIO Ethernet device
-

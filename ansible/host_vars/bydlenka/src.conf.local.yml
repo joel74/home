@@ -1,7 +1,4 @@
 ---
-freebsd_modules:
-- linux
-- linprocfs
 freebsd_srcconf:
 - WITHOUT_BLUETOOTH
 - WITHOUT_NETGRAPH
