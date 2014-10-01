@@ -1,7 +1,17 @@
 ---
-- name: disable beeping
+- name: try disable beeping
+  tags: sysctl
   sudo: yes
-  lineinfile: >
-    dest=/etc/sysctl.conf
-    line="hw.syscons.bell=0 # don't beep"
-    regexp="^hw\.syscons\.bell="
+  command: "/sbin/sysctl hw.syscons.bell=0"
+  register: sysctl_result
+  changed_when: false
+  failed_when: false
+
+- name: disable beeping
+  tags: sysctl
+  sudo: yes
+  lineinfile:
+    dest:   /etc/sysctl.conf
+    line:   "hw.syscons.bell=0 # don't beep"
+    regexp: ^\s*#*\s*hw\.syscons\.bell=
+    state:  "{{ 'present' if sysctl_result.rc == 0 else 'absent' }}"
