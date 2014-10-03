@@ -41,7 +41,7 @@
   - file-server-backup
   - file-server-downloads
   - download-server
-  - openvpn
+  - openvpn-client
   - www-server
   - role: www-site
     name: bydlenka
@@ -49,5 +49,4 @@
 
 - hosts: demonka
   roles:
-  - easyrsa
-  - openvpn
+  - openvpn-server
