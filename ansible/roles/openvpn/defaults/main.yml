@@ -1,7 +1,12 @@
 ---
+openvpn:
+  name: openvpn
+
 openvpn_bind_ip:     "{{ ansible_default_ipv4.address }}"
 openvpn_comp_lzo:    true
 openvpn_dev:         tun
+openvpn_instances:
+- "{{ openvpn }}"
 openvpn_keepalive:   10 60
 openvpn_max_clients:
 openvpn_name:        openvpn

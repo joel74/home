@@ -30,7 +30,7 @@
     src:   /usr/local/etc/rc.d/openvpn
     state: link
   with_items: openvpn_instances
-  when: item.name != 'openvpn'
+  when: item.name | default('openvpn') != 'openvpn'
 
 - name: ensure openvpn.confs
   tags: openvpn
