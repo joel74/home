@@ -64,3 +64,13 @@
   args:
     creates: "{{ easyrsa_keydir }}/{{ item }}.key"
   with_items: easyrsa_certs
+
+- name: client certs owner
+  tags: easyrsa
+  sudo: yes
+  file:
+    dest: "{{ easyrsa_keydir }}/{{ item }}.key"
+    owner: "{{ ansible_user_id }}"
+    state: file
+  with_items: easyrsa_certs
+
