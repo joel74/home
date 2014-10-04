@@ -100,6 +100,9 @@ if has('wildmenu')
         set wildignore+=*.bmp,*.gif,*.ico,*.jpg,*.png
         set wildignore+=.DS_Store,.git,.hg,.svn
         set wildignore+=*~,*.swp,*.tmp
+        set wildignore+=vim/backups/
+        set wildignore+=vim/swaps/
+        set wildignore+=vim/undo/
     endif
 endif
 
@@ -133,7 +136,7 @@ nnoremap k gk
 nnoremap n nzz
 nnoremap N Nzz
 
-" C-Tab, C-S-Tab for buffer switching
+" C-Tab, C-S-Tab for buffer switching (only in GUI)
 inoremap <C-Tab>   <Esc>:bnext<CR>
 inoremap <C-S-Tab> <Esc>:bprev<CR>
 
@@ -152,7 +155,7 @@ function! MapF1()
   if &buftype == "help"
     exec 'quit'
   else
-    exec 'vert help'
+    exec 'help'
   endif
 endfunction
 
@@ -183,3 +186,5 @@ endif
 if has('syntax')
     syntax enable
 endif
+
+command! Mkdir exec ":! mkdir -pv %:h"
