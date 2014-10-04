@@ -1,2 +1,3 @@
 ---
 openvpn_client: yes
+openvpn_client_scp_certs_from: demonka:/data/easyrsa/keys

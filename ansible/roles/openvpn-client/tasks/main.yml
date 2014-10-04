@@ -1,0 +1,14 @@
+---
+#- name: download key files
+#  tags: [ openvpn, openvpn-client ]
+#  sudo: yes
+#  cosmmand: >
+#    /usr/bin/scp -f ~{{ ansible_user_id }}/.ssh/config
+#    {{ openvpn_client_scp_certs_from }}/{{ item }}
+#    /usr/local/etc/openvpn/{{ item }}
+#  args:
+#    creates: /usr/local/etc/openvpn/{{ item }}
+#  with_items:
+#  - "ca.crt"
+#  - "{{ openvpn_client_name }}.crt"
+#  - "{{ openvpn_client_name }}.key"

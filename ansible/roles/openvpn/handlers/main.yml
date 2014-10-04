@@ -1,0 +1,9 @@
+---
+- name: openvpn services restarted
+  tags: openvpn
+  sudo: yes
+  service:
+    name: "{{ item.name }}"
+    state: restarted
+  with_items: openvpn_instances
+

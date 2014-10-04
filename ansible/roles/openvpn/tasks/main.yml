@@ -8,7 +8,7 @@
   with_items:
   - /usr/local/etc/openvpn
 
-- name: jail directories
+- name: chroot directories
   tags: openvpn
   sudo: yes
   file:
@@ -31,6 +31,7 @@
     state: link
   with_items: openvpn_instances
   when: item.name | default('openvpn') != 'openvpn'
+  notify: openvpn services restarted
 
 - name: ensure openvpn.confs
   tags: openvpn
@@ -39,6 +40,7 @@
     dest: /usr/local/etc/openvpn/{{ item.name }}.conf
     src:  openvpn.conf.j2
   with_items: openvpn_instances
+  notify: openvpn services restarted
 
 - name: openvpn services enabled
   tags: openvpn
@@ -46,12 +48,4 @@
   copy:
     dest: /etc/rc.conf.d/{{ item.name }}
     content: "{{ item.name }}_enable=\"YES\""
-  with_items: openvpn_instances
-
-- name: openvpn services started
-  tags: openvpn
-  sudo: yes
-  service:
-    name: "{{ item.name }}"
-    state: started
   with_items: openvpn_instances

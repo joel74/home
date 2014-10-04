@@ -30,8 +30,6 @@ openvpn_instances:
 # pf redirects external packets to the internal
 # interface
 openvpn_bind_ip:     "{{ demonka_int_inet_ip0 }}"
-openvpn_cipher:      AES-128-CBC
-openvpn_comp_lzo:    true
 openvpn_cred:
   ca:   "{{ easyrsa_keydir }}/ca.crt"
   cert: "{{ easyrsa_keydir }}/vpn.juliekoubova.net.crt"
