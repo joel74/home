@@ -40,6 +40,9 @@ if exists('&undodir')
     exec 'set undodir=~/' . s:vimdir . '/undo'
 endif
 
+" Make CtrlP not leave the ansible root
+let g:ctrl_root_markers = [ 'ansible.cfg' ]
+
 let mapleader=","
 
 " !silent is used to suppress error messages if the config line
@@ -100,9 +103,9 @@ if has('wildmenu')
         set wildignore+=*.bmp,*.gif,*.ico,*.jpg,*.png
         set wildignore+=.DS_Store,.git,.hg,.svn
         set wildignore+=*~,*.swp,*.tmp
-        set wildignore+=vim/backups/
-        set wildignore+=vim/swaps/
-        set wildignore+=vim/undo/
+        set wildignore+=*/vim/backups/*
+        set wildignore+=*/vim/swaps/*
+        set wildignore+=*/vim/undo/*
     endif
 endif
 
