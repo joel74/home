@@ -42,9 +42,6 @@
   - file-server-downloads
   - download-server
   - www-server
-  - role: www-site
-    name: bydlenka
-    src: sites-available/bydlenka.conf.j2
 
 - hosts: demonka
   roles:
