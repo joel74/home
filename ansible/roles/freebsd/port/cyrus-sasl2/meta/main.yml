@@ -1,0 +1,11 @@
+---
+dependencies:
+- role:  freebsd/port
+  name:  cyrus-sasl2
+  uniquename: cyrus-sasl
+  set:   DOCS PLAIN
+  unset: AUTHDAEMOND CRAM DIGEST LOGIN NTLM OBSOLETE_CRAM_ATTR OTP SCRAM
+
+- role:  freebsd/port
+  name:  cyrus-sasl2-saslauthd
+  uniquename: cyrus-sasl-saslauthd2

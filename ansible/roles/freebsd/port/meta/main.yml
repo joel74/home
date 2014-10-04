@@ -1,10 +1,12 @@
 ---
 dependencies:
 - role:     freebsd/portsnap
+  tags:     port
 - role:     freebsd/etc/make.conf-line
+  tags:     port
   variables:
-  - var:   "{{ name }}_SET"
+  - var:   "{{ uniquename | default(name) }}_SET"
     value: "{{ set }}"
-  - var:   "{{ name }}_UNSET"
+  - var:   "{{ uniquename | default(name) }}_UNSET"
     value: "{{ unset }}"
 
