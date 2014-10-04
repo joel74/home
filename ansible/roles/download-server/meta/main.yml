@@ -3,3 +3,4 @@ dependencies:
 - freebsd/port/transmission
 - freebsd/port/transmission-web
 - file-server-downloads
+- www-server

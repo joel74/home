@@ -1,0 +1,18 @@
+# {{ ansible_managed }}
+
+location ^~ /downloads {
+    access_log  /var/log/nginx/downloads-access.log;
+    error_log   /var/log/nginx/downloads-error.log;
+
+    autoindex on;
+    alias     {{ downloads_root }};
+}
+
+location ^~ /transmission {
+    access_log /var/log/nginx/transmission-access.log;
+    error_log  /var/log/nginx/transmission-error.log;
+
+    proxy_pass http://127.0.0.1:9091/transmission;
+}
+
+

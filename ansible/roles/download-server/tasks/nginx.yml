@@ -1,0 +1,7 @@
+---
+- name: nginx downloads sub-sites
+  tags: [ www, download-server ]
+  sudo: yes
+  template:
+    dest: /usr/local/etc/nginx/sites-partials/downloads.conf
+    src: nginx.conf.j2

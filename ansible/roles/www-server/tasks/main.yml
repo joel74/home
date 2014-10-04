@@ -7,6 +7,7 @@
   with_items:
   - sites-available
   - sites-enabled
+  - sites-partials
 
 - name: log directories
   tags: www

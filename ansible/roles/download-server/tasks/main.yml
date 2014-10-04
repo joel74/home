@@ -1,3 +1,4 @@
 ---
 - include: transmission.yml
 - include: subtitles.yml
+- include: nginx.yml
