@@ -1,0 +1,16 @@
+---
+- name: /var/run/saslauthd owner group
+  tags: cyrus-sasl
+  sudo: yes
+  file:
+    dest: /var/run/saslauthd
+    group: "{{ sasl_group }}"
+  notify: saslauthd restarted
+
+- name: saslauthd configuration
+  tags: cyrus-sasl
+  sudo: yes
+  template:
+    dest: /etc/rc.conf.d/saslauthd
+    src:  rc.conf.j2
+  notify: saslauthd restarted

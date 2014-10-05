@@ -37,6 +37,7 @@
 - hosts: bydlenka
   roles:
   - crashplan
+  - cyrus-sasl
   - file-server-home
   - file-server-backup
   - file-server-downloads

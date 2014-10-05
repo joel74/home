@@ -1,0 +1,7 @@
+---
+- name: saslauthd restarted
+  tags: cyrus-sasl
+  sudo: yes
+  service:
+    name: saslauthd
+    state: restarted

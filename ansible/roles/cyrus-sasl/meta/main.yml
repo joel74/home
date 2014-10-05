@@ -1,0 +1,4 @@
+---
+dependencies:
+- role: freebsd/port/cyrus-sasl2
+  tags: cyrus-sasl
