@@ -1,0 +1,5 @@
+---
+znc_conf:        demonka.conf.j2
+znc_server_cert: "{{ easyrsa_keydir }}/irc.juliekoubova.net.crt"
+znc_server_key: "{{ easyrsa_keydir }}/irc.juliekoubova.net.key"
+znc_ssl_port:    6697

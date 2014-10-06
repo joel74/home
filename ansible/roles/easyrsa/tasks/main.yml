@@ -46,14 +46,15 @@
   args:
     creates: "{{ easyrsa_keydir }}/ca.key"
 
-- name: server cert
+- name: server certs
   tags: easyrsa
   sudo: yes
   shell: >
     . {{ easyrsa_cadir  }}/vars &&
-    {{ easyrsa_root }}/pkitool --server {{ easyrsa_server_cn }}
+    {{ easyrsa_root }}/pkitool --server {{ item }}
   args:
-    creates: "{{ easyrsa_keydir }}/{{ easyrsa_server_cn }}.key"
+    creates: "{{ easyrsa_keydir }}/{{ item }}.key"
+  with_items: easyrsa_server_certs
 
 - name: client certs
   tags: easyrsa
@@ -65,12 +66,37 @@
     creates: "{{ easyrsa_keydir }}/{{ item }}.key"
   with_items: easyrsa_certs
 
+- name: pkcs12 passphrase file
+  tags: easyrsa
+  sudo: yes
+  copy:
+    dest:    "{{ easyrsa_keydir }}/pkcs12.passphrase"
+    content: "{{ easyrsa_pfx_pass }}"
+    owner: root
+    group: wheel
+    mode: 0600
+
+- name: client certs pkcs12
+  tags: easyrsa
+  sudo: yes
+  command: >
+    openssl pkcs12 -export -out      {{ easyrsa_keydir }}/{{ item }}.pfx
+                           -inkey    {{ easyrsa_keydir }}/{{ item }}.key
+                           -in       {{ easyrsa_keydir }}/{{ item }}.crt
+                           -certfile {{ easyrsa_keydir }}/ca.crt
+                           -passout  file:{{ easyrsa_keydir }}/pkcs12.passphrase
+  args:
+    creates: "{{ easyrsa_keydir }}/{{ item }}.pfx"
+  with_items: easyrsa_certs
+
 - name: client certs owner
   tags: easyrsa
   sudo: yes
   file:
-    dest: "{{ easyrsa_keydir }}/{{ item }}.key"
+    dest: "{{ easyrsa_keydir }}/{{ item[0] }}.{{ item[1] }}"
     owner: "{{ ansible_user_id }}"
     state: file
-  with_items: easyrsa_certs
+  with_nested:
+  - easyrsa_certs
+  - [ crt, pfx, key ]
 

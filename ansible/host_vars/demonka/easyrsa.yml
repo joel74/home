@@ -1,7 +1,9 @@
 ---
 easyrsa_cadir: /data/easyrsa
 easyrsa_keydir: "{{ easyrsa_cadir }}/keys"
-easyrsa_server_cn: vpn.juliekoubova.net
+easyrsa_server_certs:
+- vpn.juliekoubova.net
+- irc.juliekoubova.net
 easyrsa_certs:
 - bydlenka
 - julie-ip5
