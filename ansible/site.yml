@@ -47,6 +47,7 @@
 - hosts: demonka
   roles:
   - openvpn-server
+  - znc
 
 - hosts: bydlenka
   roles:

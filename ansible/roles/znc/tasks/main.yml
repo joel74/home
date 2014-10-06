@@ -1,0 +1,9 @@
+---
+- name: user
+  tags: znc
+  sudo: yes
+  user:
+    name:  znc
+    state: present
+    home:  /usr/local/etc/znc
+    shell: /usr/sbin/nologin

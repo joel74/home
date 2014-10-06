@@ -12,6 +12,7 @@ vpn_if      = "{ tun0 tun1 }"
 
 # Ports
 bt          = "51413"
+irc         = "6697"
 ssh         = "{{ sshd_port if sshd_port is defined else 'ssh' }}"
 
 udp_noise   = "{ mdns
@@ -48,6 +49,7 @@ nat from <int_net> to ! <int_net> -> $ext_ip0
 # tcp services on primary IP
 rdr inet proto tcp to $ext_ip0 port http    -> $int_if:0
 rdr inet proto tcp to $ext_ip0 port https   -> $int_if:0
+rdr inet proto tcp to $ext_ip0 port $irc    -> $int_if:0
 rdr inet proto tcp to $ext_ip0 port openvpn -> $int_if:0
 rdr inet proto tcp to $ext_ip0 port $ssh    -> $int_if:0
 
@@ -89,7 +91,7 @@ block return quick on $ext_if proto udp to port >= 49152
 block log
 
 # allow internal services
-pass proto tcp to $int_if:0 port { domain http https openvpn $ssh }
+pass proto tcp to $int_if:0 port { domain http https $irc openvpn $ssh }
 pass proto udp to $int_if:0 port { domain openvpn $bt }
 
 # allow pings

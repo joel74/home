@@ -1,0 +1,4 @@
+---
+dependencies:
+- { role: cyrus-sasl,       tags: znc }
+- { role: freebsd/port/znc, tags: znc }
