@@ -4,6 +4,7 @@
   sudo: yes
   file:
     dest: /var/run/saslauthd
+    state: directory
     group: "{{ sasl_group }}"
   notify: saslauthd restarted
 
