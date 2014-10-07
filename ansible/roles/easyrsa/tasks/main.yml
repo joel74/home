@@ -8,4 +8,4 @@
 
 - include:    certs.yml
   certs:      "{{ easyrsa_certs }}"
-  cert_files: [ crt, key, pem, pfx ]
+  cert_files: [ crt, key, pem, pfx, sha1 ]

@@ -1,2 +1,7 @@
 ---
 easyrsa_root: /usr/local/share/easy-rsa
+
+# public keys and SHA1 fingerprints
+# get downloaded to this location on
+# the control machine
+easyrsa_local_root: tmp/easyrsa

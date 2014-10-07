@@ -35,6 +35,19 @@
   with_items: certs
   when: "'pem' in cert_files"
 
+- name: cert sha1 files
+  tags: easyrsa
+  sudo: yes
+  shell: >
+    openssl x509 -in  "{{ easyrsa_keydir }}/{{ item.cn }}.crt"  \
+                 -inform PEM -outform DER                       \
+    | openssl dgst -sha1                                        \
+    | awk '{ print $2 }'                                        \
+    > "{{ easyrsa_keydir }}/{{ item.cn }}.sha1"
+  args:
+    creates: "{{ easyrsa_keydir }}/{{ item.cn }}.sha1"
+  with_items: certs
+  when: "'sha1' in cert_files"
 
 - name: cert permissions
   tags: easyrsa
@@ -47,3 +60,15 @@
   with_nested:
   - certs
   - cert_files
+
+- name: download public files
+  tags: easyrsa
+  sudo: yes
+  fetch:
+    dest: "{{ easyrsa_local_root }}/{{ ansible_hostname }}/"
+    src:  "{{ easyrsa_keydir }}/{{ item[0].cn }}.{{ item[1] }}"
+    flat: yes
+    fail_on_missing: no
+  with_nested:
+  - certs
+  - [ crt, sha1 ]
