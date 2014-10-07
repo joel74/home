@@ -1,0 +1,49 @@
+- name: certs
+  tags: easyrsa
+  sudo: yes
+  shell: >
+    . {{ easyrsa_cadir  }}/vars &&
+    {{ easyrsa_root }}/pkitool {{ cert_kind|default('') }} {{ item }}
+  args:
+    creates: "{{ easyrsa_keydir }}/{{ item.cn }}.key"
+  with_items: certs
+
+- name: cert pkcs12 files
+  tags: easyrsa
+  sudo: yes
+  command: >
+    openssl pkcs12 -export -out      {{ easyrsa_keydir }}/{{ item.cn }}.pfx
+                           -inkey    {{ easyrsa_keydir }}/{{ item.cn }}.key
+                           -in       {{ easyrsa_keydir }}/{{ item.cn }}.crt
+                           -certfile {{ easyrsa_keydir }}/ca.crt
+                           -passout  file:{{ easyrsa_keydir }}/pkcs12.passphrase
+  args:
+    creates: "{{ easyrsa_keydir }}/{{ item.cn }}.pfx"
+  with_items: certs
+  when: "'pfx' in cert_files"
+
+- name: cert pem files
+  tags: easyrsa
+  sudo: yes
+  shell: >
+    openssl x509 -in  "{{ easyrsa_keydir }}/{{ item.cn }}.crt"    \
+                 -out "{{ easyrsa_keydir }}/{{ item.cn }}.pem" && \
+    cat "{{ easyrsa_keydir }}/{{ item.cn }}.key" >>               \
+        "{{ easyrsa_keydir }}/{{ item.cn }}.pem"
+  args:
+    creates: "{{ easyrsa_keydir }}/{{ item.cn }}.pem"
+  with_items: certs
+  when: "'pem' in cert_files"
+
+
+- name: cert permissions
+  tags: easyrsa
+  sudo: yes
+  file:
+    dest: "{{ easyrsa_keydir }}/{{ item[0].cn }}.{{ item[1] }}"
+    owner: "{{ item[0].user | default('root') }}"
+    group: "{{ item[0].group | default('wheel') }}"
+    state: file
+  with_nested:
+  - certs
+  - cert_files
