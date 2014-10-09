@@ -1,9 +1,8 @@
 ---
 - name: portsnap periodic
+  tags: [ freebsd, portsnap, periodic ]
   sudo: yes
-  cron: >
-    name=portsnap
-    'special_time={{ item.period }}'
-    'job={{ item.command }}'
-  with_items:
-  - { period: "{{ portsnap_period }}", command: /usr/sbin/portsnap cron update }
+  copy:
+    dest:     /etc/periodic/{{ portsnap_period }}/900.portsnap
+    content: "#!/bin/sh\n/usr/sbin/portsnap cron update"
+    mode:     0755
