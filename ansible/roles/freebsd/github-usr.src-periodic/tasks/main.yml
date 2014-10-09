@@ -4,5 +4,5 @@
   sudo: yes
   copy:
     dest:     /etc/periodic/{{ freebsd_usrsrc_git_period }}/900.git-update-usr.src
-    content: "#!/bin/sh\n/usr/local/bin/git pull --rebase"
+    content: "#!/bin/sh\n/usr/local/bin/git -C /usr/src pull --rebase"
     mode:     0755
