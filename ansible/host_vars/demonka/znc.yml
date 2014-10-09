@@ -3,8 +3,7 @@ znc_conf:          demonka.conf.j2
 znc_client_certs: "{{ easyrsa_certs }}"
 
 # this is the place on the control machine
-# where easyrsa downloads the .sha1 fingerprints to,
-# appended with the hostname of the easyrsa-hosting machine.
+# where easyrsa downloads the .sha1 fingerprints to.
 # must be kept in sync with host_vars/demonka/easyrsa.yml
 znc_client_fingerprint_location: "{{ easyrsa_local_root }}/demonka"
 
