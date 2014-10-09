@@ -1,4 +1,4 @@
 ---
 dependencies:
-- easyrsa
+- { role: easyrsa, tags: openvpn }
 - openvpn

@@ -39,3 +39,22 @@ openvpn_max_clients: 16
 openvpn_push:
 - "route {{ demonka_int_inet_ip0 }} 255.255.255.255 vpn_gateway"
 - "dhcp-option DNS {{ demonka_int_inet_ip0 }}"
+
+demonka_openvpn_remote: vpn.juliekoubova.net
+
+openvpn_viscosity:
+  clients:
+  - { user: julie, client: julie-mbpr }
+  - { user: julie, client: julie-mba }
+  servers:
+  - name:     "juliekoubova.net (UDP)"
+    remote:   "{{ demonka_openvpn_remote }}"
+    instance: "{{ openvpn_udp }}"
+
+  - name:     "juliekoubova.net (TCP)"
+    remote:   "{{ demonka_openvpn_remote }}"
+    instance: "{{ openvpn_tcp }}"
+
+  - name:     "juliekoubova.net (TCP, all traffic)"
+    remote:   "{{ demonka_openvpn_remote }}"
+    instance: "{{ openvpn_tcp }}"

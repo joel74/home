@@ -1,0 +1,34 @@
+---
+- name: viscosity config dirs
+  tags: [ openvpn, viscosity ]
+  sudo: yes
+  file:
+    dest:  "~{{ item[0].user }}/{{ item[0].client }}/{{ item[1].name }}.visc"
+    state: directory
+    owner: "{{ item[0].user }}"
+  with_nested:
+  - openvpn_viscosity.clients
+  - openvpn_viscosity.servers
+
+- name: viscosity config files
+  tags: [ openvpn, viscosity ]
+  sudo: yes
+  template:
+    dest:  "~{{ item[0].user }}/{{ item[0].client }}/{{ item[1].name }}.visc/config.conf"
+    src:   "viscosity-config.conf.j2"
+    owner: "{{ item[0].user }}"
+  with_nested:
+  - openvpn_viscosity.clients
+  - openvpn_viscosity.servers
+
+- name: viscosity pfx files
+  tags: [ openvpn, viscosity ]
+  sudo: yes
+  command: >
+    /bin/cp "{{ easyrsa_keydir }}/{{ item[0].client }}.pfx"
+    "~{{ item[0].user }}/{{ item[0].client }}/{{ item[1].name }}.visc/{{ item[0].client }}.pfx"
+  args:
+    creates: "~{{ item[0].user }}/{{ item[0].client }}/{{ item[1].name }}.visc/{{ item[0].client }}.pfx"
+  with_nested:
+  - openvpn_viscosity.clients
+  - openvpn_viscosity.servers

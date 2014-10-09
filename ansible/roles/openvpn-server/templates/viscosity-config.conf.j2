@@ -1,0 +1,13 @@
+# {{ ansible_managed }}
+{% set openvpn = item[1].instance | default(openvpn) %}
+pkcs12 {{ item[0].client }}.pfx
+remote {{ item[1].remote }} {{ openvpn.port | default(openvpn_port) }} {{ openvpn.proto | default(openvpn_proto) }}
+pull
+persist-key
+persist-tun
+{% if openvpn.comp_lzo | default(openvpn_comp_lzo) | default(true) %}
+    comp-lzo adaptive
+{% endif %}
+{% if openvpn.cipher | default(openvpn_cipher) %}
+    cipher      {{ openvpn.cipher | default(openvpn_cipher) }}
+{% endif %}
