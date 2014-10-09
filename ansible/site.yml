@@ -15,8 +15,9 @@
   - freebsd/etc/sshd_config
   - freebsd/etc/sysctl.conf/hw.syscons.bell
 
+  - freebsd/github-usr.src
+  - freebsd/github-usr.src-periodic
   - freebsd/portsnap-periodic
-  - freebsd/svnup-periodic
 
   - freebsd/port/ansible
   - freebsd/port/beadm

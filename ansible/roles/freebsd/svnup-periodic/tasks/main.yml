@@ -1,9 +1,0 @@
----
-- name: svnup periodic
-  sudo: yes
-  cron: >
-    name=svnup
-    special_time='{{ item.period }}'
-    job='{{ item.command }}'
-  with_items:
-  - { period: "{{ svnup_period }}", command: /usr/local/bin/svnup update }

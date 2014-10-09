@@ -1,4 +1,0 @@
----
-dependencies:
-- role: freebsd/port
-  name: svnup

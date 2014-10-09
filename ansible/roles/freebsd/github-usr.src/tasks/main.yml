@@ -1,0 +1,8 @@
+---
+- name: /usr/src git checkout
+  tags: freebsd
+  sudo: yes
+  git:
+    dest: /usr/src
+    repo: "{{ freebsd_usrsrc_git_repo }}"
+    version: "{{ freebsd_usrsrc_git_version }}"

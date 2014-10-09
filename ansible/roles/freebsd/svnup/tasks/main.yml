@@ -1,6 +1,0 @@
----
-- name: svnup.conf
-  sudo: yes
-  template: >
-    dest=/usr/local/etc/svnup.conf
-    src=svnup.conf.j2

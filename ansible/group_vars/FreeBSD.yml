@@ -1,9 +1,10 @@
 ---
 ansible_python_interpreter: /usr/local/bin/python2.7
 data_root:                  /data
-freebsd_branch:             base/stable/10
-freebsd_mirror:             svn0.eu.freebsd.org
 freebsd_makeconf_unset:     DOCS EXAMPLES NLS X11
+freebsd_usrsrc_git_repo:    https://github.com/freebsd/freebsd.git
+freebsd_usrsrc_git_version: stable/10
+freebsd_usrsrc_git_period:  daily
 sasl_authmech:              getpwent
 sshd_password_auth:         no
 sshd_port:                  37157

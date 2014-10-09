@@ -1,0 +1,3 @@
+---
+dependencies:
+- freebsd/port/git
