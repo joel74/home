@@ -4,6 +4,82 @@
   sudo: yes
   user:
     name:  znc
+    groups: "{{ sasl_group }}"
     state: present
     home:  /usr/local/etc/znc
     shell: /usr/sbin/nologin
+
+- name: enabled
+  tags: znc
+  sudo: yes
+  copy:
+    dest: /etc/rc.conf.d/znc
+    content: 'znc_enable="YES"'
+
+- name: stopped
+  tags: znc
+  sudo: yes
+  service:
+    name: znc
+    state: stopped
+
+- name: config dirs
+  tags: znc
+  sudo: yes
+  file:
+    dest: "/usr/local/etc/znc{{ item }}"
+    state: directory
+    owner: znc
+    group: wheel
+    mode:  0750
+  with_items:
+  - /
+  - /configs
+  - /moddata
+  - /moddata/certauth
+
+- name: stat config
+  tags: znc
+  sudo: yes
+  stat: path=/usr/local/etc/znc/configs/znc.conf
+  register: zncconf_stat
+
+- name: config
+  tags: znc
+  sudo: yes
+  template:
+    dest: /usr/local/etc/znc/configs/znc.conf
+    src:  zncconfs/{{ znc_conf }}
+    owner: znc
+    group: wheel
+    mode: 0640
+  when: not zncconf_stat.stat.exists
+
+- name: server cert
+  tags: znc
+  sudo: yes
+  file:
+    dest: /usr/local/etc/znc/znc.pem
+    src:  "{{ znc_ssl_pem }}"
+    state: link
+    force: yes
+    owner: znc
+    group: wheel
+    mode: 0600
+
+- name: modauth client certs
+  tags: znc
+  sudo: yes
+  template:
+    dest:  /usr/local/etc/znc/moddata/certauth/.registry
+    src:   certauth.registry.j2
+    owner: znc
+    group: wheel
+    mode:  0640
+
+- name: started
+  tags: znc
+  sudo: yes
+  service:
+    name: znc
+    state: started

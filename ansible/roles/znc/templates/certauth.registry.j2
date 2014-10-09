@@ -1,0 +1,5 @@
+{% for certs in znc_client_certs|groupby('user') %}
+{% if certs.grouper %}
+{{ certs.grouper }} {% for c in certs.list %}{{ lookup('file', znc_client_fingerprint_location + '/' + c.cn + '.sha1') }}%20;{% endfor %}
+{% endif %}
+{% endfor %}
