@@ -47,9 +47,9 @@
 
 - hosts: demonka
   roles:
-  - openvpn-server
+  - openvpn/server
+  - openvpn/viscosity-configs
   - znc
 
 - hosts: bydlenka
   roles:
-  - openvpn-client

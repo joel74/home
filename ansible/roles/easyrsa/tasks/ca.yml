@@ -42,7 +42,7 @@
   sudo: yes
   shell: >
     . {{ easyrsa_cadir  }}/vars &&
-    {{ easyrsa_root }}/pkitool --initca
+    {{ easyrsa_root }}/pkitool --initca "{{ easyrsa_cacn }}"
   args:
     creates: "{{ easyrsa_keydir }}/ca.key"
 

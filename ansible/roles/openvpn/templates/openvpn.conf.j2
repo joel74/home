@@ -1,24 +1,51 @@
 # {{ ansible_managed }}
 
-{% set openvpn = item %}
-{% set is_client = openvpn.client | default(openvpn_client) | default(false) %}
+{#
+    when generating viscosity configs:
 
-{% if openvpn.cred is defined %}
-{% set openvpn_cred = openvpn.cred %}
+        item[0] = { client:   'macbook', user: 'owner' }
+        item[1] = { remote:   'vpn.example.com'
+                    name:     'vpn.example.com (UDP)'
+                    instance: <openvpn server config object> }
+
+    otherwise:
+
+        item = None or config object
+#}
+
+{% if item[1] is defined and item[1].remote is defined %}
+    {% set openvpn      = item[1].instance | default(openvpn_client) %}
+    {% set is_viscosity = true %}
+    {% set openvpn_remote = item[1].remote %}
+    {% set openvpn_cred = {
+          'ca':   'ca.crt',
+          'cert': item[0].client + '.crt',
+          'key':  item[0].client + '.key'
+    } %}
+{% else %}
+    {% set openvpn        = item %}
+    {% set openvpn_remote = openvpn.remote | default(openvpn_remote) | default(None) %}
+    {% set is_viscosity   = false %}
+
+    {% if openvpn.cred is defined %}
+        {% set openvpn_cred = openvpn.cred %}
+    {% endif %}
 {% endif %}
+
 
 ca   {{ openvpn_cred.ca }}
 cert {{ openvpn_cred.cert }}
 key  {{ openvpn_cred.key }}
 
-dev   {{ openvpn.dev   | default(openvpn_dev) }}
 proto {{ openvpn.proto | default(openvpn_proto) }}
 port  {{ openvpn.port  | default(openvpn_port) }}
 
-{% if is_client %}
+{% if openvpn_remote | default(None) %}
 
+    remote {{ openvpn_remote }}
     client
     nobind
+    pull
 
 {% else %}
 
@@ -33,18 +60,43 @@ port  {{ openvpn.port  | default(openvpn_port) }}
         max-clients {{ openvpn.max_clients | default(openvpn_max_clients) }}
     {% endif %}
 
+
+    {% if openvpn.bind_ip | default(openvpn_bind_ip) %}
+        local {{ openvpn.bind_ip | default(openvpn_bind_ip) }}
+    {% endif %}
+
 {% endif %}
 
-{% if openvpn.bind_ip | default(openvpn_bind_ip) %}
-    local {{ openvpn.bind_ip | default(openvpn_bind_ip) }}
+{% if is_viscosity %}
+#viscosity name {{ item[1].name }}
+{% else %}
+
+    dev   {{ openvpn.dev   | default(openvpn_dev) }}
+
+    {% if openvpn.status | default(openvpn_status) %}
+        status      {{ openvpn.status | default(openvpn_status) }}
+    {% endif %}
+
+    {% if openvpn.reduce_privileges | default(openvpn_reduce_privileges) | default(true) %}
+        # reduce privileges
+        user   nobody
+        group  nobody
+
+        {% if openvpn.chroot | default(openvpn_chroot) | default(false) %}
+            chroot {{ openvpn.chroot | default(openvpn_chroot) | mandatory }}
+        {% endif %}
+
+        # The persist options will try to avoid accessing certain
+        # resources on restart that may no longer be accessible because
+        # of the privilege downgrade.
+        persist-key
+        persist-tun
+    {% endif %}
+
 {% endif %}
 
 {% if openvpn.keepalive | default(openvpn_keepalive) %}
     keepalive   {{ openvpn.keepalive | default(openvpn_keepalive) }}
-{% endif %}
-
-{% if openvpn.status | default(openvpn_status) %}
-    status      {{ openvpn.status | default(openvpn_status) }}
 {% endif %}
 
 {% if openvpn.comp_lzo | default(openvpn_comp_lzo) %}
@@ -62,18 +114,3 @@ port  {{ openvpn.port  | default(openvpn_port) }}
     tcp-nodelay
 {% endif %}
 
-{% if openvpn.reduce_privileges | default(openvpn_reduce_privileges) | default(true) %}
-    # reduce privileges
-    user   nobody
-    group  nobody
-
-    {% if openvpn.chroot | default(openvpn_chroot) | default(false) %}
-    chroot {{ openvpn.chroot | default(openvpn_chroot) | mandatory }}
-    {% endif %}
-
-    # The persist options will try to avoid accessing certain
-    # resources on restart that may no longer be accessible because
-    # of the privilege downgrade.
-    persist-key
-    persist-tun
-{% endif %}

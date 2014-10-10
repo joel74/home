@@ -3,7 +3,7 @@
   sudo: yes
   shell: >
     . {{ easyrsa_cadir  }}/vars &&
-    {{ easyrsa_root }}/pkitool {{ cert_kind|default('') }} {{ item }}
+    {{ easyrsa_root }}/pkitool {{ cert_kind|default('') }} "{{ item.cn }}"
   args:
     creates: "{{ easyrsa_keydir }}/{{ item.cn }}.key"
   with_items: certs

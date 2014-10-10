@@ -1,5 +1,6 @@
 ---
 easyrsa_cadir: /data/easyrsa
+easyrsa_cacn:  rsa.juliekoubova.net
 easyrsa_keydir: "{{ easyrsa_cadir }}/keys"
 easyrsa_server_certs:
 - { cn: vpn.juliekoubova.net }
