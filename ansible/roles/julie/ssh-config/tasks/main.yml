@@ -16,3 +16,12 @@
   - config
   - id_rsa.pub
   - known_hosts
+
+- name: private key permissions
+  tags: ssh
+  file:
+    dest: "~/.ssh/{{ item }}"
+    state: file
+    mode:  0600
+  with_items:
+  - id_rsa
