@@ -1,3 +1,5 @@
 ---
-sshd_privilege_separation: sandbox
-user_login_shell: /usr/local/bin/zsh
+sshd_privilege_separation:    sandbox
+easyrsa_client_ca_ssh_server: demonka
+easyrsa_client_cert_path:     ~/.demonka
+user_login_shell:             /usr/local/bin/zsh

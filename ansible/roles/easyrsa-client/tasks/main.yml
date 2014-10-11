@@ -1,0 +1,9 @@
+---
+- name: download files for this machine
+  tags: easyrsa-client
+  command: >
+    rsync -aci
+    "{{ easyrsa_client_ca_ssh_server }}:{{ ansible_hostname }}/"
+    "{{ easyrsa_client_cert_path }}/"
+  register: rsync_result
+  changed_when: "rsync_result.stdout != ''"

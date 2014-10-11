@@ -1,8 +1,0 @@
----
-- name: download files for this machine
-  tags: demonka-client
-  synchronize:
-    archive: yes
-    mode:    pull
-    src:     demonka:{{ ansible_hostname }}/
-    dest:    ~/.demonka/
