@@ -48,8 +48,19 @@
 - hosts: demonka
   roles:
   - openvpn/server
-  - openvpn/viscosity-configs
   - znc
+
+  - role:    openvpn/provision-client-viscosity
+    user:    julie
+    client:  julie-mba
+    servers: "{{ demonka_openvpn_servers }}"
+
+  - role:    openvpn/provision-client-viscosity
+    user:    julie
+    client:  julie-mbpr
+    servers: "{{ demonka_openvpn_servers }}"
 
 - hosts: bydlenka
   roles:
+  - easyrsa-client
+    #- openvpn/client

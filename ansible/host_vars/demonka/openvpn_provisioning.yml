@@ -1,0 +1,16 @@
+---
+demonka_openvpn_remote: vpn.juliekoubova.net
+
+demonka_openvpn_servers:
+- name:     "juliekoubova.net (UDP)"
+  remote:   "{{ demonka_openvpn_remote }}"
+  instance: "{{ openvpn_udp }}"
+
+- name:     "juliekoubova.net (TCP)"
+  remote:   "{{ demonka_openvpn_remote }}"
+  instance: "{{ openvpn_tcp }}"
+
+- name:     "juliekoubova.net (TCP, all traffic)"
+  remote:   "{{ demonka_openvpn_remote }}"
+  instance: "{{ openvpn_tcp }}"
+

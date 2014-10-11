@@ -1,6 +1,0 @@
----
-openvpn_client: yes
-openvpn_cred:
-  ca: "ca.crt"
-  cert: "{{ openvpn_client_name }}.crt"
-  key:  "{{ openvpn_client_name }}.key"

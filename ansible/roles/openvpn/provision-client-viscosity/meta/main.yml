@@ -1,0 +1,5 @@
+---
+dependencies:
+- role: openvpn/provision-client
+  dir_ext: .visc
+  is_viscosity: yes

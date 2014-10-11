@@ -3,29 +3,26 @@
 {#
     when generating viscosity configs:
 
-        item[0] = { client:   'macbook', user: 'owner' }
-        item[1] = { remote:   'vpn.example.com'
-                    name:     'vpn.example.com (UDP)'
-                    instance: <openvpn server config object> }
+        item = { remote:   'vpn.example.com'
+                 name:     'vpn.example.com (UDP)'
+                 instance: <openvpn server config object> }
 
     otherwise:
 
         item = None or config object
 #}
 
-{% if item[1] is defined and item[1].remote is defined %}
-    {% set openvpn      = item[1].instance | default(openvpn_client) %}
-    {% set is_viscosity = true %}
-    {% set openvpn_remote = item[1].remote %}
+{% if item is defined and item.instance is defined %}
+    {% set openvpn      = item.instance | default(openvpn_client) %}
+    {% set openvpn_remote = item.remote %}
     {% set openvpn_cred = {
           'ca':   'ca.crt',
-          'cert': item[0].client + '.crt',
-          'key':  item[0].client + '.key'
+          'cert': client + '.crt',
+          'key':  client + '.key'
     } %}
 {% else %}
     {% set openvpn        = item %}
     {% set openvpn_remote = openvpn.remote | default(openvpn_remote) | default(None) %}
-    {% set is_viscosity   = false %}
 
     {% if openvpn.cred is defined %}
         {% set openvpn_cred = openvpn.cred %}
@@ -68,7 +65,7 @@ port  {{ openvpn.port  | default(openvpn_port) }}
 {% endif %}
 
 {% if is_viscosity %}
-#viscosity name {{ item[1].name }}
+#viscosity name {{ item.name }}
 {% else %}
 
     dev   {{ openvpn.dev   | default(openvpn_dev) }}
