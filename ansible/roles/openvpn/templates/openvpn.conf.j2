@@ -62,6 +62,14 @@ port  {{ openvpn.port  | default(openvpn_port) }}
         local {{ openvpn.bind_ip | default(openvpn_bind_ip) }}
     {% endif %}
 
+    {# causes "Assertion failed at helper.c:533" when specified in a client config #}
+    {% if openvpn.tcp_nodelay | default(openvpn_tcp_nodelay) | default(false) %}
+        # disables the Nagle algorithm on TCP sockets
+        # In VPN applications over TCP, TCP_NODELAY is generally
+        # a good latency optimization.
+        tcp-nodelay
+    {% endif %}
+
 {% endif %}
 
 {% if is_viscosity %}
@@ -103,11 +111,3 @@ port  {{ openvpn.port  | default(openvpn_port) }}
 {% if openvpn.cipher | default(openvpn_cipher) %}
     cipher      {{ openvpn.cipher | default(openvpn_cipher) }}
 {% endif %}
-
-{% if openvpn.tcp_nodelay | default(openvpn_tcp_nodelay) | default(false) %}
-    # disables the Nagle algorithm on TCP sockets
-    # In VPN applications over TCP, TCP_NODELAY is generally
-    # a good latency optimization.
-    tcp-nodelay
-{% endif %}
-
