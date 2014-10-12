@@ -24,10 +24,6 @@
 
 - name: private key permissions
   tags: ssh
-  file:
-    dest: "~/.ssh/{{ item }}"
-    state: file
-    mode:  0600
-  when: id_rsa.stat.exists
-  with_items:
-  - id_rsa
+  command:
+    chmod 0600 "~/.ssh/id_rsa"
+  when: id_rsa.stat.exists and id_rsa.stat.mode != "0600"
