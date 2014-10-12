@@ -5,6 +5,7 @@ sshd_port is defined in group_vars/FreeBSD.
 #}
 
 int_if      = "{{ pfconf_int_if }}"
+vpn_if      = "tun0"
 
 # Ports
 bt          = "51413"
@@ -20,6 +21,8 @@ udp_noise   = "{ netbios-ns
 # IPs
 int_ip = $int_if:0
 int_net = $int_if:network
+
+table <self> const { $int_ip $vpn_if:0 }
 
 set skip on lo0
 set block-policy return
@@ -58,10 +61,10 @@ pass proto udp  from $int_net to $int_ip     port { afpovertcp }
 pass proto udp  from $int_net to 224.0.0.251 port { mdns }
 
 # allow pings from local network
-pass proto icmp from $int_net to $int_ip icmp-type echoreq
+pass inet proto icmp from $int_net to $int_ip icmp-type echoreq
 
 # allow pinging anything
-pass proto icmp from $int_ip  to any     icmp-type echoreq
+pass inet proto icmp from <self>  to any     icmp-type echoreq
 
 # allow outbound traffic
-pass proto { tcp udp } from $int_ip
+pass proto { tcp udp } from <self>
