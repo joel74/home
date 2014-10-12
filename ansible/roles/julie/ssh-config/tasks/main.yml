@@ -17,11 +17,17 @@
   - id_rsa.pub
   - known_hosts
 
+- name: private key exists?
+  tags: ssh
+  stat: path=~/.ssh/id_rsa
+  register: id_rsa
+
 - name: private key permissions
   tags: ssh
   file:
     dest: "~/.ssh/{{ item }}"
     state: file
     mode:  0600
+  when: id_rsa.stat.exists
   with_items:
   - id_rsa
