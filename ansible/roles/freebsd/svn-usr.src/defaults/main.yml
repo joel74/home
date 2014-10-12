@@ -1,0 +1,3 @@
+---
+freebsd_svn_executable: "/usr/bin/svnlite"
+freebsd_svn_repo:       "https://{{ freebsd_svn_server }}/base/{{ freebsd_svn_branch }}"
