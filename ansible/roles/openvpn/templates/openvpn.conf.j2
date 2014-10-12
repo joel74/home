@@ -41,6 +41,7 @@ port  {{ openvpn.port  | default(openvpn_port) }}
 
     remote   {{ openvpn_remote }}
     tls-auth {{ openvpn.name | default('openvpn') }}.ta-key 1
+    remote-cert-tls server
     client
     nobind
     pull
