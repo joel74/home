@@ -60,7 +60,14 @@
     client:  julie-mbpr
     servers: "{{ demonka_openvpn_servers }}"
 
+  - role:    openvpn/provision-client
+    user:    julie
+    client:  bydlenka
+    servers:
+    - remote:   "{{ demonka_openvpn_remote }}"
+      instance: "{{ openvpn_udp }}"
+
 - hosts: bydlenka
   roles:
   - easyrsa-client
-    #- openvpn/client
+  - openvpn/client

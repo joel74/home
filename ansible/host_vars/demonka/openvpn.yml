@@ -37,5 +37,5 @@ openvpn_cred:
   key:  "{{ easyrsa_keydir }}/vpn.juliekoubova.net.key"
 openvpn_max_clients: 16
 openvpn_push:
-- "route {{ demonka_int_inet_ip0 }} 255.255.255.255 vpn_gateway"
-- "dhcp-option DNS {{ demonka_int_inet_ip0 }}"
+- "route {{ demonka_int_inet_net }} {{ demonka_int_inet_mask }} vpn_gateway"
+# "dhcp-option DNS {{ demonka_int_inet_ip0 }}"

@@ -2,7 +2,7 @@
 - name: config dir
   tags: [ openvpn, openvpn-client-provisioning ]
   file:
-    dest:  "~{{ user }}/{{ client }}/{{ item.name }}{{ dir_ext }}"
+    dest:  "~{{ user }}/{{ client }}/{{ item.name|default('openvpn') }}{{ dir_ext }}"
     state: directory
     owner: "{{ user }}"
   with_items: servers
@@ -10,7 +10,7 @@
 - name: config file
   tags: [ openvpn, openvpn-client-provisioning ]
   template:
-    dest:  "~{{ user }}/{{ client }}/{{ item.name }}{{ dir_ext }}/{{ config_name | default('config.conf') }}"
+    dest:  "~{{ user }}/{{ client }}/{{ item.name|default('openvpn') }}{{ dir_ext }}/{{ config_name | default('openvpn.conf') }}"
     src:   "../../templates/openvpn.conf.j2"
     owner: "{{ user }}"
   with_items: servers
@@ -20,7 +20,7 @@
   command: >
     rsync -ci
     "{{ easyrsa_keydir }}/ca.crt"
-    "~{{ user }}/{{ client }}/{{ item.name }}{{ dir_ext }}/ca.crt"
+    "~{{ user }}/{{ client }}/{{ item.name|default('openvpn') }}{{ dir_ext }}/ca.crt"
   register: rsync_result
   changed_when: "rsync_result.stdout != ''"
   with_items: servers
@@ -30,7 +30,7 @@
   command: >
     rsync -ci
     "{{ easyrsa_keydir }}/{{ client }}.{{ item[1] }}"
-    "~{{ user }}/{{ client }}/{{ item[0].name }}{{ dir_ext }}/{{ client }}.{{ item[1] }}"
+    "~{{ user }}/{{ client }}/{{ item[0].name|default('openvpn') }}{{ dir_ext }}/{{ client }}.{{ item[1] }}"
   register: rsync_result
   changed_when: "rsync_result.stdout != ''"
   with_nested:

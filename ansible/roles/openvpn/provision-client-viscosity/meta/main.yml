@@ -1,5 +1,6 @@
 ---
 dependencies:
-- role: openvpn/provision-client
-  dir_ext: .visc
+- role:         openvpn/provision-client
+  config_name:  config.conf
+  dir_ext:      .visc
   is_viscosity: yes
