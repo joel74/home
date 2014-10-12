@@ -1,5 +1,6 @@
 ---
 - name: defaultrouter
+  tags: [ netif, routing ]
   sudo: yes
   lineinfile:
     dest: /etc/rc.conf.d/routing
@@ -7,3 +8,13 @@
     regexp: '^defaultrouter='
     line: "defaultrouter=\"{{ netif_defaultrouter }}\""
   when: netif_defaultrouter is defined
+
+- name: gateway_enable
+  tags: [ netif, routing ]
+  sudo: yes
+  lineinfile:
+    dest:   /etc/rc.conf.d/routing
+    create: yes
+    regexp: '^gateway_enable='
+    line:   "gateway_enable=\"YES\""
+    state:  "{{ 'present' if netif_gateway | default(False) else 'absent' }}"
