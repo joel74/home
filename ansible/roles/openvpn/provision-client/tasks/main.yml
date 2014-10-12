@@ -15,6 +15,26 @@
     owner: "{{ user }}"
   with_items: servers
 
+- name: tls-auth file
+  tags: [ openvpn, openvpn-client-provisioning ]
+  sudo: yes
+  command: >
+    rsync -ci
+    "/usr/local/etc/openvpn/{{ item.instance.name|default('openvpn') }}.ta-key"
+    "~{{ user }}/{{ client }}/{{ item.name|default('openvpn') }}{{ dir_ext }}/{{ item.instance.name|default('openvpn') }}.ta-key"
+  register: rsync_result
+  changed_when: "rsync_result.stdout != ''"
+  with_items: servers
+
+- name: tls-auth file permissions
+  tags: [ openvpn, openvpn-client-provisioning ]
+  sudo: yes
+  file:
+    dest:  "~{{ user }}/{{ client }}/{{ item.name|default('openvpn') }}{{ dir_ext }}/{{ item.instance.name|default('openvpn') }}.ta-key"
+    owner: "{{ user }}"
+    mode:  0600
+  with_items: servers
+
 - name: ca cert
   tags: [ openvpn, openvpn-client-provisioning ]
   command: >

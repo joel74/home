@@ -42,6 +42,17 @@
   with_items: openvpn_instances
   notify: openvpn services restarted
 
+- name: tls-auth key
+  tags: openvpn
+  sudo: yes
+  command: >
+    /usr/local/sbin/openvpn
+    --genkey
+    --secret "/usr/local/etc/openvpn/{{ item.name | default('openvpn') }}.ta-key"
+  args:
+    creates: "/usr/local/etc/openvpn/{{ item.name | default('openvpn') }}.ta-key"
+  with_items: openvpn_instances
+
 - name: openvpn services enabled
   tags: openvpn
   sudo: yes

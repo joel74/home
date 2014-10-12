@@ -39,15 +39,17 @@ port  {{ openvpn.port  | default(openvpn_port) }}
 
 {% if openvpn_remote | default(None) %}
 
-    remote {{ openvpn_remote }}
+    remote   {{ openvpn_remote }}
+    tls-auth {{ openvpn.name | default('openvpn') }}.ta-key 1
     client
     nobind
     pull
 
 {% else %}
 
-    server {{ openvpn.ipv4.network | default(openvpn_ipv4_network) | mandatory }} {{ openvpn.ipv4.mask | default(openvpn_ipv4_mask) | mandatory }}
-    dh     {{ openvpn_cred.dh }}
+    server   {{ openvpn.ipv4.network | default(openvpn_ipv4_network) | mandatory }} {{ openvpn.ipv4.mask | default(openvpn_ipv4_mask) | mandatory }}
+    dh       {{ openvpn_cred.dh }}
+    tls-auth {{ openvpn.name | default('openvpn') }}.ta-key 0
 
     {% for p in openvpn.push | default(openvpn_push) | default([]) %}
         push "{{ p }}"
