@@ -1,5 +1,5 @@
 ---
 sshd_privilege_separation:    sandbox
 easyrsa_client_ca_ssh_server: demonka
-easyrsa_client_cert_path:     ~/.demonka
+easyrsa_client_cert_path:     ~{{ ansible_user_id }}/.demonka
 user_login_shell:             /usr/local/bin/zsh
