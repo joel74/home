@@ -1,16 +1,26 @@
 ---
-demonka_openvpn_remote: vpn.juliekoubova.net
+demonka_openvpn_remote: "{{ demonka_ext_inet_ip1 }}"
 
 demonka_openvpn_servers:
 - name:     "juliekoubova.net (UDP)"
   remote:   "{{ demonka_openvpn_remote }}"
   instance: "{{ openvpn_udp }}"
+  viscosity:
+    startonopen: yes
+    dnssupport:  yes
 
 - name:     "juliekoubova.net (TCP)"
   remote:   "{{ demonka_openvpn_remote }}"
+  port:      443
   instance: "{{ openvpn_tcp }}"
+  viscosity:
+    dnssupport: yes
 
-- name:     "juliekoubova.net (TCP, all traffic)"
-  remote:   "{{ demonka_openvpn_remote }}"
-  instance: "{{ openvpn_tcp }}"
+- name:       "juliekoubova.net (TCP, all traffic)"
+  remote:     "{{ demonka_openvpn_remote }}"
+  port:      443
+  instance:   "{{ openvpn_tcp }}"
+  redirect_gw: yes
+  viscosity:
+    dnssupport: yes
 

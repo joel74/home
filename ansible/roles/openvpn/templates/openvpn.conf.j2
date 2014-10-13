@@ -13,17 +13,35 @@
 #}
 
 {% if item is defined and item.instance is defined %}
-    {% set openvpn      = item.instance | default(openvpn_client) %}
-    {% set openvpn_remote = item.remote %}
+    {% set openvpn             = item.instance | default(openvpn_client) %}
+    {% set openvpn_redirect_gw = item.redirect_gw |
+                                 default(item.instance.redirect_gw) |
+                                 default(openvpn_redirect_gw) |
+                                 default(false) %}
+    {% set openvpn_remote      = item.remote %}
+    {% set openvpn_port        = item.port |
+                                 default(item.instance.port) |
+                                 default(openvpn_port) |
+                                 default(1194) %}
     {% set openvpn_cred = {
           'ca':   'ca.crt',
           'cert': client + '.crt',
           'key':  client + '.key'
     } %}
 {% else %}
-    {% set openvpn        = item %}
-    {% set openvpn_remote = openvpn.remote | default(openvpn_remote) | default(None) %}
+    {% set openvpn             = item %}
 
+    {% set openvpn_remote      = openvpn.remote |
+                                 default(openvpn_remote) |
+                                 default(None) %}
+
+    {% set openvpn_redirect_gw = openvpn.redirect_gw |
+                                 default(openvpn_redirect_gw) |
+                                 default(false) %}
+
+    {% set openvpn_port        = openvpn.port |
+                                 default(openvpn_port) |
+                                 default(1194) %}
     {% if openvpn.cred is defined %}
         {% set openvpn_cred = openvpn.cred %}
     {% endif %}
@@ -35,7 +53,7 @@ cert {{ openvpn_cred.cert }}
 key  {{ openvpn_cred.key }}
 
 proto {{ openvpn.proto | default(openvpn_proto) }}
-port  {{ openvpn.port  | default(openvpn_port) }}
+port  {{ openvpn_port }}
 
 {% if openvpn_remote | default(None) %}
 
@@ -45,6 +63,10 @@ port  {{ openvpn.port  | default(openvpn_port) }}
     client
     nobind
     pull
+
+    {% if openvpn_redirect_gw %}
+        redirect-gateway def1
+    {% endif %}
 
 {% else %}
 
@@ -59,7 +81,6 @@ port  {{ openvpn.port  | default(openvpn_port) }}
     {% if openvpn.max_clients | default(openvpn_max_clients) %}
         max-clients {{ openvpn.max_clients | default(openvpn_max_clients) }}
     {% endif %}
-
 
     {% if openvpn.bind_ip | default(openvpn_bind_ip) %}
         local {{ openvpn.bind_ip | default(openvpn_bind_ip) }}
@@ -77,6 +98,8 @@ port  {{ openvpn.port  | default(openvpn_port) }}
 
 {% if is_viscosity %}
 #viscosity name {{ item.name }}
+#viscosity dnssupport {{ 'true' if item.viscosity.dnssupport | default(false) else 'false' }}
+#viscosity startonopen {{ 'true' if item.viscosity.startonopen | default(false) else 'false' }}
 {% else %}
 
     dev   {{ openvpn.dev   | default(openvpn_dev) }}
