@@ -22,6 +22,7 @@
     owner: root
     group: unbound
     mode:  0644
+  notify: unbound restarted
   when: unbound_access_control|length > 0
 
 - name: set interfaces
@@ -33,4 +34,17 @@
     owner: root
     group: unbound
     mode:  0644
+  notify: unbound restarted
   when: unbound_interfaces|length > 0
+
+- name: set local zone
+  tags: unbound
+  sudo: yes
+  template:
+    dest:  /var/unbound/conf.d/local-zone.conf
+    src:   local-zone.conf.j2
+    owner: root
+    group: unbound
+    mode:  0644
+  notify: unbound restarted
+  when: unbound_local_zone|default('')|length > 0

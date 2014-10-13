@@ -1,0 +1,7 @@
+---
+- name: unbound restarted
+  tags: unbound
+  sudo: yes
+  service:
+    name: local_unbound
+    state: restarted

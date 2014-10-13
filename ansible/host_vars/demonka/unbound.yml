@@ -1,6 +1,16 @@
 ---
 unbound_access_control:
 - "{{ demonka_int_inet_net }}/{{ demonka_int_inet_mask_bits }} allow"
+
 unbound_interfaces:
 - 127.0.0.1
 - "{{ demonka_int_inet_ip0 }}"
+
+unbound_local_zone: juliekoubova.net.
+
+unbound_local_data:
+- "juliekoubova.net.     IN A {{ demonka_int_inet_ip0 }}"
+- "irc.juliekoubova.net. IN A {{ demonka_int_inet_ip0 }}"
+
+unbound_local_data_ptr:
+- "{{ demonka_int_inet_ip0 }} juliekoubova.net"

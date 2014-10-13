@@ -1,0 +1,11 @@
+# {{ ansible_managed }}
+server:
+    local-zone: "{{ unbound_local_zone }}" static
+
+{% for entry in unbound_local_data|default([]) %}
+    local-data: "{{ entry }}"
+{% endfor %}
+
+{% for entry in unbound_local_data_ptr|default([]) %}
+    local-data-ptr: "{{ entry }}"
+{% endfor %}
