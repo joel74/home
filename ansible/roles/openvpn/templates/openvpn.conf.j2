@@ -1,35 +1,24 @@
 # {{ ansible_managed }}
 
-{#
-    when generating viscosity configs:
-
-        item = { remote:   'vpn.example.com'
-                 name:     'vpn.example.com (UDP)'
-                 instance: <openvpn server config object> }
-
-    otherwise:
-
-        item = None or config object
-#}
-
 {% if item is defined and item.instance is defined %}
-    {% set openvpn             = item.instance | default(openvpn_client) %}
+
+    {# generating a client config based on a server config #}
+
+    {% set openvpn             = item.instance %}
     {% set openvpn_redirect_gw = item.redirect_gw |
                                  default(item.instance.redirect_gw) |
                                  default(openvpn_redirect_gw) |
                                  default(false) %}
     {% set openvpn_remote      = item.remote %}
-    {% set openvpn_port        = item.port |
-                                 default(item.instance.port) |
-                                 default(openvpn_port) |
-                                 default(1194) %}
     {% set openvpn_cred = {
           'ca':   'ca.crt',
           'cert': client + '.crt',
           'key':  client + '.key'
     } %}
+
 {% else %}
-    {% set openvpn             = item %}
+
+    {# generating a server or custom client config #}
 
     {% set openvpn_remote      = openvpn.remote |
                                  default(openvpn_remote) |
@@ -39,26 +28,51 @@
                                  default(openvpn_redirect_gw) |
                                  default(false) %}
 
-    {% set openvpn_port        = openvpn.port |
-                                 default(openvpn_port) |
-                                 default(1194) %}
     {% if openvpn.cred is defined %}
-        {% set openvpn_cred = openvpn.cred %}
+        {% set openvpn_cred = openvpn.cred | d(openvpn_cred) | mandatory %}
     {% endif %}
+
 {% endif %}
 
+{% set openvpn_bind_ip           = openvpn.bind_ip           | d(openvpn_bind_ip)           %}
+{% set openvpn_cipher            = openvpn.cipher            | d(openvpn_cipher)            %}
+{% set openvpn_chroot            = openvpn.chroot            | d(openvpn_chroot)            %}
+{% set openvpn_comp_lzo          = openvpn.comp_lzo          | d(openvpn_comp_lzo)          %}
+{% set openvpn_dev               = openvpn.dev               | d(openvpn_dev)               %}
+{% set openvpn_name              = openvpn.name              | d(openvpn_name)              %}
+{% set openvpn_ipv4              = openvpn.ipv4              | d(openvpn_ipv4)              %}
+{% set openvpn_keepalive         = openvpn.keepalive         | d(openvpn_keepalive)         %}
+{% set openvpn_max_clients       = openvpn.max_clients       | d(openvpn_max_clients)       %}
+{% set openvpn_port              = openvpn.port              | d(openvpn_port)              %}
+{% set openvpn_proto             = openvpn.proto             | d(openvpn_proto)             %}
+{% set openvpn_push              = openvpn.push              | d(openvpn_push)              %}
+{% set openvpn_reduce_privileges = openvpn.reduce_privileges | d(openvpn_reduce_privileges) %}
+{% set openvpn_status            = openvpn.status            | d(openvpn_status)            %}
+{% set openvpn_tcp_nodelay       = openvpn.tcp_nodelay       | d(openvpn_tcp_nodelay)       %}
+
+{% if is_viscosity %}
+
+    {% macro viscosity_bool(val) -%}
+    {{ 'true' if val | default(false) else 'false' }}
+    {%- endmacro %}
+
+    #viscosity name {{ item.name }}
+    #viscosity dnssupport {% call viscosity_bool(item.viscosity.dnssupport) %}
+    #viscosity startonopen {% call viscosity_bool(item.viscosity.startonopen) %}
+
+{% endif %}
 
 ca   {{ openvpn_cred.ca }}
 cert {{ openvpn_cred.cert }}
 key  {{ openvpn_cred.key }}
 
-proto {{ openvpn.proto | default(openvpn_proto) }}
+proto {{ openvpn_proto }}
 port  {{ openvpn_port }}
 
 {% if openvpn_remote | default(None) %}
 
     remote   {{ openvpn_remote }}
-    tls-auth {{ openvpn.name | default('openvpn') }}.ta-key 1
+    tls-auth {{ openvpn_name }}.ta-key 1
     remote-cert-tls server
     client
     nobind
@@ -70,24 +84,24 @@ port  {{ openvpn_port }}
 
 {% else %}
 
-    server   {{ openvpn.ipv4.network | default(openvpn_ipv4_network) | mandatory }} {{ openvpn.ipv4.mask | default(openvpn_ipv4_mask) | mandatory }}
+    server   {{ openvpn_ipv4.network | mandatory }} {{ openvpn_ipv4.mask | mandatory }}
     dh       {{ openvpn_cred.dh }}
-    tls-auth {{ openvpn.name | default('openvpn') }}.ta-key 0
+    tls-auth {{ openvpn_name }}.ta-key 0
 
-    {% for p in openvpn.push | default(openvpn_push) | default([]) %}
+    {% for p in openvpn_push %}
         push "{{ p }}"
     {% endfor %}
 
-    {% if openvpn.max_clients | default(openvpn_max_clients) %}
-        max-clients {{ openvpn.max_clients | default(openvpn_max_clients) }}
+    {% if openvpn_max_clients %}
+        max-clients {{ openvpn_max_clients }}
     {% endif %}
 
-    {% if openvpn.bind_ip | default(openvpn_bind_ip) %}
-        local {{ openvpn.bind_ip | default(openvpn_bind_ip) }}
+    {% if openvpn_bind_ip %}
+        local {{ openvpn_bind_ip }}
     {% endif %}
 
     {# causes "Assertion failed at helper.c:533" when specified in a client config #}
-    {% if openvpn.tcp_nodelay | default(openvpn_tcp_nodelay) | default(false) %}
+    {% if openvpn_tcp_nodelay %}
         # disables the Nagle algorithm on TCP sockets
         # In VPN applications over TCP, TCP_NODELAY is generally
         # a good latency optimization.
@@ -96,25 +110,21 @@ port  {{ openvpn_port }}
 
 {% endif %}
 
-{% if is_viscosity %}
-#viscosity name {{ item.name }}
-#viscosity dnssupport {{ 'true' if item.viscosity.dnssupport | default(false) else 'false' }}
-#viscosity startonopen {{ 'true' if item.viscosity.startonopen | default(false) else 'false' }}
-{% else %}
+{% if not is_viscosity %}
 
-    dev   {{ openvpn.dev   | default(openvpn_dev) }}
+    dev {{ openvpn_dev }}
 
-    {% if openvpn.status | default(openvpn_status) %}
-        status      {{ openvpn.status | default(openvpn_status) }}
+    {% if openvpn_status %}
+        status {{ openvpn_status }}
     {% endif %}
 
-    {% if openvpn.reduce_privileges | default(openvpn_reduce_privileges) | default(true) %}
+    {% if openvpn_reduce_privileges %}
         # reduce privileges
         user   nobody
         group  nobody
 
-        {% if openvpn.chroot | default(openvpn_chroot) | default(false) %}
-            chroot {{ openvpn.chroot | default(openvpn_chroot) | mandatory }}
+        {% if openvpn_chroot %}
+            chroot {{ openvpn_chroot }}
         {% endif %}
 
         # The persist options will try to avoid accessing certain
@@ -126,14 +136,14 @@ port  {{ openvpn_port }}
 
 {% endif %}
 
-{% if openvpn.keepalive | default(openvpn_keepalive) %}
-    keepalive   {{ openvpn.keepalive | default(openvpn_keepalive) }}
+{% if openvpn_keepalive %}
+    keepalive {{ openvpn_keepalive }}
 {% endif %}
 
-{% if openvpn.comp_lzo | default(openvpn_comp_lzo) %}
+{% if openvpn_comp_lzo %}
     comp-lzo
 {% endif %}
 
-{% if openvpn.cipher | default(openvpn_cipher) %}
-    cipher      {{ openvpn.cipher | default(openvpn_cipher) }}
+{% if openvpn_cipher %}
+    cipher {{ openvpn_cipher }}
 {% endif %}
