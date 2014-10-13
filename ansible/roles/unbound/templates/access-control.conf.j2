@@ -1,5 +1,5 @@
 # {{ ansible_managed }}
 server:
 {% for entry in unbound_access_control %}
-    access-control {{ entry }}
+    access-control: {{ entry }}
 {% endfor %}

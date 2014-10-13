@@ -1,0 +1,6 @@
+# {{ ansible_managed }}
+server:
+{% for entry in unbound_interfaces %}
+    interface: {{ entry }}
+{% endfor %}
+
