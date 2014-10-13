@@ -38,4 +38,4 @@ openvpn_cred:
 openvpn_max_clients: 16
 openvpn_push:
 - "route {{ demonka_int_inet_net }} {{ demonka_int_inet_mask }} vpn_gateway"
-# "dhcp-option DNS {{ demonka_int_inet_ip0 }}"
+- "dhcp-option DNS {{ demonka_int_inet_ip0 }}"
