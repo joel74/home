@@ -10,7 +10,9 @@ openvpn_udp:
   status: /var/log/openvpn.status
   ipv4:
     network: "{{ demonka_openpvn_udp_inet_net }}"
-    mask:    255.255.255.0
+    mask:    "{{ demonka_openpvn_udp_inet_mask }}"
+  ipv4_static:
+  - { cn: bydlenka, ips: "{{ demonka_openvpn_udp_inet_bydlenka_ips }}" }
 
 openvpn_tcp:
   name:        openvpn_tcp
@@ -21,7 +23,7 @@ openvpn_tcp:
   status:      /var/log/openvpn_tcp.status
   ipv4:
     network: "{{ demonka_openvpn_tcp_inet_net }}"
-    mask:    255.255.255.0
+    mask:    "{{ demonka_openvpn_tcp_inet_mask }}"
 
 openvpn_instances:
 - "{{ openvpn_udp }}"
