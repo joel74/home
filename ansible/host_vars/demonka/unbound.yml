@@ -1,0 +1,3 @@
+---
+unbound_access_control:
+- "{{ demonka_int_inet_net }}/{{ demonka_int_inet_mask_bits }} allow"
