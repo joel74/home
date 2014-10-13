@@ -47,9 +47,14 @@
 
 - hosts: demonka
   roles:
-  - openvpn/server
   - unbound
   - znc
+
+  - role:    openvpn/server
+    openvpn: "{{ openvpn_tcp }}"
+
+  - role:    openvpn/server
+    openvpn: "{{ openvpn_udp }}"
 
   - role:    openvpn/provision-client-viscosity
     user:    julie

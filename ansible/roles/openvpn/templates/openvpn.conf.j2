@@ -57,8 +57,8 @@
     {%- endmacro %}
 
     #viscosity name {{ item.name }}
-    #viscosity dnssupport {% call viscosity_bool(item.viscosity.dnssupport) %}
-    #viscosity startonopen {% call viscosity_bool(item.viscosity.startonopen) %}
+    #viscosity dnssupport {{ viscosity_bool(item.viscosity.dnssupport) }}
+    #viscosity startonopen {{ viscosity_bool(item.viscosity.startonopen) }}
 
 {% endif %}
 

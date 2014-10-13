@@ -15,7 +15,7 @@ demonka_openvpn_udp_inet_bydlenka_ips: 10.42.2.42 10.42.2.41
 
 # 10.42.3.0 - 10.42.3.31
 demonka_openvpn_tcp_inet_net:  10.42.3.0
-demonka_openpvn_tcp_inet_mask: 255.255.255.224
+demonka_openvpn_tcp_inet_mask: 255.255.255.224
 
 netif_gateway: yes
 

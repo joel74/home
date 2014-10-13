@@ -6,41 +6,42 @@
     dest:  "{{ item }}"
     state: directory
   with_items:
-  - /usr/local/etc/openvpn
+  - "{{ openvpn_etc }}"
 
 - name: chroot directories
   tags: openvpn
   sudo: yes
   file:
-    dest:  "{{ item[0].chroot }}{{ item[1].name }}"
+    dest:  "{{ item[0] }}{{ item[1].name }}"
     mode:  "{{ item[1].mode }}"
     state: directory
-  when: item[0].chroot | default(false)
+  when: item[0]
   with_nested:
-  - openvpn_instances
-  -
-    - { name: '/',    mode:  '755' }
+  - [ "{{ openvpn.chroot | default(openvpn_chroot) }}" ]
+  - - { name: '/',    mode:  '755' }
     - { name: '/tmp', mode: '1777' }
 
-- name: link openvpn service instances
-  tags: openvpn
-  sudo: yes
+- name:   link openvpn service instance
+  tags:   openvpn
+  sudo:   yes
+  notify: openvpn services restarted
   file:
-    dest:  /usr/local/etc/rc.d/{{ item.name }}
-    src:   /usr/local/etc/rc.d/openvpn
+    dest:  "/usr/local/etc/rc.d/{{ item }}"
+    src:   "/usr/local/etc/rc.d/openvpn"
     state: link
-  with_items: openvpn_instances
-  when: item.name | default('openvpn') != 'openvpn'
-  notify: openvpn services restarted
+  with_items:
+  - "{{ openvpn.name | default(openvpn_name) }}"
+  when: item != 'openvpn'
 
-- name: ensure openvpn.confs
-  tags: openvpn
-  sudo: yes
-  template:
-    dest: /usr/local/etc/openvpn/{{ item.name }}.conf
-    src:  ../../templates/openvpn.conf.j2
-  with_items: openvpn_instances
+- name:   ensure openvpn.confs
+  tags:   openvpn
+  sudo:   yes
   notify: openvpn services restarted
+  template:
+    dest: "{{ openvpn_etc }}/{{ item }}.conf"
+    src:  ../../templates/openvpn.conf.j2
+  with_items:
+  - "{{ openvpn.name | default(openvpn_name) }}"
 
 - name: tls-auth key
   tags: openvpn
@@ -48,15 +49,17 @@
   command: >
     /usr/local/sbin/openvpn
     --genkey
-    --secret "/usr/local/etc/openvpn/{{ item.name | default('openvpn') }}.ta-key"
+    --secret "/usr/local/etc/openvpn/{{ item }}.ta-key"
   args:
-    creates: "/usr/local/etc/openvpn/{{ item.name | default('openvpn') }}.ta-key"
-  with_items: openvpn_instances
+    creates: "/usr/local/etc/openvpn/{{ item }}.ta-key"
+  with_items:
+  - "{{ openvpn.name | default(openvpn_name) }}"
 
 - name: openvpn services enabled
   tags: openvpn
   sudo: yes
   copy:
-    dest: /etc/rc.conf.d/{{ item.name }}
-    content: "{{ item.name }}_enable=\"YES\""
-  with_items: openvpn_instances
+    dest: /etc/rc.conf.d/{{ item }}
+    content: '{{ item }}_enable="YES"'
+  with_items:
+  - "{{ openvpn.name | default(openvpn_name) }}"

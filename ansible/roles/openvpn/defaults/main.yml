@@ -4,6 +4,7 @@ openvpn_cipher:            AES-128-CBC
 openvpn_client_config_dir: client-config
 openvpn_comp_lzo:          yes
 openvpn_dev:               tun
+openvpn_etc:               /usr/local/etc/openvpn
 openvpn_keepalive:         10 60
 openvpn_max_clients:
 openvpn_name:              openvpn

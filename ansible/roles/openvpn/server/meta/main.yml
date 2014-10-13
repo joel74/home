@@ -1,4 +1,5 @@
 ---
+allow_duplicates: yes
 dependencies:
-- { role: easyrsa, tags: openvpn }
+- easyrsa
 - openvpn

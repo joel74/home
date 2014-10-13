@@ -6,8 +6,8 @@ openvpn_udp:
   name:   openvpn
   dev:    tun0
   proto:  udp
-  chroot: /usr/local/etc/openvpn/openvpn_root
-  status: /var/log/openvpn.status
+  chroot: /var/openvpn_udp
+  status: /var/log/openvpn_udp.status
   ipv4:
     network: "{{ demonka_openpvn_udp_inet_net }}"
     mask:    "{{ demonka_openpvn_udp_inet_mask }}"
@@ -19,15 +19,11 @@ openvpn_tcp:
   dev:         tun1
   proto:       tcp
   tcp_nodelay: true
-  chroot:      /usr/local/etc/openvpn/openvpn_tcp_root
+  chroot:      /var/openvpn_tcp
   status:      /var/log/openvpn_tcp.status
   ipv4:
     network: "{{ demonka_openvpn_tcp_inet_net }}"
     mask:    "{{ demonka_openvpn_tcp_inet_mask }}"
-
-openvpn_instances:
-- "{{ openvpn_udp }}"
-- "{{ openvpn_tcp }}"
 
 # pf redirects external packets to the internal
 # interface
