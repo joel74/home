@@ -1,4 +1,8 @@
 ---
+#
+# Create directories for all server configurations. Optionally append an extension,
+# Viscosity bundles are directories ending in .visc.
+#
 - name: config dir
   tags: [ openvpn, openvpn-client-provisioning ]
   file:
@@ -7,6 +11,9 @@
     owner: "{{ user }}"
   with_items: servers
 
+#
+# Generate the config files. Config name can be overriden, Viscosity uses config.conf.
+#
 - name: config file
   tags: [ openvpn, openvpn-client-provisioning ]
   template:
@@ -15,6 +22,9 @@
     owner: "{{ user }}"
   with_items: servers
 
+#
+# Sync the ta-key file
+#
 - name: tls-auth file
   tags: [ openvpn, openvpn-client-provisioning ]
   sudo: yes
@@ -26,6 +36,9 @@
   changed_when: "rsync_result.stdout != ''"
   with_items: servers
 
+#
+# Set the ta-key file owner and permissions.
+#
 - name: tls-auth file permissions
   tags: [ openvpn, openvpn-client-provisioning ]
   sudo: yes
@@ -35,6 +48,9 @@
     mode:  0600
   with_items: servers
 
+#
+# Sync the CA root cert
+#
 - name: ca cert
   tags: [ openvpn, openvpn-client-provisioning ]
   command: >
@@ -45,6 +61,9 @@
   changed_when: "rsync_result.stdout != ''"
   with_items: servers
 
+#
+# Sync the client cert and key files
+#
 - name: client cert files
   tags: [ openvpn, openvpn-client-provisioning ]
   command: >
