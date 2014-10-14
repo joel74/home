@@ -60,11 +60,8 @@ pass proto tcp  from $int_net to $int_ip     port { afpovertcp http $ssh }
 pass proto udp  from $int_net to $int_ip     port { afpovertcp }
 pass proto udp  from $int_net to 224.0.0.251 port { mdns }
 
-# allow pings from local network
-pass inet proto icmp from $int_net to $int_ip icmp-type echoreq
-
 # allow pinging anything
-pass inet proto icmp from <self>  to any     icmp-type echoreq
+pass inet proto icmp from any  to any     icmp-type echoreq
 
 # allow outbound traffic
 pass proto { tcp udp } from <self>

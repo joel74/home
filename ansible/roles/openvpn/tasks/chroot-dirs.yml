@@ -1,0 +1,14 @@
+---
+- name: chroot directories
+  tags: openvpn
+  sudo: yes
+  file:
+    dest:  "{{ item[0] }}{{ item[1].name }}"
+    mode:  "{{ item[1].mode }}"
+    state: directory
+  when: item[0]
+  with_nested:
+  - [ "{{ openvpn.chroot | default(openvpn_chroot) }}" ]
+  - - { name: '/',    mode:  '755' }
+    - { name: '/tmp', mode: '1777' }
+

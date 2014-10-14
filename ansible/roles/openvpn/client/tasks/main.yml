@@ -2,16 +2,8 @@
 - name: copy configs to /usr/local/etc
   tags: openvpn
   sudo: yes
+  notify: openvpn restarted
   command: >
     rsync -rcip "{{ easyrsa_client_cert_path }}/openvpn/" /usr/local/etc/openvpn/
 
-- name: chroot directories
-  tags: openvpn
-  sudo: yes
-  file:
-    dest:  "/usr/local/etc/openvpn/openvpn_root{{ item.name }}"
-    mode:  "{{ item.mode }}"
-    state: directory
-  with_items:
-  - { name: '/',    mode:  '755' }
-  - { name: '/tmp', mode: '1777' }
+- include: '../../tasks/chroot-dirs.yml'

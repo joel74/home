@@ -1,8 +1,10 @@
 ---
+openvpn:
 openvpn_bind_ip:           "{{ ansible_default_ipv4.address }}"
 openvpn_cipher:            AES-128-CBC
 openvpn_client_config_dir: client-config
 openvpn_comp_lzo:          yes
+openvpn_chroot:            /var/openvpn
 openvpn_dev:               tun
 openvpn_etc:               /usr/local/etc/openvpn
 openvpn_keepalive:         10 60

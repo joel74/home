@@ -3,11 +3,8 @@
 # certificate variables are defined in easyrsa.yml
 
 openvpn_udp:
-  name:   openvpn
   dev:    tun0
   proto:  udp
-  chroot: /var/openvpn_udp
-  status: /var/log/openvpn_udp.status
   ipv4:
     network: "{{ demonka_openpvn_udp_inet_net }}"
     mask:    "{{ demonka_openpvn_udp_inet_mask }}"
