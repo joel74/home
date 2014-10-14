@@ -1,0 +1,8 @@
+---
+- name: update-resolvconf
+  tags: [ openvpn, openvpn-client-provisioning ]
+  copy:
+    dest: "~{{ user }}/{{ client }}/{{ item.name|default('openvpn') }}{{ dir_ext }}/update-resolvconf"
+    mode: 0755
+    src: "update-resolvconf"
+  with_items: servers

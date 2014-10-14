@@ -148,7 +148,7 @@ port  {{ openvpn_port }}
 
   {% if openvpn_script_down %}
     {% if openvpn_script_down_root %}
-      plugin {{ openvpn_lib }}/plugins/openvpn-plugin-root-down.so "{{ openvpn_script_down }}"
+      plugin {{ openvpn_lib }}/plugins/openvpn-plugin-down-root.so "{{ openvpn_script_down }}"
     {% else %}
       down {{ openvpn_script_down }}
     {% endif %}
