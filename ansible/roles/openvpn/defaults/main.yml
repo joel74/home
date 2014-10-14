@@ -2,11 +2,8 @@
 openvpn:
 openvpn_bind_ip:           "{{ ansible_default_ipv4.address }}"
 openvpn_cipher:            AES-128-CBC
-openvpn_client_config_dir: client-config
 openvpn_comp_lzo:          yes
-openvpn_chroot:            /var/openvpn
 openvpn_dev:               tun
-openvpn_etc:               /usr/local/etc/openvpn
 openvpn_keepalive:         10 60
 openvpn_max_clients:
 openvpn_name:              openvpn
@@ -14,5 +11,15 @@ openvpn_port:              1194
 openvpn_proto:             udp
 openvpn_push:              []
 openvpn_reduce_privileges: yes
-openvpn_status:            /var/log/openvpn.status
+openvpn_script_down:
+openvpn_script_down_root:  no
+openvpn_script_up:
+openvpn_script_security:
 openvpn_tcp_nodelay:       no
+
+openvpn_client_config_dir: client-config
+openvpn_chroot:            /var/openvpn
+openvpn_status:            /var/log/openvpn.status
+openvpn_prefix:            /usr/local
+openvpn_etc:               "{{ openvpn_prefix }}/etc/openvpn"
+openvpn_lib:               "{{ openvpn_prefix }}/lib/openvpn"

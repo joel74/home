@@ -2,35 +2,35 @@
 
 {% if item is defined and item.instance is defined %}
 
-    {# generating a client config based on a server config #}
+  {# generating a client config based on a server config #}
 
-    {% set openvpn             = item.instance %}
-    {% set openvpn_redirect_gw = item.redirect_gw |
-                                 default(item.instance.redirect_gw) |
-                                 default(openvpn_redirect_gw) |
-                                 default(false) %}
-    {% set openvpn_remote      = item.remote %}
-    {% set openvpn_cred = {
-          'ca':   'ca.crt',
-          'cert': client + '.crt',
-          'key':  client + '.key'
-    } %}
+  {% set openvpn             = item.instance %}
+  {% set openvpn_redirect_gw = item.redirect_gw |
+                               default(item.instance.redirect_gw) |
+                               default(openvpn_redirect_gw) |
+                               default(false) %}
+  {% set openvpn_remote      = item.remote %}
+  {% set openvpn_cred = {
+        'ca':   'ca.crt',
+        'cert': client + '.crt',
+        'key':  client + '.key'
+  } %}
 
 {% else %}
 
-    {# generating a server or custom client config #}
+  {# generating a server or custom client config #}
 
-    {% set openvpn_remote      = openvpn.remote |
-                                 default(openvpn_remote) |
-                                 default(None) %}
+  {% set openvpn_remote      = openvpn.remote |
+                               default(openvpn_remote) |
+                               default(None) %}
 
-    {% set openvpn_redirect_gw = openvpn.redirect_gw |
-                                 default(openvpn_redirect_gw) |
-                                 default(false) %}
+  {% set openvpn_redirect_gw = openvpn.redirect_gw |
+                               default(openvpn_redirect_gw) |
+                               default(false) %}
 
-    {% if openvpn.cred is defined %}
-        {% set openvpn_cred = openvpn.cred | d(openvpn_cred) | mandatory %}
-    {% endif %}
+  {% if openvpn.cred is defined %}
+    {% set openvpn_cred = openvpn.cred | d(openvpn_cred) | mandatory %}
+  {% endif %}
 
 {% endif %}
 
@@ -47,18 +47,22 @@
 {% set openvpn_proto             = openvpn.proto             | d(openvpn_proto)             %}
 {% set openvpn_push              = openvpn.push              | d(openvpn_push)              %}
 {% set openvpn_reduce_privileges = openvpn.reduce_privileges | d(openvpn_reduce_privileges) %}
+{% set openvpn_script_down       = openvpn.script_down       | d(openvpn_script_down)       %}
+{% set openvpn_script_down_root  = openvpn.script_down_root  | d(openvpn_script_down_root)  %}
+{% set openvpn_script_up         = openvpn.script_up         | d(openvpn_script_up)         %}
+{% set openvpn_script_security   = openvpn.script_security   | d(openvpn_script_security)   %}
 {% set openvpn_status            = openvpn.status            | d(openvpn_status)            %}
 {% set openvpn_tcp_nodelay       = openvpn.tcp_nodelay       | d(openvpn_tcp_nodelay)       %}
 
 {% if is_viscosity %}
 
-    {% macro viscosity_bool(val) -%}
+  {% macro viscosity_bool(val) -%}
     {{ 'true' if val | default(false) else 'false' }}
-    {%- endmacro %}
+  {%- endmacro %}
 
-    #viscosity name {{ item.name }}
-    #viscosity dnssupport {{ viscosity_bool(item.viscosity.dnssupport) }}
-    #viscosity startonopen {{ viscosity_bool(item.viscosity.startonopen) }}
+  #viscosity name {{ item.name }}
+  #viscosity dnssupport {{ viscosity_bool(item.viscosity.dnssupport) }}
+  #viscosity startonopen {{ viscosity_bool(item.viscosity.startonopen) }}
 
 {% endif %}
 
@@ -71,79 +75,95 @@ port  {{ openvpn_port }}
 
 {% if openvpn_remote | default(None) %}
 
-    remote   {{ openvpn_remote }}
-    tls-auth {{ openvpn_name }}.ta-key 1
-    remote-cert-tls server
-    client
-    nobind
-    pull
+  remote   {{ openvpn_remote }}
+  tls-auth {{ openvpn_name }}.ta-key 1
+  remote-cert-tls server
+  client
+  nobind
+  pull
 
-    {% if openvpn_redirect_gw %}
-        redirect-gateway def1
-    {% endif %}
+  {% if openvpn_redirect_gw %}
+    redirect-gateway def1
+  {% endif %}
 
 {% else %}
 
-    server   {{ openvpn_ipv4.network | mandatory }} {{ openvpn_ipv4.mask | mandatory }}
-    dh       {{ openvpn_cred.dh }}
-    tls-auth {{ openvpn_name }}.ta-key 0
+  server   {{ openvpn_ipv4.network | mandatory }} {{ openvpn_ipv4.mask | mandatory }}
+  dh       {{ openvpn_cred.dh }}
+  tls-auth {{ openvpn_name }}.ta-key 0
 
-    {% for p in openvpn_push %}
-        push "{{ p }}"
-    {% endfor %}
+  {% for p in openvpn_push %}
+    push "{{ p }}"
+  {% endfor %}
 
-    {% if openvpn_max_clients %}
-        max-clients {{ openvpn_max_clients }}
-    {% endif %}
+  {% if openvpn_max_clients %}
+    max-clients {{ openvpn_max_clients }}
+  {% endif %}
 
-    {% if openvpn_bind_ip %}
-        local {{ openvpn_bind_ip }}
-    {% endif %}
+  {% if openvpn_bind_ip %}
+    local {{ openvpn_bind_ip }}
+  {% endif %}
 
-    {# causes "Assertion failed at helper.c:533" when specified in a client config #}
-    {% if openvpn_tcp_nodelay %}
-        # disables the Nagle algorithm on TCP sockets
-        # In VPN applications over TCP, TCP_NODELAY is generally
-        # a good latency optimization.
-        tcp-nodelay
-    {% endif %}
+  {# causes "Assertion failed at helper.c:533" when specified in a client config #}
+  {% if openvpn_tcp_nodelay %}
+    # disables the Nagle algorithm on TCP sockets
+    # In VPN applications over TCP, TCP_NODELAY is generally
+    # a good latency optimization.
+    tcp-nodelay
+  {% endif %}
 
 {% endif %}
 
 {% if not is_viscosity %}
 
-    dev {{ openvpn_dev }}
+  dev {{ openvpn_dev }}
 
-    {% if openvpn_status %}
-        status {{ openvpn_status }}
+  {% if openvpn_status %}
+    status {{ openvpn_status }}
+  {% endif %}
+
+  {% if openvpn_reduce_privileges %}
+    # reduce privileges
+    user   nobody
+    group  nobody
+
+    {% if openvpn_chroot %}
+      chroot {{ openvpn_chroot }}
     {% endif %}
 
-    {% if openvpn_reduce_privileges %}
-        # reduce privileges
-        user   nobody
-        group  nobody
+    # The persist options will try to avoid accessing certain
+    # resources on restart that may no longer be accessible because
+    # of the privilege downgrade.
+    persist-key
+    persist-tun
+  {% endif %}
 
-        {% if openvpn_chroot %}
-            chroot {{ openvpn_chroot }}
-        {% endif %}
+  {% if openvpn_script_security %}
+    script-security {{ openvpn_script_security }}
+  {% endif %}
 
-        # The persist options will try to avoid accessing certain
-        # resources on restart that may no longer be accessible because
-        # of the privilege downgrade.
-        persist-key
-        persist-tun
+  {% if openvpn_script_up %}
+    up {{ openvpn_script_up }}
+  {% endif %}
+
+  {% if openvpn_script_down %}
+    {% if openvpn_script_down_root %}
+      plugin {{ openvpn_lib }}/plugins/openvpn-plugin-root-down.so "{{ openvpn_script_down }}"
+    {% else %}
+      down {{ openvpn_script_down }}
     {% endif %}
+  {% endif %}
 
 {% endif %}
 
 {% if openvpn_keepalive %}
-    keepalive {{ openvpn_keepalive }}
+  keepalive {{ openvpn_keepalive }}
 {% endif %}
 
 {% if openvpn_comp_lzo %}
-    comp-lzo
+  comp-lzo
 {% endif %}
 
 {% if openvpn_cipher %}
-    cipher {{ openvpn_cipher }}
+  cipher {{ openvpn_cipher }}
 {% endif %}
