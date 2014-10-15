@@ -8,8 +8,9 @@ openvpn_udp:
   ipv4:
     network: "{{ demonka_openpvn_udp_inet_net }}"
     mask:    "{{ demonka_openpvn_udp_inet_mask }}"
-  ipv4_static:
-  - { cn: bydlenka, ips: "{{ demonka_openvpn_udp_inet_bydlenka_ips }}" }
+  client_config:
+    bydlenka:
+      ipv4: "{{ demonka_openvpn_udp_inet_bydlenka_ips }}"
 
 openvpn_tcp:
   name:        openvpn_tcp
