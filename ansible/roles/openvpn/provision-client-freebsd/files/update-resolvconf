@@ -2,7 +2,7 @@
 
 RESOLVCONF=/sbin/resolvconf
 
-case ${script_type} in
+case ${1} in
     up)
         env | awk '
         BEGIN {
