@@ -143,14 +143,14 @@ port  {{ openvpn_port }}
   {% endif %}
 
   {% if openvpn_script_up %}
-    up {{ openvpn_script_up }}
+    up "{{ openvpn_script_up }}"
   {% endif %}
 
   {% if openvpn_script_down %}
     {% if openvpn_script_down_root %}
       plugin {{ openvpn_lib }}/plugins/openvpn-plugin-down-root.so "{{ openvpn_script_down }}"
     {% else %}
-      down {{ openvpn_script_down }}
+      down "{{ openvpn_script_down }}"
     {% endif %}
   {% endif %}
 

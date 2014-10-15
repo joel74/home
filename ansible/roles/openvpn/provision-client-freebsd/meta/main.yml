@@ -2,6 +2,6 @@
 dependencies:
 - role: openvpn/provision-client
   openvpn_script_security:  2
-  openvpn_script_up:       '"{{ openvpn_etc }}/update-resolvconf up"'
-  openvpn_script_down:     '"{{ openvpn_etc }}/update-resolvconf down"'
+  openvpn_script_up:       '{{ openvpn_etc }}/update-resolvconf up'
+  openvpn_script_down:     '{{ openvpn_etc }}/update-resolvconf down'
   openvpn_script_down_root: yes
