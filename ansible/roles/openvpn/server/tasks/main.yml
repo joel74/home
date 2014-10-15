@@ -39,7 +39,7 @@
   notify: openvpn restarted
   copy:
     dest:    "{{ openvpn.chroot | d(openvpn_chroot) }}/{{ openvpn.ccd | d(openvpn_ccd) }}/{{ item.key }}"
-    content: 'ifconfig-push {{ item.value.ipv4 }}'
+    content: 'ifconfig-push {{ item.value.inet }} {{ item.value.inet_tunnel }}'
   with_dict: "openvpn.client_config | d(openvpn_client_config)"
 
 - name: tls-auth key
