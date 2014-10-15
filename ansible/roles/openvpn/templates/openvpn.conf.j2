@@ -35,8 +35,10 @@
 {% endif %}
 
 {% set openvpn_bind_ip           = openvpn.bind_ip           | d(openvpn_bind_ip)           %}
-{% set openvpn_cipher            = openvpn.cipher            | d(openvpn_cipher)            %}
+{% set openvpn_ccd               = openvpn.ccd               | d(openvpn_ccd)               %}
 {% set openvpn_chroot            = openvpn.chroot            | d(openvpn_chroot)            %}
+{% set openvpn_cipher            = openvpn.cipher            | d(openvpn_cipher)            %}
+{% set openvpn_client_config     = openvpn.client_config     | d(openvpn_client_config)     %}
 {% set openvpn_comp_lzo          = openvpn.comp_lzo          | d(openvpn_comp_lzo)          %}
 {% set openvpn_dev               = openvpn.dev               | d(openvpn_dev)               %}
 {% set openvpn_name              = openvpn.name              | d(openvpn_name)              %}
@@ -95,6 +97,10 @@ port  {{ openvpn_port }}
   {% for p in openvpn_push %}
     push "{{ p }}"
   {% endfor %}
+
+  {% if openvpn_ccd %}
+    client-config-dir {{ openvpn_ccd }}
+  {% endif %}
 
   {% if openvpn_max_clients %}
     max-clients {{ openvpn_max_clients }}

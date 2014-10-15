@@ -7,15 +7,22 @@ demonka_int_inet_net:       10.42.0.0
 demonka_int_inet_mask:      255.255.0.0
 demonka_int_inet_mask_bits: 16
 
+#
+# Static IPs have to be assigned accorting to this document:
+#
+#   http://openvpn.net/index.php/open-source/documentation/howto.html#policy
+#
+# Also, make sure that the IPs *are* inside the VPN subnet, otherwise you'll get a stupid
+# "Authenticate/Decrypt packet error: # packet HMAC authentication failed" message in the log.
+
 # 10.42.2.0 - 10.42.2.31
 demonka_openpvn_udp_inet_net:  10.42.2.0
-demonka_openpvn_udp_inet_mask: 255.255.255.224
-# http://openvpn.net/index.php/open-source/documentation/howto.html#policy
+demonka_openpvn_udp_inet_mask: 255.255.255.0
 demonka_openvpn_udp_inet_bydlenka_ips: 10.42.2.42 10.42.2.41
 
 # 10.42.3.0 - 10.42.3.31
 demonka_openvpn_tcp_inet_net:  10.42.3.0
-demonka_openvpn_tcp_inet_mask: 255.255.255.224
+demonka_openvpn_tcp_inet_mask: 255.255.255.0
 
 netif_gateway: yes
 

@@ -1,6 +1,6 @@
 ---
-- name: config directory
-  tags: openvpn
+- name: config directories
+  tags: [ openvpn, openvpn-server ]
   sudo: yes
   file:
     dest:  "{{ item }}"
@@ -9,9 +9,10 @@
   - "{{ openvpn_etc }}"
 
 - include: '../../tasks/chroot-dirs.yml'
+  tags:    [ openvpn, openvpn-server ]
 
 - name:   link openvpn service instance
-  tags:   openvpn
+  tags:   [ openvpn, openvpn-server ]
   sudo:   yes
   notify: openvpn restarted
   file:
@@ -23,7 +24,7 @@
   when: item != 'openvpn'
 
 - name:   ensure openvpn.confs
-  tags:   openvpn
+  tags:   [ openvpn, openvpn-server ]
   sudo:   yes
   notify: openvpn restarted
   template:
@@ -32,8 +33,17 @@
   with_items:
   - "{{ openvpn.name | d(openvpn_name) }}"
 
+- name:   ensure client configs
+  tags:   [ openvpn, openvpn-server ]
+  sudo:   yes
+  notify: openvpn restarted
+  copy:
+    dest:    "{{ openvpn.chroot | d(openvpn_chroot) }}/{{ openvpn.ccd | d(openvpn_ccd) }}/{{ item.key }}"
+    content: 'ifconfig-push {{ item.value.ipv4 }}'
+  with_dict: "openvpn.client_config | d(openvpn_client_config)"
+
 - name: tls-auth key
-  tags: openvpn
+  tags: [ openvpn, openvpn-server ]
   sudo: yes
   notify: openvpn restarted
   command: >
@@ -46,7 +56,7 @@
   - "{{ openvpn.name | d(openvpn_name) }}"
 
 - name: openvpn services enabled
-  tags: openvpn
+  tags: [ openvpn, openvpn-server ]
   sudo: yes
   copy:
     dest: /etc/rc.conf.d/{{ item }}

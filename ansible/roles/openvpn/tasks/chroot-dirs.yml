@@ -4,11 +4,12 @@
   sudo: yes
   file:
     dest:  "{{ item[0] }}{{ item[1].name }}"
-    mode:  "{{ item[1].mode }}"
+    mode:  "{{ item[1].mode | default('0755') }}"
     state: directory
   when: item[0]
   with_nested:
-  - [ "{{ openvpn.chroot | default(openvpn_chroot) }}" ]
-  - - { name: '/',    mode:  '755' }
-    - { name: '/tmp', mode: '1777' }
-
+  - [ "{{ openvpn.chroot | d(openvpn_chroot) }}" ]
+  - - name: '/'
+    - name: '/{{ openvpn.ccd | d(openvpn_ccd) }}'
+    - name: '/tmp'
+      mode: '1777'
