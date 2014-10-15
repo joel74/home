@@ -19,7 +19,7 @@
     src:   "/usr/local/etc/rc.d/openvpn"
     state: link
   with_items:
-  - "{{ openvpn.name | default(openvpn_name) }}"
+  - "{{ openvpn.name | d(openvpn_name) }}"
   when: item != 'openvpn'
 
 - name:   ensure openvpn.confs
@@ -30,7 +30,7 @@
     dest: "{{ openvpn_etc }}/{{ item }}.conf"
     src:  ../../templates/openvpn.conf.j2
   with_items:
-  - "{{ openvpn.name | default(openvpn_name) }}"
+  - "{{ openvpn.name | d(openvpn_name) }}"
 
 - name: tls-auth key
   tags: openvpn
@@ -43,7 +43,7 @@
   args:
     creates: "/usr/local/etc/openvpn/{{ item }}.ta-key"
   with_items:
-  - "{{ openvpn.name | default(openvpn_name) }}"
+  - "{{ openvpn.name | d(openvpn_name) }}"
 
 - name: openvpn services enabled
   tags: openvpn
@@ -52,4 +52,4 @@
     dest: /etc/rc.conf.d/{{ item }}
     content: '{{ item }}_enable="YES"'
   with_items:
-  - "{{ openvpn.name | default(openvpn_name) }}"
+  - "{{ openvpn.name | d(openvpn_name) }}"
