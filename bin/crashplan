@@ -1,0 +1,37 @@
+#!/bin/sh
+
+: ${CRASHPLAN_REMOTE:=${1}}
+: ${CRASHPLAN:=/Applications/CrashPlan.app}
+: ${CRASHPLAN_LOCAL_PORT:=4200}
+: ${CRASHPLAN_REMOTE_PORT:=4243}
+: ${CRASHPLAN_BIN:=${CRASHPLAN}/Contents/MacOS/CrashPlan}
+: ${UIPROPERTIES:=${CRASHPLAN}/Contents/Resources/Java/conf/ui.properties}
+
+CRASHPLAN_SSH_PID=""
+UIPROPERTIES_BAK=""
+
+if [ -n "${CRASHPLAN_REMOTE}" ]
+then
+    UIPROPERTIES_BAK="${UIPROPERTIES}.bak"
+    /bin/mv ${UIPROPERTIES} ${UIPROPERTIES_BAK}
+    /usr/bin/egrep -v '^\s*servicePort' ${UIPROPERTIES_BAK} > ${UIPROPERTIES}
+    echo "servicePort=${CRASHPLAN_LOCAL_PORT}" >> ${UIPROPERTIES}
+
+    /usr/bin/ssh -NL                                              \
+     "${CRASHPLAN_LOCAL_PORT}:localhost:${CRASHPLAN_REMOTE_PORT}" \
+     "${CRASHPLAN_REMOTE}" &
+    CRASHPLAN_SSH_PID=$!
+fi
+
+${CRASHPLAN_BIN} > /dev/null 2>&1
+
+if [ -n "${CRASHPLAN_SSH_PID}" ]
+then
+    kill ${CRASHPLAN_SSH_PID}
+fi
+
+if [ -f "${UIPROPERTIES_BAK}" ]
+then
+    /bin/mv ${UIPROPERTIES_BAK} ${UIPROPERTIES}
+fi
+
