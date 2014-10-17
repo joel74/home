@@ -1,0 +1,120 @@
+#!/usr/bin/env python
+
+import base64
+import hashlib
+import os
+import platform
+import plistlib
+import uuid
+
+class DeterministicUUID(object):
+    last = 0
+    root = None
+
+    @classmethod
+    def next_uuid(c):
+        c.last = c.last + 1
+        return str(uuid.uuid5(
+                uuid.NAMESPACE_DNS,
+                ("%d.%s.juliekoubova.net" % (c.last, c.root))))
+
+def read_data(path):
+    with open(os.path.expanduser(path), 'r') as f:
+        return plistlib.Data(f.read())
+
+def Payload(parent, payload_type):
+    result_uuid = DeterministicUUID.next_uuid()
+    result =  dict(
+         PayloadType    = payload_type,
+         PayloadUUID    = result_uuid,
+         PayloadVersion = 1
+    )
+
+    if parent is not None:
+        result['PayloadIdentifier'] = '%s.%s' % (parent['PayloadIdentifier'], result_uuid)
+
+    return result
+
+def PayloadCert(parent, payload_type, path, p):
+    result = Payload(parent, payload_type)
+    result['PayloadContent']         = read_data(path)
+    result['PayloadCertificateName'] = os.path.basename(path)
+    result['PayloadDisplayName']     = p['display_name']
+    result['PayloadDescription']     = 'Configures certificate settings.'
+    return result
+
+def PayloadRootCert(parent, p):
+    return PayloadCert(parent, 'com.apple.security.root', p['ca'], p)
+
+def PayloadPkcs12(parent, p):
+    result = PayloadCert(parent, 'com.apple.security.pkcs12', p['pkcs12'], p)
+    if 'password' in p:
+        result['Password'] = str(p['password'])
+    return result
+
+def process_payloads(parent, payloads):
+    for p in payloads:
+        if 'ca' in p:
+            yield PayloadRootCert(parent, p)
+        elif 'pkcs12' in p:
+            yield PayloadPkcs12(parent, p)
+
+def main():
+    module = AnsibleModule(
+        argument_spec=dict(
+            name=dict(aliases=['dest']),
+            identifier=dict(type='str'),
+            display_name=dict(type='str'),
+            can_remove=dict(
+                default=True,
+                type='bool',
+            ),
+            payloads=dict(
+                default=None,
+                type='list',
+            )
+        ),
+        supports_check_mode=True,
+    )
+
+    params       = module.params
+    name         = os.path.expanduser(params['name'])
+    existing_md5 = None
+
+    if not params['display_name']:
+        module.fail_json(msg='display_name not specified')
+        return
+
+    for p in params['payloads']:
+        if not p.get('display_name'):
+            module.fail_json(msg='display_name not specified for payload %s' % str(p))
+            return
+
+    if os.path.isfile(name):
+        with open(name, 'r') as f:
+            existing_md5 = hashlib.md5(f.read()).digest()
+
+    DeterministicUUID.root = params['identifier']
+
+    plist = Payload(None, 'Configuration')
+    plist['PayloadIdentifier']        = params['identifier']
+    plist['PayloadDisplayName']       = params['display_name']
+    plist['PayloadRemovalDisallowed'] = not params['can_remove']
+    plist['PayloadContent']           = list(process_payloads(plist, params['payloads']))
+
+    with open('/tmp/plist', 'w') as f:
+        f.write(str(plist))
+
+    plist_str = plistlib.writePlistToString(plist)
+    plist_md5 = hashlib.md5(plist_str).digest()
+
+    if plist_md5 == existing_md5:
+        module.exit_json(changed=False)
+    else:
+        with open(name, 'w') as f:
+            f.write(plist_str)
+        module.exit_json(changed=True, message='mobile config generated')
+
+# this is magic, see lib/ansible/module_common.py
+#<<INCLUDE_ANSIBLE_MODULE_COMMON>>
+main()
