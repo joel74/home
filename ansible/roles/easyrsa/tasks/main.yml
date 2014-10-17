@@ -9,3 +9,6 @@
 - include:    certs.yml
   certs:      "{{ easyrsa_certs }}"
   cert_files: [ crt, key, pem, pfx, sha1 ]
+
+- include:    provision.yml
+  certs:      "{{ easyrsa_certs }}"

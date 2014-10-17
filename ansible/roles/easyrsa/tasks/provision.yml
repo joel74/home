@@ -1,0 +1,34 @@
+---
+- name: provision client dirs
+  tags: easyrsa
+  sudo: yes
+  file:
+    dest: "~{{ item.user }}/{{ item.cn }}"
+    state: directory
+    owner: "{{ item.user }}"
+  with_items: certs
+
+- name: provision mobile configs
+  tags: easyrsa
+  sudo: yes
+  mobileconfig:
+    dest:         "~{{ item.user }}/{{ item.cn }}/{{ item.cn }}.mobileconfig"
+    display_name: "{{ item.cn }} ({{ easyrsa_cacn }})"
+    identifier:   "{{ item.cn }}.{{ easyrsa_cacn }}"
+    payloads:
+    - ca: "{{ easyrsa_keydir }}/ca.crt"
+      display_name: "{{ easyrsa_cacn }}"
+    - pkcs12: "{{ easyrsa_keydir }}/{{ item.cn }}.pfx"
+      display_name: "{{ item.cn }}"
+      password: "{{ easyrsa_pfx_pass }}"
+  with_items: certs
+
+- name: mobile configs permissions
+  tags: easyrsa
+  sudo: yes
+  file:
+    dest: "~{{ item.user }}/{{ item.cn }}/{{ item.cn }}.mobileconfig"
+    state: file
+    owner: "{{ item.user }}"
+    mode: 0700
+  with_items: certs
