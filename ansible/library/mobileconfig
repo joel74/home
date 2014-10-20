@@ -52,12 +52,19 @@ def PayloadPkcs12(parent, p):
         result['Password'] = str(p['password'])
     return result
 
+def PayloadInclude(parent, p):
+    plist = plistlib.readPlist(os.path.expanduser(p['include']))
+    return plist['PayloadContent']
+
 def process_payloads(parent, payloads):
     for p in payloads:
         if 'ca' in p:
             yield PayloadRootCert(parent, p)
         elif 'pkcs12' in p:
             yield PayloadPkcs12(parent, p)
+        elif 'include' in p:
+            for inc in PayloadInclude(parent, p):
+                yield inc
 
 def main():
     module = AnsibleModule(
@@ -86,7 +93,7 @@ def main():
         return
 
     for p in params['payloads']:
-        if not p.get('display_name'):
+        if not p.get('include') and not p.get('display_name'):
             module.fail_json(msg='display_name not specified for payload %s' % str(p))
             return
 
