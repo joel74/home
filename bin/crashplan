@@ -10,29 +10,41 @@
 CRASHPLAN_SSH_PID=""
 UIPROPERTIES_BAK=""
 
+_cleanup() {
+    if [ -n "${CRASHPLAN_SSH_PID}" ]
+    then
+        echo "Killing ${CRASHPLAN_SSH_PID}."
+        kill ${CRASHPLAN_SSH_PID}
+    fi
+
+    if [ -f "${UIPROPERTIES_BAK}" ]
+    then
+        echo "Restoring ${UIPROPERTIES_BAK} to ${UIPROPERTIES}."
+        /bin/mv ${UIPROPERTIES_BAK} ${UIPROPERTIES}
+    fi
+}
+
+trap '_cleanup' EXIT
+
 if [ -n "${CRASHPLAN_REMOTE}" ]
 then
     UIPROPERTIES_BAK="${UIPROPERTIES}.bak"
+
+    echo "Moving ${UIPROPERTIES} to ${UIPROPERTIES_BAK}."
     /bin/mv ${UIPROPERTIES} ${UIPROPERTIES_BAK}
+
+    echo "Setting servicePort to ${CRASHPLAN_LOCAL_PORT}."
     /usr/bin/egrep -v '^\s*servicePort' ${UIPROPERTIES_BAK} > ${UIPROPERTIES}
     echo "servicePort=${CRASHPLAN_LOCAL_PORT}" >> ${UIPROPERTIES}
 
+    echo "Forwarding local port ${CRASHPLAN_LOCAL_PORT} to ${CRASHPLAN_REMOTE}:${CRASHPLAN_REMOTE_PORT}."
     /usr/bin/ssh -NL                                              \
      "${CRASHPLAN_LOCAL_PORT}:localhost:${CRASHPLAN_REMOTE_PORT}" \
      "${CRASHPLAN_REMOTE}" &
+
     CRASHPLAN_SSH_PID=$!
+    echo "SSH process ID is ${CRASHPLAN_SSH_PID}."
 fi
 
 echo "You can now start CrashPlan. Press ENTER to revert."
 read
-
-if [ -n "${CRASHPLAN_SSH_PID}" ]
-then
-    kill ${CRASHPLAN_SSH_PID}
-fi
-
-if [ -f "${UIPROPERTIES_BAK}" ]
-then
-    /bin/mv ${UIPROPERTIES_BAK} ${UIPROPERTIES}
-fi
-
