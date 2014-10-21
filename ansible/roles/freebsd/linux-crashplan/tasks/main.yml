@@ -14,4 +14,4 @@
   changed_when: >
     'is already running' not in start_result.stdout
   failed_when: >
-    start_result|failed and 'WARNING: no shebang' not in start_result.stderr
+    (start_result.rc != 0) and ('already running' not in start_result.stdout)
