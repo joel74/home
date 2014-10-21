@@ -1,4 +1,3 @@
-#!/usr/bin/env ansible-playbook
 ---
 - hosts: FreeBSD
   roles:
@@ -73,7 +72,20 @@
     - remote:   "{{ demonka_openvpn_remote }}"
       instance: "{{ openvpn_udp }}"
 
+  - role:    openvpn/provision-client-ios
+    user:    julie
+    client:  julie-ip5
+    servers: "{{ demonka_openvpn_servers }}"
+
 - hosts: bydlenka
   roles:
   - easyrsa-client
   - openvpn/client
+
+- hosts: Darwin
+  roles:
+  - julie/darwin-software
+  - julie/common
+  - julie/torrent-uploader
+  - darwin/login-shell
+  - easyrsa-client

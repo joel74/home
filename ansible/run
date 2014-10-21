@@ -1,3 +1,19 @@
 #!/bin/sh
 cd $(dirname $0)
-ansible-playbook site.yml -l "$(basename $0)" "$@"
+
+args=""
+script="$(basename $0)"
+
+case "${script}" in
+site)
+    args="--limit=FreeBSD"
+    ;;
+localhost)
+    args="--ask-sudo-pass --limit=$(hostname) --connection=local"
+    ;;
+*)
+    args="--limit=${script}"
+    ;;
+esac
+
+ansible-playbook site.yml ${args} $@
