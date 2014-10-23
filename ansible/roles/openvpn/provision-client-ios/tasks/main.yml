@@ -1,0 +1,22 @@
+---
+- name: mobile configs
+  tags: [ openvpn, openvpn-client-provisioning, openvpn-ios ]
+  sudo: yes
+  mobileconfig:
+    dest:         "~{{ user }}/{{ client }}/.vpn.mobileconfig"
+    display_name: "{{ client }} (OpenVPN)"
+    identifier:   "{{ client }}.openvpn"
+    payloads:
+    - include: "~{{ user }}/{{ client }}/.rsa.mobileconfig"
+    - openvpn: "{{ servers }}"
+      certificate:  "{{ client }}.pfx"
+      display_name: vpn.juliekoubova.net
+
+- name: mobile configs permissions
+  tags: [ openvpn, openvpn-client-provisioning, openvpn-ios ]
+  sudo: yes
+  file:
+    dest: "~{{ user }}/{{ client }}/.vpn.mobileconfig"
+    state: file
+    owner: "{{ user }}"
+    mode: 0700

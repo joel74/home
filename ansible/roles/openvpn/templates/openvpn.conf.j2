@@ -120,7 +120,7 @@ port  {{ openvpn_port }}
 
 {% endif %}
 
-{% if not is_viscosity %}
+{% if not is_viscosity and not is_ios %}
 
   dev {{ openvpn_dev }}
 

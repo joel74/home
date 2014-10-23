@@ -12,22 +12,23 @@
   tags: easyrsa
   sudo: yes
   mobileconfig:
-    dest:         "~{{ item.user }}/{{ item.cn }}/{{ item.cn }}.mobileconfig"
+    dest:         "~{{ item.user }}/{{ item.cn }}/.rsa.mobileconfig"
     display_name: "{{ item.cn }} ({{ easyrsa_cacn }})"
     identifier:   "{{ item.cn }}.{{ easyrsa_cacn }}"
     payloads:
     - ca: "{{ easyrsa_keydir }}/ca.crt"
       display_name: "{{ easyrsa_cacn }}"
-    - pkcs12: "{{ easyrsa_keydir }}/{{ item.cn }}.pfx"
+    - pkcs12:       "{{ easyrsa_keydir }}/{{ item.cn }}.pfx"
       display_name: "{{ item.cn }}"
-      password: "{{ easyrsa_pfx_pass }}"
+      identifier:   "{{ item.cn }}.pfx"
+      password:     "{{ easyrsa_pfx_pass }}"
   with_items: certs
 
 - name: mobile configs permissions
   tags: easyrsa
   sudo: yes
   file:
-    dest: "~{{ item.user }}/{{ item.cn }}/{{ item.cn }}.mobileconfig"
+    dest: "~{{ item.user }}/{{ item.cn }}/.rsa.mobileconfig"
     state: file
     owner: "{{ item.user }}"
     mode: 0700

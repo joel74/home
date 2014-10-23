@@ -5,6 +5,7 @@ import hashlib
 import os
 import platform
 import plistlib
+import re
 import uuid
 
 class DeterministicUUID(object):
@@ -18,13 +19,65 @@ class DeterministicUUID(object):
                 uuid.NAMESPACE_DNS,
                 ("%d.%s.juliekoubova.net" % (c.last, c.root))))
 
+class PayloadMarker(object):
+    def replace(self, plist):
+        return None
+
+class ReplaceWithPayloadUUIDMarker(PayloadMarker):
+    def __init__(self, identifier):
+        self.identifier = identifier
+
+    def replace(self, plist):
+        for child in plist['PayloadContent']:
+            if isinstance(child, dict) and child['PayloadIdentifier'] == self.identifier:
+                return child['PayloadUUID']
+        raise Exception("Payload %s not found." % self.identifier)
+
 def read_data(path):
     with open(os.path.expanduser(path), 'r') as f:
         return plistlib.Data(f.read())
 
+def read_string(path):
+    with open(os.path.expanduser(path), 'r') as f:
+        return f.read()
+
+def open_openvpn_file(server, filename):
+    path = '.%s.ovpn/%s' % (server, filename)
+    return open(os.path.expanduser(path), 'r')
+
+def read_openvpn_file(server, filename):
+    with open_openvpn_file(server, filename) as f:
+        return f.read()
+
+def read_openvpn_conf(name):
+    with open_openvpn_file(name, 'openvpn.conf') as f:
+        for line in f:
+            line = re.sub(r'(?m)#.*', '', line).strip()
+            if len(line):
+                m = re.match(r'(\S+)\s*(.*)', line)
+                if m:
+                    yield m.group(1, 2)
+
+def parse_openvpn_conf(name):
+    for key, value in read_openvpn_conf(name):
+        if key == 'ca':
+            yield key, read_openvpn_file(name, value)
+        elif key == 'cert' or key == 'key':
+            # ignore, certificate is a pkcs12 payload
+            pass
+        elif key == 'tls-auth':
+            path, direction = value.split()
+            yield key, read_openvpn_file(name, path)
+            yield 'key-direction', str(direction)
+        elif not value:
+            yield key, 'NOARGS'
+        else:
+            yield key, value
+
+
 def Payload(parent, payload_type):
     result_uuid = DeterministicUUID.next_uuid()
-    result =  dict(
+    result = dict(
          PayloadType    = payload_type,
          PayloadUUID    = result_uuid,
          PayloadVersion = 1
@@ -41,6 +94,10 @@ def PayloadCert(parent, payload_type, path, p):
     result['PayloadCertificateName'] = os.path.basename(path)
     result['PayloadDisplayName']     = p['display_name']
     result['PayloadDescription']     = 'Configures certificate settings.'
+
+    if 'identifier' in p:
+        result['PayloadIdentifier'] = p['identifier']
+
     return result
 
 def PayloadRootCert(parent, p):
@@ -56,15 +113,55 @@ def PayloadInclude(parent, p):
     plist = plistlib.readPlist(os.path.expanduser(p['include']))
     return plist['PayloadContent']
 
+def PayloadOpenVpn(parent, p):
+    for server in p['openvpn']:
+        openvpn_conf = dict(parse_openvpn_conf(server['name']))
+
+        result = Payload(parent, 'com.apple.vpn.managed')
+        result['PayloadDisplayName'] = server['name']
+        result['VPN'] = dict(
+            AuthenticationMethod   = 'Certificate',
+            PayloadCertificateUUID = ReplaceWithPayloadUUIDMarker(p['certificate']),
+            RemoteAddress          = 'DEFAULT',
+            VendorConfig           = openvpn_conf,
+            VPNType                = 'VPN',
+            VPNSubType             = 'net.openvpn.OpenVPN-Connect.vpnplugin'
+        )
+        yield result
+
+def process_payload(parent, p):
+    if 'ca' in p:
+        return PayloadRootCert(parent, p)
+    if 'pkcs12' in p:
+        return PayloadPkcs12(parent, p)
+    if 'include' in p:
+        return PayloadInclude(parent, p)
+    if 'openvpn' in p:
+        return PayloadOpenVpn(parent, p)
+    return []
+
 def process_payloads(parent, payloads):
     for p in payloads:
-        if 'ca' in p:
-            yield PayloadRootCert(parent, p)
-        elif 'pkcs12' in p:
-            yield PayloadPkcs12(parent, p)
-        elif 'include' in p:
-            for inc in PayloadInclude(parent, p):
-                yield inc
+        results = process_payload(parent, p)
+
+        if hasattr(results, '__iter__') and not isinstance(results, dict):
+            results = list(results)
+        else:
+            results = [ results ]
+
+        for r in results:
+            yield r
+
+def process_markers(plist, current):
+    if hasattr(current, 'iteritems'):
+        for key, value in current.iteritems():
+            if isinstance(value, PayloadMarker):
+                current[key] = value.replace(plist)
+            else:
+                process_markers(plist, value)
+    elif hasattr(current, '__iter__'):
+        for child in current:
+            process_markers(plist, child)
 
 def main():
     module = AnsibleModule(
@@ -101,6 +198,8 @@ def main():
         with open(name, 'r') as f:
             existing_md5 = hashlib.md5(f.read()).digest()
 
+    os.chdir(os.path.dirname(name))
+
     DeterministicUUID.root = params['identifier']
 
     plist = Payload(None, 'Configuration')
@@ -109,8 +208,11 @@ def main():
     plist['PayloadRemovalDisallowed'] = not params['can_remove']
     plist['PayloadContent']           = list(process_payloads(plist, params['payloads']))
 
-    with open('/tmp/plist', 'w') as f:
-        f.write(str(plist))
+#    import yaml
+#    print yaml.dump(plist)
+#    raise Exception("yaaa")
+
+    process_markers(plist, plist['PayloadContent'])
 
     plist_str = plistlib.writePlistToString(plist)
     plist_md5 = hashlib.md5(plist_str).digest()

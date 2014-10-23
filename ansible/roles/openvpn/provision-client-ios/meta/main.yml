@@ -1,0 +1,7 @@
+---
+allow_duplicates: yes
+dependencies:
+- role: openvpn/provision-client
+  dir_prefix: '.'
+  dir_ext: '.ovpn'
+  is_ios: true

@@ -6,7 +6,7 @@
 - name: config dir
   tags: [ openvpn, openvpn-client-provisioning ]
   file:
-    dest:  "~{{ user }}/{{ client }}/{{ item.name|default('openvpn') }}{{ dir_ext }}"
+    dest:  "~{{ user }}/{{ client }}/{{ dir_prefix }}{{ item.name|default('openvpn') }}{{ dir_ext }}"
     state: directory
     owner: "{{ user }}"
   with_items: servers
@@ -17,7 +17,7 @@
 - name: config file
   tags: [ openvpn, openvpn-client-provisioning ]
   template:
-    dest:  "~{{ user }}/{{ client }}/{{ item.name|default('openvpn') }}{{ dir_ext }}/{{ config_name | default('openvpn.conf') }}"
+    dest:  "~{{ user }}/{{ client }}/{{ dir_prefix }}{{ item.name|default('openvpn') }}{{ dir_ext }}/{{ config_name | default('openvpn.conf') }}"
     src:   "../../templates/openvpn.conf.j2"
     owner: "{{ user }}"
   with_items: servers
@@ -31,7 +31,7 @@
   command: >
     rsync -ci
     "/usr/local/etc/openvpn/{{ item.instance.name|default('openvpn') }}.ta-key"
-    "~{{ user }}/{{ client }}/{{ item.name|default('openvpn') }}{{ dir_ext }}/{{ item.instance.name|default('openvpn') }}.ta-key"
+    "~{{ user }}/{{ client }}/{{ dir_prefix }}{{ item.name|default('openvpn') }}{{ dir_ext }}/{{ item.instance.name|default('openvpn') }}.ta-key"
   register: rsync_result
   changed_when: "rsync_result.stdout != ''"
   with_items: servers
@@ -43,7 +43,7 @@
   tags: [ openvpn, openvpn-client-provisioning ]
   sudo: yes
   file:
-    dest:  "~{{ user }}/{{ client }}/{{ item.name|default('openvpn') }}{{ dir_ext }}/{{ item.instance.name|default('openvpn') }}.ta-key"
+    dest:  "~{{ user }}/{{ client }}/{{ dir_prefix }}{{ item.name|default('openvpn') }}{{ dir_ext }}/{{ item.instance.name|default('openvpn') }}.ta-key"
     owner: "{{ user }}"
     mode:  0600
   with_items: servers
@@ -56,7 +56,7 @@
   command: >
     rsync -ci
     "{{ easyrsa_keydir }}/ca.crt"
-    "~{{ user }}/{{ client }}/{{ item.name|default('openvpn') }}{{ dir_ext }}/ca.crt"
+    "~{{ user }}/{{ client }}/{{ dir_prefix }}{{ item.name|default('openvpn') }}{{ dir_ext }}/ca.crt"
   register: rsync_result
   changed_when: "rsync_result.stdout != ''"
   with_items: servers
@@ -69,7 +69,7 @@
   command: >
     rsync -ci
     "{{ easyrsa_keydir }}/{{ client }}.{{ item[1] }}"
-    "~{{ user }}/{{ client }}/{{ item[0].name|default('openvpn') }}{{ dir_ext }}/{{ client }}.{{ item[1] }}"
+    "~{{ user }}/{{ client }}/{{ dir_prefix }}{{ item[0].name|default('openvpn') }}{{ dir_ext }}/{{ client }}.{{ item[1] }}"
   register: rsync_result
   changed_when: "rsync_result.stdout != ''"
   with_nested:

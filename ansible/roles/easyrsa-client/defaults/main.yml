@@ -1,0 +1,3 @@
+---
+easyrsa_clients:
+- "{{ ansible_hostname }}"
