@@ -36,18 +36,10 @@
   - julie/common
   - freebsd/login-shell
 
-- hosts: bydlenka
-  roles:
-  - crashplan
-  - cyrus-sasl
-  - file-server-home
-  - file-server-backup
-  - file-server-downloads
-  - download-server
-  - www-server
-
 - hosts: demonka
   roles:
+  - role: cyrus-sasl
+  - role: mail-server
   - role: unbound
   - role: znc
 
@@ -81,6 +73,12 @@
 
 - hosts: bydlenka
   roles:
+  - crashplan
+  - file-server-home
+  - file-server-backup
+  - file-server-downloads
+  - download-server
+  - www-server
   - easyrsa-client
   - openvpn/client
 
