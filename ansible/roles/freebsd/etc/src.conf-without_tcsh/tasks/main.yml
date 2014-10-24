@@ -1,0 +1,23 @@
+---
+- name: set WITHOUT_TCSH
+  tags: [ freebsd, src.conf, without_tcsh ]
+  sudo: yes
+  lineinfile:
+    dest: /etc/src.conf.local
+    line: "{{ item }}="
+  with_items:
+  - WITHOUT_TCSH
+
+- name: get users using /bin/csh
+  tags: [ freebsd, src.conf, without_tcsh ]
+  shell: "egrep '/bin/t?csh' /etc/passwd | cut -d: -f1"
+  register: csh_users
+  changed_when: False
+
+- name: set user shells to /bin/sh
+  tags: [ freebsd, src.conf, without_tcsh ]
+  sudo: yes
+  command: '/usr/bin/chsh -s /bin/sh "{{ item }}"'
+  with_items: csh_users.stdout_lines
+  register: chsh_result
+  changed_when: '"chsh: user information updated" in chsh_result.stdout'
