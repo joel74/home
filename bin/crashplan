@@ -19,7 +19,7 @@ _cleanup() {
 
     if [ -f "${UIPROPERTIES_BAK}" ]
     then
-        echo "Restoring ${UIPROPERTIES_BAK} to ${UIPROPERTIES}."
+        echo "Restoring ${UIPROPERTIES_BAK}."
         /bin/mv ${UIPROPERTIES_BAK} ${UIPROPERTIES}
     fi
 }
@@ -46,5 +46,5 @@ then
     echo "SSH process ID is ${CRASHPLAN_SSH_PID}."
 fi
 
-echo "You can now start CrashPlan. Press ENTER to revert."
-read
+echo "Starting CrashPlan."
+${CRASHPLAN}/Contents/MacOS/CrashPlan >/dev/null 2>&1
