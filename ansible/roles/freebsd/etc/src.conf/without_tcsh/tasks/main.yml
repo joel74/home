@@ -1,12 +1,8 @@
 ---
-- name: set WITHOUT_TCSH
+- include: ../../tasks/local-line.yml
   tags: [ freebsd, src.conf, without_tcsh ]
-  sudo: yes
-  lineinfile:
-    dest: /etc/src.conf.local
-    line: "{{ item }}="
-  with_items:
-  - WITHOUT_TCSH
+  srcconf:
+    WITHOUT_TCSH:
 
 - name: get users using /bin/csh
   tags: [ freebsd, src.conf, without_tcsh ]

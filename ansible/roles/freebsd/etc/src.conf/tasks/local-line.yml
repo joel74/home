@@ -1,0 +1,8 @@
+---
+- name: set flags
+  tags: [ freebsd, src.conf ]
+  sudo: yes
+  lineinfile:
+    dest: /etc/src.conf.local
+    line: "{{ item.key }}={{ item.value|default('') }}"
+  with_dict: srcconf
