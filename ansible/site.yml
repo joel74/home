@@ -12,6 +12,7 @@
   - freebsd/etc/rc.conf.d/zfs
   - freebsd/etc/src.conf
   - freebsd/etc/src.conf/without_tcsh
+  - freebsd/etc/src.conf/without_sendmail
   - freebsd/etc/sshd_config
   - freebsd/etc/sysctl.conf/hw.syscons.bell
 

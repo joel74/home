@@ -1,0 +1,6 @@
+---
+- include: ../../tasks/local-line.yml
+  tags: [ freebsd, src.conf, without_sendmail ]
+  srcconf:
+    WITHOUT_SENDMAIL:
+
