@@ -1,3 +1,4 @@
 ---
+hostname: bydlenka.juliekoubova.net
 netif_ifconfig:
   igb0: DHCP

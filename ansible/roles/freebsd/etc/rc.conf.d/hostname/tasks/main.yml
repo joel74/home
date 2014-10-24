@@ -6,4 +6,4 @@
     dest: /etc/rc.conf.d/hostname
     create: yes
     regexp: ^hostname=
-    line: hostname="{{ ansible_hostname }}"
+    line: hostname="{{ hostname | default(ansible_fqdn) }}"
