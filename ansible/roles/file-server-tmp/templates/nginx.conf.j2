@@ -1,0 +1,9 @@
+# {{ ansible_managed }}
+
+location ^~ /tmp {
+    access_log  /var/log/nginx/tmp-access.log;
+    error_log   /var/log/nginx/tmp-error.log;
+
+    autoindex on;
+    alias     {{ tmp_root }};
+}

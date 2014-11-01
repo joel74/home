@@ -39,8 +39,10 @@
 - hosts: demonka
   roles:
   - role: cyrus-sasl
+  - role: file-server-tmp
   - role: mail-server
   - role: unbound
+  - role: www-server
   - role: znc
 
   - role:    openvpn/server

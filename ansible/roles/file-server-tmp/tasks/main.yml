@@ -1,0 +1,39 @@
+---
+- name: tmp data filesystem
+  tags: file-server-tmp
+  sudo: yes
+  zfs:
+    name: "{{ zpool|mandatory }}{{ tmp_root }}"
+    state: present
+
+- name:  tmp data group
+  tags: file-server-tmp
+  sudo: yes
+  group:
+    name: "{{ tmp_group | mandatory }}"
+    state: present
+
+- name: tmp group members
+  tags: file-server-tmp
+  sudo: yes
+  user:
+    name: "{{ item }}"
+    groups: "{{ tmp_group | mandatory }}"
+    append: yes
+  with_items: tmp_users | mandatory
+
+- name: tmp dir permissions
+  tags: file-server-tmp
+  sudo: yes
+  file:
+    name:  "{{ tmp_root | mandatory }}"
+    group: "{{ tmp_group | mandatory }}"
+    state: directory
+    mode:  0775
+
+- name: nginx tmp site
+  tags: [ www, file-server-tmp ]
+  sudo: yes
+  template:
+    dest: /usr/local/etc/nginx/sites-partials/tmp.conf
+    src: nginx.conf.j2
