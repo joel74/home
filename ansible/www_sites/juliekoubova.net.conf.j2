@@ -1,0 +1,36 @@
+# {{ ansible_managed }}
+
+server {
+    listen      {{ demonka_int_inet_ip0 }}:80;
+    server_name ~^(www\.)?(jachymko\.|juliekoubova\.)(com|cz|eu|name|net)$;
+
+    add_header  Alternate-Protocol "443:npn-spdy/3";
+    add_header  Cache-Control "public";
+    expires     max;
+
+    root        /var/empty;
+    return 301  https://juliekoubova.net$request_uri;
+
+    access_log  /var/log/nginx/redirect-access.log;
+    error_log   /var/log/nginx/redirect-error.log;
+}
+
+server {
+    listen      {{ demonka_int_inet_ip0 }}:443 ssl spdy;
+    server_name juliekoubova.net;
+
+    ssl_certificate     juliekoubova.net.crt;
+    ssl_certificate_key juliekoubova.net.key;
+
+    add_header Strict-Transport-Security "max-age=315360000; includeSubdomains";
+    add_header X-Frame-Options "DENY";
+
+    access_log  /var/log/nginx/juliekoubova.net-access.log;
+    error_log   /var/log/nginx/juliekoubova.net-error.log;
+
+    include sites-partials/*;
+
+    location /favicon.ico {
+        log_not_found off;
+    }
+}
