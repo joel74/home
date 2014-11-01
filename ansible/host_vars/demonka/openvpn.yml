@@ -15,7 +15,8 @@ openvpn_tcp:
   name:        openvpn_tcp
   dev:         tun1
   proto:       tcp
-  tcp_nodelay: true
+  comp_lzo:    no
+  tcp_nodelay: yes
   chroot:      /var/openvpn_tcp
   status:      /var/log/openvpn_tcp.status
   ipv4:
