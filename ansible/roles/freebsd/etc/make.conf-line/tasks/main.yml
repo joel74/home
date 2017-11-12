@@ -7,5 +7,5 @@
     create: yes
     line: "{{ item.var }}={{ item.value }}"
     regexp: "^{{ item.var }}="
-  with_items: variables
+  with_items: "{{variables}}"
   when: item.value|length > 0 and item.var|length > 0

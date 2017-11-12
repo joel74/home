@@ -17,9 +17,9 @@
   tags: kernconf
   sudo: yes
   when: kernconf_stat.stat.exists
-  lineinfile: >
-    dest=/etc/src.conf.local
-    create=yes
-    "regexp=^KERNCONF="
-    "line=KERNCONF={{ freebsd_kernconf }}"
+  lineinfile:
+    dest: /etc/src.conf.local
+    create: yes
+    regexp: "^KERNCONF="
+    line: "KERNCONF={{ freebsd_kernconf }}"
 

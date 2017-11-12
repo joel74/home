@@ -30,7 +30,14 @@ server {
     access_log  /var/log/nginx/juliekoubova.net-access.log;
     error_log   /var/log/nginx/juliekoubova.net-error.log;
 
+    root        /data/www/juliekoubova.net;
+
     include sites-partials/*;
+
+    location ~* \.(?:jpg|jpeg|gif|png|ico|cur|gz|svg|svgz|mp4|ogg|ogv|webm|htc)$ {
+      expires 1M;
+      add_header Cache-Control "public";
+    }
 
     location /favicon.ico {
         log_not_found off;

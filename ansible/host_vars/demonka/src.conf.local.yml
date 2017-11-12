@@ -1,4 +1,0 @@
----
-freebsd_is_virtual: yes
-freebsd_srcconf:
-- WITHOUT_LIB32

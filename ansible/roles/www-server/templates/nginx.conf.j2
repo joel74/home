@@ -54,5 +54,7 @@ http {
     sendfile        off; # sendfile on ZFS is said to suck
     postpone_output 0;   # no postpone, ZFS ARC and L2ARC can instantly saturate the nginx buffer
 
+    gzip_static     on;
+
     include sites-enabled/*;
 }

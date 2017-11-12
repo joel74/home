@@ -1,0 +1,15 @@
+#!/bin/sh
+# {{ ansible_managed }}
+
+if [ "$1" ]; then
+    scp "$1" "{{ torrent_uploader_dest }}" && \
+    rm  "$1"                               && \
+    osascript - <<EOF
+      display notification "$1" with title "Torrent Uploader" subtitle "Successfully uploaded"
+EOF
+else
+    find "{{ torrent_uploader_source }}" \
+         -name \*.torrent         \
+         -not -path \*.download\* \
+         -exec $0 \{\} \;
+fi

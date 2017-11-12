@@ -1,4 +1,0 @@
----
-pfconf: demonka.pf.conf.j2
-pfconf_int_if: lo1
-pfconf_ext_if: vtnet0

@@ -1,0 +1,20 @@
+---
+- name: launch agent
+  tags: ssh-proxy
+  template: >
+    dest=~/Library/LaunchAgents/net.juliekoubova.SshProxy.plist
+    src=SshProxy.plist.j2
+  register: plist
+
+- name:    unload launch agent
+  tags:    ssh-proxy
+  command: /bin/launchctl unload ~/Library/LaunchAgents/net.juliekoubova.SshProxy.plist
+  when:    plist.changed
+  failed_when: false
+  changed_when: false
+
+- name:     load launch agent
+  tags:     ssh-proxy
+  command:  /bin/launchctl load ~/Library/LaunchAgents/net.juliekoubova.SshProxy.plist
+  register: launchctl
+  changed_when: "'Already loaded' not in launchctl.stderr"

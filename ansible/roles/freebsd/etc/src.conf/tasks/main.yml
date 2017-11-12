@@ -9,16 +9,16 @@
 - name: include /etc/src.conf.virtual
   tags: [ freebsd,src.conf ]
   sudo: yes
-  lineinfile: >
-    dest=/etc/src.conf.local
-    create=yes
-    "line=.include </etc/src.conf.virtual>"
+  lineinfile:
+    dest: /etc/src.conf.local
+    create: yes
+    line: ".include </etc/src.conf.virtual>"
   when: freebsd_is_virtual
 
 - name: set machine-specific defines
   tags: [ freebsd,src.conf ]
   sudo: yes
-  lineinfile: >
-    dest=/etc/src.conf.local
-    "line={{ item }}="
+  lineinfile:
+    dest: /etc/src.conf.local
+    line: "{{ item }}="
   with_items: freebsd_srcconf

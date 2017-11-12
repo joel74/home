@@ -1,0 +1,5 @@
+---
+dependencies:
+- role:  freebsd/port
+  name:  curl
+  unset: GSSAPI_NONE

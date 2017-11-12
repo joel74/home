@@ -1,5 +1,6 @@
 ---
 dependencies:
+- role:  freebsd/port/curl
 - role:  freebsd/port
   name:  git
-  unset: CONTRIB CVS ICONV P4 SVN
+  unset: CONTRIB CVS ICONV P4 SVN PERL

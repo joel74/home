@@ -1,5 +1,0 @@
----
-tmp_root: "{{ data_root }}/tmp"
-tmp_group: tmp
-tmp_users:
-- julie
