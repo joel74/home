@@ -154,7 +154,7 @@
 : ${WHEEL_USERS:=julie}
 
 # packages to install
-: ${PACKAGES:=python sudo}
+: ${PACKAGES:=sudo}
 
 # mount point for the new filesystem
 : ${MNT:=/mnt}
@@ -169,7 +169,7 @@
 : ${DIST_DIR:=/usr/freebsd-dist}
 
 # which version to download if the distribution files are not available
-: ${DIST_RELEASE:=10.0-RELEASE}
+: ${DIST_RELEASE:=11.1-RELEASE}
 
 # where from download the distribution files
 : ${DIST_MIRROR:=http://ftp.cz.freebsd.org}
