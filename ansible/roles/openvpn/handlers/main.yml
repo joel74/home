@@ -1,7 +1,7 @@
 ---
 - name: openvpn restarted
   tags: openvpn
-  sudo: yes
+  become: yes
   service:
     name: "{{ openvpn.name | default(openvpn_name) }}"
     state: restarted

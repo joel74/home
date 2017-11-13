@@ -1,7 +1,7 @@
 ---
 - name: datasets
   tags: zfs
-  sudo: yes
+  become: yes
   zfs:
     name:  "{{ item.name }}"
     state: present

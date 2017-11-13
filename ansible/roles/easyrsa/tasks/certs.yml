@@ -1,6 +1,6 @@
 - name: certs
   tags: easyrsa
-  sudo: yes
+  become: yes
   shell: >
     . {{ easyrsa_cadir  }}/vars &&
     {{ easyrsa_root }}/pkitool {{ cert_kind|default('') }} "{{ item.cn }}"
@@ -10,7 +10,7 @@
 
 - name: cert pkcs12 files
   tags: easyrsa
-  sudo: yes
+  become: yes
   command: >
     openssl pkcs12 -export -out      {{ easyrsa_keydir }}/{{ item.cn }}.pfx
                            -inkey    {{ easyrsa_keydir }}/{{ item.cn }}.key
@@ -24,7 +24,7 @@
 
 - name: cert pem files
   tags: easyrsa
-  sudo: yes
+  become: yes
   shell: >
     openssl x509 -in  "{{ easyrsa_keydir }}/{{ item.cn }}.crt"    \
                  -out "{{ easyrsa_keydir }}/{{ item.cn }}.pem" && \
@@ -37,7 +37,7 @@
 
 - name: cert sha1 files
   tags: easyrsa
-  sudo: yes
+  become: yes
   shell: >
     openssl x509 -in  "{{ easyrsa_keydir }}/{{ item.cn }}.crt"  \
                  -inform PEM -outform DER                       \
@@ -51,7 +51,7 @@
 
 - name: cert permissions
   tags: easyrsa
-  sudo: yes
+  become: yes
   file:
     dest: "{{ easyrsa_keydir }}/{{ item[0].cn }}.{{ item[1] }}"
     owner: "{{ item[0].user | default('root') }}"
@@ -63,7 +63,7 @@
 
 - name: download public files
   tags: easyrsa
-  sudo: yes
+  become: yes
   fetch:
     dest: "{{ easyrsa_local_root }}/{{ ansible_hostname }}/"
     src:  "{{ easyrsa_keydir }}/{{ item[0].cn }}.{{ item[1] }}"

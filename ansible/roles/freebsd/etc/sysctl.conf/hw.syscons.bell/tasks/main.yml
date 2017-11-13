@@ -1,7 +1,7 @@
 ---
 - name: try disable beeping
   tags: sysctl
-  sudo: yes
+  become: yes
   command: "/sbin/sysctl hw.syscons.bell=0"
   register: sysctl_result
   changed_when: false
@@ -9,7 +9,7 @@
 
 - name: disable beeping
   tags: sysctl
-  sudo: yes
+  become: yes
   lineinfile:
     dest:   /etc/sysctl.conf
     line:   "hw.syscons.bell=0 # don't beep"

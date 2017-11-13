@@ -1,14 +1,14 @@
 ---
 - name: /usr/compat/linux/proc exists
   tags: [ linux, linprocfs ]
-  sudo: yes
+  become: yes
   file:
     dest: /usr/compat/linux/proc
     state: directory
 
 - name: /compat symlink exists
   tags: [ linux, linprocfs ]
-  sudo: yes
+  become: yes
   file:
     dest: /compat
     src:  /usr/compat
@@ -16,7 +16,7 @@
 
 - name: linprocfs in fstab
   tags: [ linux, linprocfs ]
-  sudo: yes
+  become: yes
   register: fstab
   lineinfile:
     dest: /etc/fstab
@@ -32,7 +32,7 @@
 
 - name: load linprocfs.ko
   tags: [ linux, linprocfs ]
-  sudo: yes
+  become: yes
   command: /sbin/kldload linprocfs
   when: "'linprocfs' not in kldstat.stdout"
 
@@ -44,6 +44,6 @@
 
 - name: mount linprocfs
   tags: [ linux, linprocfs ]
-  sudo: yes
+  become: yes
   command: /sbin/mount /compat/linux/proc
   when: "'linprocfs' not in mount.stdout"

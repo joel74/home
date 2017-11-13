@@ -1,21 +1,21 @@
 ---
 - name: tmp data filesystem
   tags: file-server-tmp
-  sudo: yes
+  become: yes
   zfs:
     name: "{{ zpool|mandatory }}{{ tmp_root }}"
     state: present
 
 - name:  tmp data group
   tags: file-server-tmp
-  sudo: yes
+  become: yes
   group:
     name: "{{ tmp_group | mandatory }}"
     state: present
 
 - name: tmp group members
   tags: file-server-tmp
-  sudo: yes
+  become: yes
   user:
     name: "{{ item }}"
     groups: "{{ tmp_group | mandatory }}"
@@ -24,7 +24,7 @@
 
 - name: tmp dir permissions
   tags: file-server-tmp
-  sudo: yes
+  become: yes
   file:
     name:  "{{ tmp_root | mandatory }}"
     group: "{{ tmp_group | mandatory }}"
@@ -33,7 +33,7 @@
 
 - name: nginx tmp site
   tags: [ www, file-server-tmp ]
-  sudo: yes
+  become: yes
   template:
     dest: /usr/local/etc/nginx/sites-partials/tmp.conf
     src: nginx.conf.j2

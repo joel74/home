@@ -1,21 +1,21 @@
 ---
 - name: enabled
   tags: pf
-  sudo: yes
+  become: yes
   copy:
     dest: /etc/rc.conf.d/pf
     content: "pf_enable=\"YES\""
 
 - name: started
   tags: pf
-  sudo: yes
+  become: yes
   service:
     name: pf
     state: started
 
 - name: pf.conf
   tags: pf
-  sudo: yes
+  become: yes
   notify: reload pf.conf
   template:
     dest: /etc/pf.conf

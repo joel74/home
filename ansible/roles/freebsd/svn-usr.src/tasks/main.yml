@@ -1,6 +1,6 @@
 ---
 - name: /usr/src svn checkout
   tags: freebsd
-  sudo: yes
+  become: yes
   command: >
     "{{ freebsd_svn_executable }}" checkout "{{ freebsd_svn_repo }}" /usr/src

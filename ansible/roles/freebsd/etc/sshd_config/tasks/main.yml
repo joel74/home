@@ -1,6 +1,6 @@
 ---
 - name: sshd_config
-  sudo: yes
+  become: yes
   tags: sshd
   register: sshd_config
   template:

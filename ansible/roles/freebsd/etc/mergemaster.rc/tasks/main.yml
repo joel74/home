@@ -1,11 +1,11 @@
 ---
 - name: template
-  sudo: yes
+  become: yes
   template: dest=/etc/mergemaster.rc
             src=mergemaster.rc.j2
 
 - name: ignore file
-  sudo: yes
+  become: yes
   copy: dest={{ mergemaster_ignore_file }}
         content=""
         force=no

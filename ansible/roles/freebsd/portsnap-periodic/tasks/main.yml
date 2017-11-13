@@ -1,7 +1,7 @@
 ---
 - name: portsnap periodic
   tags: [ freebsd, portsnap, periodic ]
-  sudo: yes
+  become: yes
   copy:
     dest:     /etc/periodic/{{ portsnap_period }}/900.portsnap
     content: "#!/bin/sh\n/usr/sbin/portsnap cron update"

@@ -1,7 +1,7 @@
 ---
 - name: fetch
   tags: portsnap
-  sudo: yes
+  become: yes
   command: /usr/sbin/portsnap fetch
   register: portsnap_fetch_result
   changed_when: "'No updates needed.' not in portsnap_fetch_result.stdout"
@@ -15,13 +15,13 @@
 
 - name: extract
   tags: portsnap
-  sudo: yes
+  become: yes
   command: /usr/sbin/portsnap extract
   when: not ports_index.stat.exists
 
 - name: update
   tags: portsnap
-  sudo: yes
+  become: yes
   command: /usr/sbin/portsnap update
   when: portsnap_fetch_result|success
   register: portsnap_update_result

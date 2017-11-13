@@ -1,6 +1,6 @@
 ---
 - name: set content
-  sudo: yes
+  become: yes
   copy: >
     dest=/etc/motd
     content="{{ content|default() }}\n"

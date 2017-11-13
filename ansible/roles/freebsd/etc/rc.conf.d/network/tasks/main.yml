@@ -1,7 +1,7 @@
 ---
 - name: ifconfig
   tags: netif
-  sudo: yes
+  become: yes
   notify: restart netif
   template:
     dest: /etc/rc.conf.d/network

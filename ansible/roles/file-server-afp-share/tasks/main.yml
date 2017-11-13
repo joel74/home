@@ -1,6 +1,6 @@
 ---
 - name:       afp.conf section
-  sudo:       yes
+  become: yes
   ini_file:   dest='{{ afp_conf_path }}'
               section='{{ afp_share_name }}'
               option='{{ item.key }}'

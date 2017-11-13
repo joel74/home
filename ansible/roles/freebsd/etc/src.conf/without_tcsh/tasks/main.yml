@@ -12,7 +12,7 @@
 
 - name: set user shells to /bin/sh
   tags: [ freebsd, src.conf, without_tcsh ]
-  sudo: yes
+  become: yes
   command: '/usr/bin/chsh -s /bin/sh "{{ item }}"'
   with_items: csh_users.stdout_lines
   register: chsh_result

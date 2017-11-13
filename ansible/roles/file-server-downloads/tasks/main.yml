@@ -1,18 +1,18 @@
 ---
 - name:  downloads group
   tags:  file-server
-  sudo:  yes
+  become: yes
   group: name={{ downloads_group | mandatory }} state=present
 
 - name: downloads group members
   tags: file-server
-  sudo: yes
+  become: yes
   user: name={{ item }} groups={{ downloads_group | mandatory }} append=yes
   with_items: downloads_users | mandatory
 
 - name: downloads filesystem
   tags: file-server
-  sudo: yes
+  become: yes
   zfs:  name={{ zpool|mandatory }}{{ downloads_root|mandatory }}
         exec=off
         quota={{ downloads_quota | default(none) }}
@@ -20,7 +20,7 @@
 
 - name: downloads dir permissions
   tags: file-server
-  sudo: yes
+  become: yes
   file: name={{ downloads_root | mandatory }}
         group={{ downloads_group | mandatory }}
         state=directory

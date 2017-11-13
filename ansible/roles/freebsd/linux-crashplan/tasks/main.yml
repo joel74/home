@@ -1,14 +1,14 @@
 ---
 - name: crashplan enabled
   tags: crashplan
-  sudo: yes
+  become: yes
   copy:
     dest: /etc/rc.conf.d/crashplan
     content: 'crashplan_enable="YES"'
 
 - name: crashplan started
   tags: crashplan
-  sudo: yes
+  become: yes
   command: /usr/local/etc/rc.d/crashplan start
   register: start_result
   changed_when: >

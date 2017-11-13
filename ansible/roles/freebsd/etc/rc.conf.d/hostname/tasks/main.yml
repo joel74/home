@@ -1,7 +1,7 @@
 ---
 - name: hostname config
   tags: hostname
-  sudo: yes
+  become: yes
   lineinfile:
     dest: /etc/rc.conf.d/hostname
     create: yes

@@ -1,7 +1,7 @@
 ---
 - name: user
   tags: znc
-  sudo: yes
+  become: yes
   user:
     name:  znc
     groups: "{{ sasl_group }}"
@@ -11,21 +11,21 @@
 
 - name: enabled
   tags: znc
-  sudo: yes
+  become: yes
   copy:
     dest: /etc/rc.conf.d/znc
     content: 'znc_enable="YES"'
 
 - name: stopped
   tags: znc
-  sudo: yes
+  become: yes
   service:
     name: znc
     state: stopped
 
 - name: config dirs
   tags: znc
-  sudo: yes
+  become: yes
   file:
     dest: "/usr/local/etc/znc{{ item }}"
     state: directory
@@ -40,13 +40,13 @@
 
 - name: stat config
   tags: znc
-  sudo: yes
+  become: yes
   stat: path=/usr/local/etc/znc/configs/znc.conf
   register: zncconf_stat
 
 - name: config
   tags: znc
-  sudo: yes
+  become: yes
   template:
     dest: /usr/local/etc/znc/configs/znc.conf
     src:  zncconfs/{{ znc_conf }}
@@ -57,7 +57,7 @@
 
 - name: server cert
   tags: znc
-  sudo: yes
+  become: yes
   file:
     dest: /usr/local/etc/znc/znc.pem
     src:  "{{ znc_ssl_pem }}"
@@ -69,7 +69,7 @@
 
 - name: modauth client certs
   tags: znc
-  sudo: yes
+  become: yes
   template:
     dest:  /usr/local/etc/znc/moddata/certauth/.registry
     src:   certauth.registry.j2
@@ -79,7 +79,7 @@
 
 - name: started
   tags: znc
-  sudo: yes
+  become: yes
   service:
     name: znc
     state: started

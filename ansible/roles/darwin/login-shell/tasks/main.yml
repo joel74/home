@@ -7,6 +7,6 @@
 
 - name:         change shell
   tags:         login-shell
-  sudo:         yes
+  become: yes
   command:      "chsh -s {{ user_login_shell }} \"{{ ansible_env.USER }}\""
   when:         (user_login_shell is defined) and (dscl.stdout != user_login_shell)

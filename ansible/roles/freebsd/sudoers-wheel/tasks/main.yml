@@ -1,12 +1,12 @@
 ---
 - name: ensure sudoers.d included
-  sudo: yes
+  become: yes
   lineinfile:
     dest: /usr/local/etc/sudoers
     line: '#includedir /usr/local/etc/sudoers.d'
 
 - name: allow wheel
-  sudo: yes
+  become: yes
   copy:
     dest: /usr/local/etc/sudoers.d/wheel
     content: "%wheel ALL=(ALL) ALL"

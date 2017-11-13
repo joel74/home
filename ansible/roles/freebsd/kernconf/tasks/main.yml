@@ -1,7 +1,7 @@
 ---
 - name: kernel configs in /usr/src/sys/amd64/conf
   tags: kernconf
-  sudo: yes
+  become: yes
   copy: >
     dest=/usr/src/sys/amd64/conf
     src=kernconfs/
@@ -15,7 +15,7 @@
 
 - name: register default kernel config
   tags: kernconf
-  sudo: yes
+  become: yes
   when: kernconf_stat.stat.exists
   lineinfile:
     dest: /etc/src.conf.local

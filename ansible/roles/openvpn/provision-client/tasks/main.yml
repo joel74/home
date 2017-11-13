@@ -27,7 +27,7 @@
 #
 - name: tls-auth file
   tags: [ openvpn, openvpn-client-provisioning ]
-  sudo: yes
+  become: yes
   command: >
     rsync -ci
     "/usr/local/etc/openvpn/{{ item.instance.name|default('openvpn') }}.ta-key"
@@ -41,7 +41,7 @@
 #
 - name: tls-auth file permissions
   tags: [ openvpn, openvpn-client-provisioning ]
-  sudo: yes
+  become: yes
   file:
     dest:  "~{{ user }}/{{ client }}/{{ dir_prefix }}{{ item.name|default('openvpn') }}{{ dir_ext }}/{{ item.instance.name|default('openvpn') }}.ta-key"
     owner: "{{ user }}"

@@ -1,7 +1,7 @@
 ---
 - name: /var/run/saslauthd owner group
   tags: cyrus-sasl
-  sudo: yes
+  become: yes
   file:
     dest: /var/run/saslauthd
     state: directory
@@ -10,7 +10,7 @@
 
 - name: saslauthd configuration
   tags: cyrus-sasl
-  sudo: yes
+  become: yes
   template:
     dest: /etc/rc.conf.d/saslauthd
     src:  rc.conf.j2

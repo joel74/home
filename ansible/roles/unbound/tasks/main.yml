@@ -1,21 +1,21 @@
 ---
 - name: enable local_unbound
   tags: unbound
-  sudo: yes
+  become: yes
   copy:
     dest:    /etc/rc.conf.d/local_unbound
     content: 'local_unbound_enable="YES"'
 
 - name: start local_unbound
   tags: unbound
-  sudo: yes
+  become: yes
   service:
     name: local_unbound
     state: started
 
 - name: set access control
   tags: unbound
-  sudo: yes
+  become: yes
   template:
     dest:  /var/unbound/conf.d/access-control.conf
     src:   access-control.conf.j2
@@ -27,7 +27,7 @@
 
 - name: set interfaces
   tags: unbound
-  sudo: yes
+  become: yes
   template:
     dest:  /var/unbound/conf.d/interfaces.conf
     src:   interfaces.conf.j2
@@ -39,7 +39,7 @@
 
 - name: set local zone
   tags: unbound
-  sudo: yes
+  become: yes
   template:
     dest:  /var/unbound/conf.d/local-zone.conf
     src:   local-zone.conf.j2

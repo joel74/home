@@ -1,7 +1,7 @@
 ---
 - name: site directories
   tags: www
-  sudo: yes
+  become: yes
   file: dest=/usr/local/etc/nginx/{{ item }}
         state=directory
   with_items:
@@ -11,7 +11,7 @@
 
 - name: log directories
   tags: www
-  sudo: yes
+  become: yes
   file: dest=/var/log/nginx
         state=directory
         owner=www
@@ -20,7 +20,7 @@
 
 - name: nginx.conf
   tags: www
-  sudo: yes
+  become: yes
   notify: reload nginx
   template: dest=/usr/local/etc/nginx/nginx.conf
             src=nginx.conf.j2
@@ -28,7 +28,7 @@
 - name: sites-available config
   notify: reload nginx
   tags: www
-  sudo: yes
+  become: yes
   template:
     dest: "/usr/local/etc/nginx/sites-available/{{ item.name }}"
     src:  "www_sites/{{ item.src }}"
@@ -37,7 +37,7 @@
 - name: sites-enabled link
   notify: reload nginx
   tags: www
-  sudo: yes
+  become: yes
   file:
     dest:  "/usr/local/etc/nginx/sites-enabled/{{ item.name }}"
     src:   "/usr/local/etc/nginx/sites-available/{{ item.name }}"
@@ -46,14 +46,14 @@
 
 - name: nginx enabled
   tags: www
-  sudo: yes
+  become: yes
   copy:
     dest: /etc/rc.conf.d/nginx
     content: 'nginx_enable="YES"'
 
 - name: nginx started
   tags: www
-  sudo: yes
+  become: yes
   service:
     name: nginx
     state: started

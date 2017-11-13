@@ -1,7 +1,7 @@
 ---
 - name: directories
   tags: easyrsa
-  sudo: yes
+  become: yes
   file: dest={{ item }}
         state=directory
   with_items:
@@ -10,14 +10,14 @@
 
 - name: vars
   tags: easyrsa
-  sudo: yes
+  become: yes
   template:
     dest={{ easyrsa_cadir | mandatory  }}/vars
     src=vars.j2
 
 - name: index files
   tags: easyrsa
-  sudo: yes
+  become: yes
   copy:
     dest: "{{ easyrsa_keydir }}/{{ item.name }}"
     content: "{{ item.content|default('') }}"
@@ -30,7 +30,7 @@
 
 - name: dh
   tags: easyrsa
-  sudo: yes
+  become: yes
   shell: >
     . {{ easyrsa_cadir  }}/vars &&
     {{ easyrsa_root }}/build-dh
@@ -39,7 +39,7 @@
 
 - name: ca cert
   tags: easyrsa
-  sudo: yes
+  become: yes
   shell: >
     . {{ easyrsa_cadir  }}/vars &&
     {{ easyrsa_root }}/pkitool --initca "{{ easyrsa_cacn }}"
@@ -48,7 +48,7 @@
 
 - name: pkcs12 passphrase file
   tags: easyrsa
-  sudo: yes
+  become: yes
   copy:
     dest:    "{{ easyrsa_keydir }}/pkcs12.passphrase"
     content: "{{ easyrsa_pfx_pass }}"

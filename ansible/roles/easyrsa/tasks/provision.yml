@@ -1,7 +1,7 @@
 ---
 - name: provision client dirs
   tags: easyrsa
-  sudo: yes
+  become: yes
   file:
     dest: "~{{ item.user }}/{{ item.cn }}"
     state: directory
@@ -10,7 +10,7 @@
 
 - name: provision mobile configs
   tags: easyrsa
-  sudo: yes
+  become: yes
   mobileconfig:
     dest:         "~{{ item.user }}/{{ item.cn }}/.rsa.mobileconfig"
     display_name: "{{ item.cn }} ({{ easyrsa_cacn }})"
@@ -26,7 +26,7 @@
 
 - name: mobile configs permissions
   tags: easyrsa
-  sudo: yes
+  become: yes
   file:
     dest: "~{{ item.user }}/{{ item.cn }}/.rsa.mobileconfig"
     state: file

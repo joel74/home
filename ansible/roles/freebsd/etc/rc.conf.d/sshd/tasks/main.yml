@@ -1,6 +1,6 @@
 ---
 - name: sshd_enable
-  sudo: yes
+  become: yes
   copy:
     dest: /etc/rc.conf.d/sshd
     content: 'sshd_enable="YES"'

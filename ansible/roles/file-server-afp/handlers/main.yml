@@ -1,8 +1,8 @@
 ---
 - name: restart netatalk
   service: name=netatalk state=restarted
-  sudo: yes
+  become: yes
 
 - name: restart mdnsresponderposix
   service: name=mdnsresponderposix state=restarted
-  sudo: yes
+  become: yes

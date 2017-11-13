@@ -1,4 +1,4 @@
 ---
 - name: restart transmission
-  sudo: yes
+  become: yes
   service: name=transmission state=restarted

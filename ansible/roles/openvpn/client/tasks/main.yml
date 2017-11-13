@@ -1,7 +1,7 @@
 ---
 - name: copy configs to /usr/local/etc
   tags: openvpn
-  sudo: yes
+  become: yes
   notify: openvpn restarted
   command: >
     rsync -rcip "{{ easyrsa_client_cert_path }}/openvpn/" /usr/local/etc/openvpn/

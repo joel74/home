@@ -1,7 +1,7 @@
 ---
 - name: /etc/make.conf variable
   tags: make.conf
-  sudo: yes
+  become: yes
   lineinfile:
     dest: /etc/make.conf
     create: yes

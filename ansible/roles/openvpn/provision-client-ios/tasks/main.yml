@@ -1,7 +1,7 @@
 ---
 - name: mobile configs
   tags: [ openvpn, openvpn-client-provisioning, openvpn-ios ]
-  sudo: yes
+  become: yes
   mobileconfig:
     dest:         "~{{ user }}/{{ client }}/.vpn.mobileconfig"
     display_name: "{{ client }} (OpenVPN)"
@@ -14,7 +14,7 @@
 
 - name: mobile configs permissions
   tags: [ openvpn, openvpn-client-provisioning, openvpn-ios ]
-  sudo: yes
+  become: yes
   file:
     dest: "~{{ user }}/{{ client }}/.vpn.mobileconfig"
     state: file

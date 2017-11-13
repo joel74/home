@@ -1,7 +1,7 @@
 ---
 - name: periodic svn update /usr/src
   tags: [ freebsd, periodic ]
-  sudo: yes
+  become: yes
   copy:
     dest:     /etc/periodic/{{ freebsd_svn_period }}/900.svn-update-usr.src
     content: "#!/bin/sh\n{{ freebsd_svn_executable }} update"

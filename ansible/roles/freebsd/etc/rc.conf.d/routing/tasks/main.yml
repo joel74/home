@@ -1,7 +1,7 @@
 ---
 - name: defaultrouter
   tags: [ netif, routing ]
-  sudo: yes
+  become: yes
   lineinfile:
     dest: /etc/rc.conf.d/routing
     create: yes
@@ -11,7 +11,7 @@
 
 - name: gateway_enable
   tags: [ netif, routing ]
-  sudo: yes
+  become: yes
   lineinfile:
     dest:   /etc/rc.conf.d/routing
     create: yes

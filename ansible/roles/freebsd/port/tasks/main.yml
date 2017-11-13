@@ -1,7 +1,7 @@
 ---
 - name: install port
   tags: port
-  sudo: yes
+  become: yes
   port: name={{ item }}
   with_items:
   - "{{ name }}"

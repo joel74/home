@@ -1,13 +1,13 @@
 ---
 - name: home filesystem
   tags: file-server
-  sudo: yes
+  become: yes
   zfs:  name={{ zpool|mandatory }}{{ home_root|mandatory }}
         state=present
 
 - name:       user home filesystems
   tags:       file-server
-  sudo:       yes
+  become: yes
   zfs:        name={{ zpool|mandatory }}{{ home_root|mandatory }}/{{ item.name|mandatory }}
               quota={{ item.quota | default(none) }}
               state=present
@@ -15,7 +15,7 @@
 
 - name:       user home filesystems permissions
   tags:       file-server
-  sudo:       yes
+  become: yes
   file:       name={{ home_root|mandatory }}/{{ item.name|mandatory }}
               owner={{ item.name|mandatory }}
               group=0
@@ -26,7 +26,7 @@
 
 - name:       assign user homes
   tags:       file-server
-  sudo:       yes
+  become: yes
   user:       name={{ item.name|mandatory }}
               home={{ home_root|mandatory }}/{{ item.name|mandatory }}
   with_items: home_users|mandatory

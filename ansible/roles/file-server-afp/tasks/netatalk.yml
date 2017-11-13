@@ -1,6 +1,6 @@
 ---
 - name:   afp.conf
-  sudo:   yes
+  become: yes
   notify: restart netatalk
   ini_file: >
     dest='{{ afp_conf_path }}'
@@ -10,7 +10,7 @@
   with_items: afp_global
 
 - name:     netatalk enabled and started
-  sudo:     yes
+  become: yes
   service:  name=netatalk
             enabled=yes
             state=started
