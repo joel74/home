@@ -154,7 +154,7 @@
 : ${WHEEL_USERS:=julie}
 
 # packages to install
-: ${PACKAGES:=sudo}
+: ${PACKAGES:=sudo python}
 
 # mount point for the new filesystem
 : ${MNT:=/mnt}
