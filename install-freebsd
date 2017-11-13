@@ -594,7 +594,7 @@ echo Remove existing /home
 if [ -d "${MNT}/home" ]
 then
     rm ${MNT}/home || _errex
-done
+fi
 
 echo Symlink /home to /data/home
 chroot ${MNT} /bin/ln -s /data/home /home || _errex
