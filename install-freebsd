@@ -425,12 +425,18 @@ _zfs_create -o ${NOEXEC} -o ${NOSUID} -o ${NOCOMP} -o mountpoint=inherit ${BOOT_
 _zfs_create -o   ${EXEC} -o ${NOSUID} -o   ${COMP} -o mountpoint=inherit ${BOOT_ENV}/var/tmp
 
 echo Create datasets that aren\'t part of the boot environment.
-_zfs_create -o   ${EXEC} -o ${NOSUID} -o ${NOCOMP} -o mountpoint=${MNT}/home      ${ZPOOL}/home
+_zfs_create -o   ${EXEC} -o ${NOSUID} -o ${NOCOMP} -o mountpoint=${MNT}/data      ${ZPOOL}/data
+_zfs_create -o   ${EXEC} -o ${NOSUID} -o ${NOCOMP} -o mountpoint=inherit          ${ZPOOL}/data/home
 _zfs_create -o   ${EXEC} -o ${NOSUID} -o   ${COMP} -o mountpoint=${MNT}/usr/ports ${ZPOOL}/usr.ports
 _zfs_create -o ${NOEXEC} -o ${NOSUID} -o ${NOCOMP} -o mountpoint=inherit          ${ZPOOL}/usr.ports/distfiles
 _zfs_create -o ${NOEXEC} -o ${NOSUID} -o ${NOCOMP} -o mountpoint=inherit          ${ZPOOL}/usr.ports/packages
 _zfs_create -o ${NOEXEC} -o ${NOSUID} -o   ${COMP} -o mountpoint=${MNT}/usr/src   ${ZPOOL}/usr.src
 _zfs_create -o ${NOEXEC} -o ${NOSUID} -o ${NOCOMP} -o mountpoint=${MNT}/var/empty ${ZPOOL}/var.empty
+
+for user in ${WHEEL_USERS}
+do
+    _zfs_create -o ${EXEC} -o ${NOSUID} -o ${NOCOMP} -o mountpoint=inherit ${ZPOOL}/data/home/${user}
+done
 
 echo Set the dataset \"${BOOT_ENV}\" as bootfs.
 zpool set bootfs=${BOOT_ENV} ${ZPOOL} || _errex
