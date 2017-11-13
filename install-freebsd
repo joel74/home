@@ -381,7 +381,7 @@ DEFAULT_ROUTE_IF=$(netstat -nrf inet | grep '^default' | awk '{ print $6 }')
 BE_ROOT=${ZPOOL}/ROOT
 
 # the default boot environment dataset
-BOOT_ENV=${BE_ROOT}/current
+BOOT_ENV=${BE_ROOT}/${DIST_RELEASE}
 
 # various dataset options
 COMP="compression=on"; NOCOMP="compression=off"
@@ -587,6 +587,19 @@ else
 fi
 
 # ==============================================================================
+# home
+# ==============================================================================
+
+echo Remove existing /home
+if [ -d "${MNT}/home" ]
+then
+    rm ${MNT}/home || _errex
+done
+
+echo Symlink /home to /data/home
+chroot ${MNT} /bin/ln -s /data/home /home || _errex
+
+# ==============================================================================
 # wheel users
 # ==============================================================================
 
@@ -595,21 +608,18 @@ do
     echo "Add wheel user ${user}"
     chroot ${MNT} /usr/sbin/pw useradd ${user} -g wheel || _errex
 
-    echo "  create ${MNT}/home/${user}"
-    mkdir -p ${MNT}/home/${user} || _errex
-
     if [ -r "/tmp/${user}.authorized_keys" ]
     then
         echo "  copy authorized_keys"
-        mkdir -p ${MNT}/home/${user}/.ssh || _errex
+        mkdir -p ${MNT}/data/home/${user}/.ssh || _errex
         cp /tmp/${user}.authorized_keys \
-           ${MNT}/home/${user}/.ssh/authorized_keys || _errex
+           ${MNT}/data/home/${user}/.ssh/authorized_keys || _errex
     else
         echo "  not found: /tmp/${user}.authorized_keys"
     fi
 
-    echo "  set ownership of ${MNT}/home/${user}"
-    chroot ${MNT} /usr/sbin/chown -R ${user}:wheel /home/${user} || _errex
+    echo "  set ownership of ${MNT}/data/home/${user}"
+    chroot ${MNT} /usr/sbin/chown -R ${user}:wheel /data/home/${user} || _errex
 done
 
 # ==============================================================================
@@ -641,7 +651,7 @@ zfs umount -a || _errex
 
 echo Set dataset mountpoints.
 zfs set mountpoint=legacy      ${BOOT_ENV}           || _errex
-zfs set mountpoint=/home          ${ZPOOL}/home      || _errex
+zfs set mountpoint=/data          ${ZPOOL}/data      || _errex
 zfs set mountpoint=/tmp        ${BOOT_ENV}/tmp       || _errex
 zfs set mountpoint=/usr        ${BOOT_ENV}/usr       || _errex
 zfs set mountpoint=/usr/ports     ${ZPOOL}/usr.ports || _errex
@@ -651,7 +661,7 @@ zfs set mountpoint=/var/empty     ${ZPOOL}/var.empty || _errex
 
 echo
 echo Unmount datasets to avoid having / mounted from the boot media,
-echo and /usr, /var, /tmp, and /home from the new filesystem.
+echo and /usr, /var, /tmp, and /data/home from the new filesystem.
 zfs umount -a || _errex
 
 echo
